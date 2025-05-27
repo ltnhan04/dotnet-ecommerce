@@ -1,0 +1,55 @@
+services:
+  frontend:
+    image: itribe-v2-fe
+    container_name: itribe-v2-fe
+    pull_policy: never
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_PUBLIC_API_ENDPOINT=https://localhost:8000
+      - NODE_ENV=development
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-networks
+  admin:
+    image: itribe-v2-admin
+    container_name: itribe-v2-admin
+    pull_policy: never
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    environment:
+      - VITE_API_URL=https://localhost:8000
+      - VITE_NODE_ENV=development
+    ports:
+      - 5173:80
+    depends_on:
+      - backend
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    networks:
+      - app-networks
+  backend:
+    image: itribe-v2-be
+    container_name: itribe-v2-be
+    pull_policy: never
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api:/app
+    networks:
+      - app-networks
+networks:
+  app-networks:
+    driver: bridge
