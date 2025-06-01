@@ -1,29 +1,52 @@
-using Microsoft.EntityFrameworkCore;
-using api.database;
+using api.configurations;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("http://0.0.0.0:8000");
 
 builder.Services.AddControllers();
-builder.Services.ConnectMongoDB(builder.Configuration);
-builder.Services.ConnectRedis(builder.Configuration);
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddRazorPages();
+builder.Services.AddHttpClient();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")));
+
+
+DatabaseConfiguration.ConfigurationMongoDb(builder.Services, builder.Configuration);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowFrontend");
+app.UseAuthorization();
 
+app.MapGet("/", () => "Backend is running!");
+app.MapControllers();
+app.MapRazorPages();
 
 app.Run();
-
-

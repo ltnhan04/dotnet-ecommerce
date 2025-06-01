@@ -57,6 +57,7 @@
 /home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/bin/Debug/net8.0/runtimes/linux/native/libmongocrypt.so
 /home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/bin/Debug/net8.0/runtimes/osx/native/libmongocrypt.dylib
 /home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/bin/Debug/net8.0/runtimes/win/native/mongocrypt.dll
+<<<<<<< HEAD
 C:\dotnet-ecommerce\dotnet-ecommerce\api\bin\Debug\net8.0\appsettings.Development.json
 C:\dotnet-ecommerce\dotnet-ecommerce\api\bin\Debug\net8.0\api.exe
 C:\dotnet-ecommerce\dotnet-ecommerce\api\bin\Debug\net8.0\api.deps.json
@@ -117,3 +118,7 @@ C:\dotnet-ecommerce\dotnet-ecommerce\api\obj\Debug\net8.0\api.genruntimeconfig.c
 C:\dotnet-ecommerce\dotnet-ecommerce\api\obj\Debug\net8.0\ref\api.dll
 C:\dotnet-ecommerce\dotnet-ecommerce\api\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
 C:\dotnet-ecommerce\dotnet-ecommerce\api\bin\Debug\net8.0\StackExchange.Redis.dll
+=======
+/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/obj/Debug/net8.0/api.RazorAssemblyInfo.cache
+/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/obj/Debug/net8.0/api.RazorAssemblyInfo.cs
+>>>>>>> c0302fd (refactor: remove unused schema validation and type definitions)
