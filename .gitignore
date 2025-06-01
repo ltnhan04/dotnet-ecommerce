@@ -1,1 +1,3 @@
 api/appsettings*.json
+data-protection-keys
+api/DataProtection-Keys
