@@ -1,7 +1,11 @@
 using api.configurations;
 using Microsoft.AspNetCore.DataProtection;
+using DotNetEnv;
+
 
 var builder = WebApplication.CreateBuilder(args);
+Env.Load();
+
 
 builder.WebHost.UseUrls("http://0.0.0.0:8000");
 
@@ -14,6 +18,7 @@ builder.Services.AddDataProtection()
 
 
 DatabaseConfiguration.ConfigurationMongoDb(builder.Services, builder.Configuration);
+ServiceConfiguration.ConfigureServices(builder.Services);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

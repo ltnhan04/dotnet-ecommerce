@@ -14,7 +14,7 @@ namespace api.configurations
     {
         public static void ConfigurationMongoDb(IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MongoDb");
+            var connectionString = Environment.GetEnvironmentVariable("MONGODB_URI");
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new InvalidOperationException("MongoDB connection string is not configured");
@@ -23,7 +23,7 @@ namespace api.configurations
             {
                 options.UseMongoDB(connectionString, "hufPhone");
             });
-            Console.WriteLine("Connected MongoDb");
+            Console.WriteLine("✅ Connected MongoDb");
         }
     }
 }

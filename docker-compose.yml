@@ -26,6 +26,8 @@ services:
       context: ./api
       dockerfile: Dockerfile
       target: development
+    env_file:
+      - ./api/.env
     ports:
       - 8000:8000
     volumes:

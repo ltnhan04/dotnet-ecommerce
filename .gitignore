@@ -1,3 +1,6 @@
 api/appsettings*.json
 data-protection-keys
 api/DataProtection-Keys
+api/bin
+api/.env
+frontend/.env.local
