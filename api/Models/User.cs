@@ -13,11 +13,11 @@ namespace api.models
         [BsonId]
         public ObjectId _id { get; set; }
         [MaxLength(50), BsonElement("name")]
-        public required string name { get; set; }
+        public string name { get; set; } = string.Empty;
         [MaxLength(100), BsonElement("email")]
-        public required string email { get; set; }
+        public string email { get; set; } = string.Empty;
         [MinLength(8), BsonElement("password")]
-        public required string password { get; set; }
+        public string password { get; set; } = string.Empty;
         [BsonElement("phoneNumber")]
         public string phoneNumber { get; set; } = string.Empty;
         [BsonElement("address")]
