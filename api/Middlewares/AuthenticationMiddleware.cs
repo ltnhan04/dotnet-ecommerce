@@ -11,17 +11,29 @@ using MongoDB.Bson;
 
 namespace api.middlewares
 {
-    public class AuthMiddleware
+    public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
-        public AuthMiddleware(RequestDelegate next, IConfiguration configuration)
+        public AuthenticationMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
             _configuration = configuration;
         }
+
+        private readonly List<string> _bypassRoutes = new()
+        {
+            "api/v1/auth/login",
+            "api/v1/auth/signup"
+        };
         public async Task Invoke(HttpContext context)
         {
+            var path = context.Request.Path.Value?.ToLower();
+            if (!string.IsNullOrEmpty(path) && _bypassRoutes.Any(p => path.StartsWith(p)))
+            {
+                await _next(context);
+                return;
+            }
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token == null)
             {
@@ -53,7 +65,7 @@ namespace api.middlewares
 
                 var objectId = ObjectId.Parse(userId);
                 var roleEnum = Enum.TryParse<Role>(role, true, out var parsedRole) ? parsedRole : Role.user;
-                context.Items["User"] = new User { _id = objectId, role = roleEnum };
+                context.Items["user"] = new User { _id = objectId, role = roleEnum };
                 await _next(context);
             }
             catch

@@ -19,7 +19,6 @@ public static class ResponseHandler
         var result = new
         {
             message,
-            data = new { }
         };
         await response.WriteAsJsonAsync(result);
     }

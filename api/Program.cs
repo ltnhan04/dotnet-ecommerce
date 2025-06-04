@@ -1,6 +1,9 @@
 using api.configurations;
 using Microsoft.AspNetCore.DataProtection;
 using DotNetEnv;
+using api.middlewares;
+using Microsoft.AspNetCore.RateLimiting;
+using api.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +39,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -47,6 +52,16 @@ else
 }
 
 app.UseRouting();
+app.UseMiddleware<AuthenticationMiddleware>();
+app.UseWhen(context =>
+    context.Request.Path.StartsWithSegments("/admin") ||
+    context.Request.Path.StartsWithSegments("/api/v1/admin"),
+    appBuilder =>
+    {
+        appBuilder.UseMiddleware<AuthorizationMiddleware>();
+    }
+);
+
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
 

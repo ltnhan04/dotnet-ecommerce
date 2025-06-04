@@ -18,6 +18,6 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = /home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api
 build_property._RazorSourceGeneratorDebug = 
 
-[/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/Pages/_Layout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX0xheW91dC5jc2h0bWw=
+[/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/Pages/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU2hhcmVkL19MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
