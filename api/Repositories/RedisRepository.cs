@@ -15,5 +15,21 @@ namespace api.Repositories
             var db = _redis.GetDatabase();
             await db.StringSetAsync(key, value, expiry);
         }
+        public async Task<string?> GetAsync(string key)
+        {
+            var db = _redis.GetDatabase();
+            var value = await db.StringGetAsync(key);
+            return value.HasValue ? value.ToString() : null;
+        }
+        public async Task DeleteAsync(string key)
+        {
+            var db = _redis.GetDatabase();
+            await db.KeyDeleteAsync(key);
+        }
+        public async Task<long> IncrementAsync(string key)
+        {
+            var db = _redis.GetDatabase();
+            return await db.StringIncrementAsync(key);
+        }
     }
 }

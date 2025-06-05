@@ -70,7 +70,6 @@ namespace api.middlewares
             }
             catch
             {
-
                 await ResponseHandler.SendError(context.Response, "Token is not valid", 403);
             }
         }
