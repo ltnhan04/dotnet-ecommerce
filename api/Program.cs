@@ -2,7 +2,6 @@ using api.configurations;
 using Microsoft.AspNetCore.DataProtection;
 using DotNetEnv;
 using api.middlewares;
-using Microsoft.AspNetCore.RateLimiting;
 using api.Middlewares;
 
 

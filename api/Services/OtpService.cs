@@ -86,7 +86,7 @@ namespace api.Services
             var resendCount = string.IsNullOrEmpty(resendCountRaw) ? 0 : int.Parse(resendCountRaw);
 
             if (resendCount > 2)
-                throw new AppException("Resend limit reached. Try after 10 minutes.", 429);
+                throw new AppException("You have reached the limit for resending OTP. Please try after 10 mins.", 429);
 
             var (verificationCode, createdAt) = GenerateOtp();
 
