@@ -1,13 +1,13 @@
 using api.configurations;
 using Microsoft.AspNetCore.DataProtection;
 using DotNetEnv;
-using api.middlewares;
 using api.Middlewares;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
-
 
 builder.WebHost.UseUrls("http://0.0.0.0:8000");
 
@@ -24,7 +24,22 @@ ServiceConfiguration.ConfigureServices(builder.Services);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
+{
+    var secret = Environment.GetEnvironmentVariable("ACCESS_TOKEN_SECRET");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret!)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOny", policy => policy.RequireRole("admin"));
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -51,20 +66,13 @@ else
 }
 
 app.UseRouting();
-app.UseMiddleware<AuthenticationMiddleware>();
-app.UseWhen(context =>
-    context.Request.Path.StartsWithSegments("/admin") ||
-    context.Request.Path.StartsWithSegments("/api/v1/admin"),
-    appBuilder =>
-    {
-        appBuilder.UseMiddleware<AuthorizationMiddleware>();
-    }
-);
 
 app.UseCors("AllowFrontend");
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Backend is running!");
+
+app.MapGet("/", () => "Backend is running!").AllowAnonymous();
 app.MapControllers();
 app.MapRazorPages();
 
