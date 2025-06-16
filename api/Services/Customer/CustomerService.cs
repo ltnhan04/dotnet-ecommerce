@@ -67,7 +67,7 @@ namespace api.Services.Customer
             var customer = await _customerRepository.FindByEmail(dto.email);
             if (customer == null || customer.password != dto.password)
                 throw new AppException("Invalid credentials", 401);
-            if (customer.role != dto.role)
+            if (customer.role.ToString() != dto.role.ToString())
                 throw new AppException("Access denied - Admin only", 403);
             return customer;
         }

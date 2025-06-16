@@ -65,7 +65,7 @@ namespace api.Services
                 throw new AppException($"Invalid OTP. You have {5 - wrongOtp} attempts remaining.", 400);
             }
             await _redis.DeleteAsync($"wrongOtp:{email}");
-            return otpDto;
+            return new OtpDto { name = otpDto.name, password = otpDto.password, email = email };
         }
 
         public async Task<string> CheckAndResendOtp(string email)
