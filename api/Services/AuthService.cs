@@ -143,6 +143,31 @@ namespace api.Services
         {
             return await _customerRepository.FindById(userId) ?? throw new AppException("Customer not found");
         }
+        public async Task<User> UpdateProfile(string userId, UpdateCustomerProfileDto dto)
+        {
+            var customer = await _customerRepository.FindById(userId);
+            if (customer == null)
+                throw new AppException("User not found", 404);
+
+            customer.name = dto.name;
+            customer.phoneNumber = dto.phoneNumber;
+            customer.address = new Address
+            {
+                street = dto.address.street,
+                ward = dto.address.ward,
+                district = dto.address.district,
+                city = dto.address.city,
+                country = dto.address.country
+            };
+
+            var result = await _customerRepository.UpdateUser(customer);
+            if (result == null)
+            {
+                throw new AppException("Update profile failed", 400);
+            }
+            return result;
+        }
+
         public async Task<string> ChangePassword(string email)
         {
             var customer = await _customerRepository.FindByEmail(email);

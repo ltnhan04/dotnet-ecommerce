@@ -1,6 +1,6 @@
 public static class ResponseHandler
 {
-    public static async Task SendSuccess(HttpResponse response, object data, int statusCode = 200, string message = "Success")
+    public static async Task SendSuccess(HttpResponse response, object? data = null, int statusCode = 200, string message = "Success")
     {
         response.StatusCode = statusCode;
         response.ContentType = "application/json";

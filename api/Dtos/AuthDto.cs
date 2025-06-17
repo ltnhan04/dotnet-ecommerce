@@ -66,6 +66,8 @@ public class LoginResponseDto
     public string message { get; set; } = string.Empty;
 }
 
+
+
 public enum Role
 {
     user,
