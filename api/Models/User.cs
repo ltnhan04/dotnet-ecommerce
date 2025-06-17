@@ -24,7 +24,6 @@ namespace api.models
         [BsonElement("address")]
         public Address address { get; set; } = new();
         [BsonElement("role")]
-        [BsonRepresentation(BsonType.String)]
 
         public Role role { get; set; } = Role.user;
 

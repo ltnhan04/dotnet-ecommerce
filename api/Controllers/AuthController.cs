@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Interfaces;
 using api.Services;
 using api.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +16,10 @@ namespace api.Controllers
     [Route("api/v1/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _authService;
+        private readonly IAuthService _authService;
         private readonly EmailService _emailService;
         private readonly IConfiguration _config;
-        public AuthController(AuthService authService, EmailService emailService, IConfiguration config)
+        public AuthController(IAuthService authService, EmailService emailService, IConfiguration config)
         {
             _authService = authService;
             _emailService = emailService;
@@ -42,7 +43,6 @@ namespace api.Controllers
         [HttpPost("verify-signup")]
         public async Task VerifySignup([FromBody] VerifyOtpDto dto)
         {
-
             try
             {
                 var customer = await _authService.VerifyAccount(dto);
@@ -51,6 +51,7 @@ namespace api.Controllers
                     email = dto.email,
                     password = customer.password,
                 }, Response);
+                Console.Write(result);
                 await ResponseHandler.SendSuccess(Response, new LoginResponseDto
                 {
                     accessToken = result.accessToken,

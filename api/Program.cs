@@ -5,10 +5,21 @@ using api.Middlewares;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using api.Repositories.Customer;
+using api.Services;
+using api.Repositories;
+using api.Interfaces;
+using api.Services.Customer;
+using api.models;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson;
 
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
+
+
 
 builder.WebHost.UseUrls("http://0.0.0.0:8000");
 
@@ -22,6 +33,15 @@ builder.Services.AddDataProtection()
 
 DatabaseConfiguration.ConfigurationMongoDb(builder.Services, builder.Configuration);
 ServiceConfiguration.ConfigureServices(builder.Services);
+
+builder.Services.AddScoped<iTribeDbContext>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IOtpService, OtpService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IRedisRepository, RedisRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -80,6 +100,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
 var app = builder.Build();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();

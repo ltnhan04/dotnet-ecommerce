@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.models;
 using Microsoft.EntityFrameworkCore;
+using api.Interfaces;
 
 namespace api.Repositories.Customer
 {
-    public class CustomerRepository
+    public class CustomerRepository : ICustomerRepository
     {
         private readonly iTribeDbContext _context;
         public CustomerRepository(iTribeDbContext context)
@@ -35,7 +36,5 @@ namespace api.Repositories.Customer
             await _context.SaveChangesAsync();
             return user;
         }
-
-
     }
 }

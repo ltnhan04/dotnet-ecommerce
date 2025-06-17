@@ -9,6 +9,7 @@ namespace api.Interfaces
     public interface IOtpService
     {
         (string verificationCode, DateTime createdAt) GenerateOtp();
+        Task<(OtpDto data, DateTime createdAt)> CheckExpiredOtp(string email);
         Task<OtpDto> VerifyOtp(string otp, string email);
         Task<string> CheckAndResendOtp(string email);
     }

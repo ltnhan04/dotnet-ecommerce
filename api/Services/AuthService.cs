@@ -15,13 +15,13 @@ namespace api.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly CustomerRepository _customerRepository;
-        private readonly TokenService _tokenService;
-        private readonly RedisRepository _redisRepository;
-        private readonly OtpService _otpService;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly ITokenService _tokenService;
+        private readonly IRedisRepository _redisRepository;
+        private readonly IOtpService _otpService;
         private readonly IConfiguration _configuration;
 
-        public AuthService(CustomerRepository customerRepository, TokenService tokenService, RedisRepository redisRepository, OtpService otpService, IConfiguration configuration)
+        public AuthService(ICustomerRepository customerRepository, ITokenService tokenService, IRedisRepository redisRepository, IOtpService otpService, IConfiguration configuration)
         {
             _customerRepository = customerRepository;
             _tokenService = tokenService;
@@ -39,8 +39,10 @@ namespace api.Services
             {
                 {"name", dto.name},
                 {"email", dto.email},
+                {"password", dto.password},
                 { "verificationCode", verificationCode },
                 { "createdAt", createdAt.ToString("o") }
+
             };
             await _redisRepository.SetAsync($"signup:{dto.email}", JsonSerializer.Serialize(otpData), TimeSpan.FromMinutes(5));
             await _redisRepository.SetAsync($"signup:count:{dto.email}", "1", TimeSpan.FromMinutes(10));
@@ -135,7 +137,7 @@ namespace api.Services
             var stored = await _redisRepository.GetAsync($"refresh_token:{userId}");
             if (stored != refreshToken) throw new AppException("Invalid token");
 
-            var tokens = _tokenService.GenerateToken(userId);
+            var tokens = _tokenService.GenerateToken(userId.ToString()!);
             CookieUtil.SetCookie(res, "refreshToken", tokens.refreshToken);
             return new RefreshTokenResponseDto { newAccessToken = tokens.accessToken, message = "Token refreshed" };
         }

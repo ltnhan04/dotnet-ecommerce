@@ -14,9 +14,9 @@ namespace api.Services.Customer
 {
     public class CustomerService : ICustomerService
     {
-        private readonly RedisRepository _redis;
-        private readonly CustomerRepository _customerRepository;
-        public CustomerService(RedisRepository redis, CustomerRepository customerRepository)
+        private readonly IRedisRepository _redis;
+        private readonly ICustomerRepository _customerRepository;
+        public CustomerService(IRedisRepository redis, ICustomerRepository customerRepository)
         {
             _redis = redis;
             _customerRepository = customerRepository;

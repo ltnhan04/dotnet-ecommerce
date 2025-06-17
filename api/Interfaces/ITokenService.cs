@@ -11,5 +11,6 @@ namespace api.Interfaces
         TokenDto GenerateToken(string userId);
         TokenDto GenerateNewToken(string userId);
         Task StoreRefreshToken(string userId, string refreshToken);
+        string ValidateRefreshToken(string refreshToken);
     }
 }

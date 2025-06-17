@@ -27,7 +27,6 @@ namespace api.models
 
         [BsonElement("status")]
         [Required]
-        [BsonRepresentation(BsonType.String)]
         public ChatbotStatus status { get; set; } = ChatbotStatus.active;
 
         [BsonElement("createdAt")]
@@ -41,8 +40,7 @@ namespace api.models
     {
         [BsonElement("role")]
         [Required]
-        [BsonRepresentation(BsonType.String)]
-        public ChatRole role { get; set; }
+        public string role { get; set; } = string.Empty;
 
         [BsonElement("content")]
         [Required]
@@ -50,6 +48,12 @@ namespace api.models
 
         [BsonElement("timestamp")]
         public DateTime timestamp { get; set; } = DateTime.UtcNow;
+
+        public ChatRole Role
+        {
+            get => Enum.Parse<ChatRole>(role);
+            set => role = value.ToString();
+        }
     }
 
     public enum ChatRole

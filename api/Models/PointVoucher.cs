@@ -35,7 +35,6 @@ namespace api.models
         public DateTime validTo { get; set; }
 
         [BsonElement("status")]
-        [BsonRepresentation(BsonType.String)]
         public VoucherStatus status { get; set; } = VoucherStatus.unused;
 
         [BsonElement("usedOrder")]

@@ -25,6 +25,7 @@ namespace api.Services
         public async Task<(OtpDto data, DateTime createdAt)> CheckExpiredOtp(string email)
         {
             var stored = await _redis.GetAsync($"signup:{email}");
+            Console.WriteLine($"🧩 Raw Redis OTP data: {stored}");
             if (stored == null)
             {
                 throw new AppException("OTP doesn't exist", 404);
@@ -76,11 +77,10 @@ namespace api.Services
                 throw new AppException("OTP doesn't exist", 404);
             }
             var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(stored);
-            if (parsed == null || !parsed.ContainsKey("name") || !parsed.ContainsKey("password"))
+            if (parsed == null || !parsed.TryGetValue("name", out string? value) || !parsed.TryGetValue("password", out _))
                 throw new AppException("Invalid OTP data", 500);
-
-            var name = parsed["name"];
-            var password = parsed["password"];
+            var name = value;
+            var password = value;
 
             var resendCountRaw = await _redis.GetAsync($"signup:count:{email}");
             var resendCount = string.IsNullOrEmpty(resendCountRaw) ? 0 : int.Parse(resendCountRaw);

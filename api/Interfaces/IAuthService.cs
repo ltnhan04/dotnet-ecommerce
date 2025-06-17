@@ -23,6 +23,5 @@ namespace api.Interfaces
         Task<User> UpdateProfile(string userId, UpdateCustomerProfileDto dto);
         Task<string> ResendOtp(string email);
         Task<User> VerifyRole(string email, string role);
-
     }
 }
