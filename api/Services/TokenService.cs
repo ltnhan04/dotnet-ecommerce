@@ -15,19 +15,31 @@ namespace api.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _config;
         private readonly IRedisRepository _redisRepository;
 
-        public TokenService(IConfiguration configuration, IRedisRepository redisRepository)
+        public TokenService(IRedisRepository redisRepository)
         {
-            _config = configuration;
             _redisRepository = redisRepository;
+
         }
 
         public TokenDto GenerateToken(string userId)
         {
-            var accessToken = JwtUtils.GenerateToken(userId, _config["ACCESS_TOKEN_SECRET"]!, 1);
-            var refreshToken = JwtUtils.GenerateToken(userId, _config["REFRESH_TOKEN_SECRET"]!, 7);
+            var accessTokenSecret = Environment.GetEnvironmentVariable("ACCESS_TOKEN_SECRET");
+            var refreshTokenSecret = Environment.GetEnvironmentVariable("REFRESH_TOKEN_SECRET");
+
+            if (string.IsNullOrEmpty(accessTokenSecret))
+            {
+                throw new AppException("ACCESS_TOKEN_SECRET is not configured", 500);
+            }
+
+            if (string.IsNullOrEmpty(refreshTokenSecret))
+            {
+                throw new AppException("REFRESH_TOKEN_SECRET is not configured", 500);
+            }
+
+            var accessToken = JwtUtils.GenerateToken(userId, accessTokenSecret, 1);
+            var refreshToken = JwtUtils.GenerateToken(userId, refreshTokenSecret, 7);
 
             return new TokenDto
             {
@@ -37,8 +49,21 @@ namespace api.Services
         }
         public TokenDto GenerateNewToken(string userId)
         {
-            var accessToken = JwtUtils.GenerateToken(userId, _config["ACCESS_TOKEN_SECRET"]!, 1);
-            var refreshToken = JwtUtils.GenerateToken(userId, _config["REFRESH_TOKEN_SECRET"]!, 7);
+            var accessTokenSecret = Environment.GetEnvironmentVariable("ACCESS_TOKEN_SECRET");
+            var refreshTokenSecret = Environment.GetEnvironmentVariable("REFRESH_TOKEN_SECRET");
+
+            if (string.IsNullOrEmpty(accessTokenSecret))
+            {
+                throw new AppException("ACCESS_TOKEN_SECRET is not configured", 500);
+            }
+
+            if (string.IsNullOrEmpty(refreshTokenSecret))
+            {
+                throw new AppException("REFRESH_TOKEN_SECRET is not configured", 500);
+            }
+
+            var accessToken = JwtUtils.GenerateToken(userId, accessTokenSecret, 1);
+            var refreshToken = JwtUtils.GenerateToken(userId, refreshTokenSecret, 7);
             return new TokenDto
             {
                 accessToken = accessToken,
@@ -51,8 +76,15 @@ namespace api.Services
         }
         public string ValidateRefreshToken(string refreshToken)
         {
+            var refreshTokenSecret = Environment.GetEnvironmentVariable("REFRESH_TOKEN_SECRET");
+
+            if (string.IsNullOrEmpty(refreshTokenSecret))
+            {
+                throw new AppException("REFRESH_TOKEN_SECRET is not configured", 500);
+            }
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_config["REFRESH_TOKEN_SECRET"]!);
+            var key = Encoding.UTF8.GetBytes(refreshTokenSecret);
 
             try
             {
@@ -66,7 +98,7 @@ namespace api.Services
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
-                var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userId = principal.FindFirst("userId")?.Value;
                 if (userId == null)
                     throw new AppException("Invalid token", 400);
 

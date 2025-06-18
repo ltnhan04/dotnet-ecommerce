@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using api.Utils;
 
 
 namespace api.Middlewares
@@ -28,7 +29,20 @@ namespace api.Middlewares
         }
         public async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            var statusCode = (int)HttpStatusCode.InternalServerError;
+            int statusCode;
+            string message;
+
+            if (ex is AppException appEx)
+            {
+                statusCode = appEx.StatusCode;
+                message = appEx.Message;
+            }
+            else
+            {
+                statusCode = (int)HttpStatusCode.InternalServerError;
+                message = "Internal Server Error";
+            }
+
             Console.WriteLine($"[Error] {ex.Message}\n{ex.StackTrace}");
 
             context.Response.Clear();

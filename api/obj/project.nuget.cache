@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "rrMz4oL84Z937BJYKmSWGpugZQtI4BKZV9vlcWk2GNMFN2atowYeMnEs3gnLaeCUDmmzI4/p+HaFb4HbSFZdyw==",
+  "dgSpecHash": "0NXINSV/FIIft9b9MOBlCBTNFOOlsUSCa08dgFHY0olHjf9UULQYGISU3ZzvU/8SiS5J1qEjDABy2xs3BJ4Q9Q==",
   "success": true,
   "projectFilePath": "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/api.csproj",
   "expectedPackageFiles": [
@@ -10,6 +10,7 @@
     "/home/l4x/.nuget/packages/cloudinarydotnet/1.27.5/cloudinarydotnet.1.27.5.nupkg.sha512",
     "/home/l4x/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
     "/home/l4x/.nuget/packages/dotnetenv/3.1.1/dotnetenv.3.1.1.nupkg.sha512",
+    "/home/l4x/.nuget/packages/microsoft.aspnetcore.authentication.google/8.0.5/microsoft.aspnetcore.authentication.google.8.0.5.nupkg.sha512",
     "/home/l4x/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/8.0.0/microsoft.aspnetcore.authentication.jwtbearer.8.0.0.nupkg.sha512",
     "/home/l4x/.nuget/packages/microsoft.aspnetcore.openapi/8.0.16/microsoft.aspnetcore.openapi.8.0.16.nupkg.sha512",
     "/home/l4x/.nuget/packages/microsoft.entityframeworkcore/8.0.4/microsoft.entityframeworkcore.8.0.4.nupkg.sha512",

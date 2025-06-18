@@ -46,4 +46,15 @@ namespace api.Dtos
         public string password { get; set; } = string.Empty;
         public Role role { get; set; } = new();
     }
+    public class UserProfileDto
+    {
+        public string _id { get; set; } = string.Empty;
+        public string name { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
+        public string phoneNumber { get; set; } = string.Empty;
+        public Address Address { get; set; } = new();
+        public string role { get; set; } = string.Empty;
+    }
+
+
 }

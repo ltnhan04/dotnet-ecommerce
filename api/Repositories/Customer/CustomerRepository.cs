@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.models;
 using Microsoft.EntityFrameworkCore;
 using api.Interfaces;
+using MongoDB.Bson;
 
 namespace api.Repositories.Customer
 {
@@ -17,7 +18,8 @@ namespace api.Repositories.Customer
         }
         public async Task<User?> FindById(string userId)
         {
-            return await _context.Users.FindAsync(userId);
+            var objectId = ObjectId.Parse(userId);
+            return await _context.Users.FindAsync(objectId);
         }
 
         public async Task<User?> FindByEmail(string email)

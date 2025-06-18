@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -19,14 +20,12 @@ namespace api.Services
         private readonly ITokenService _tokenService;
         private readonly IRedisRepository _redisRepository;
         private readonly IOtpService _otpService;
-        private readonly IConfiguration _configuration;
 
-        public AuthService(ICustomerRepository customerRepository, ITokenService tokenService, IRedisRepository redisRepository, IOtpService otpService, IConfiguration configuration)
+        public AuthService(ICustomerRepository customerRepository, ITokenService tokenService, IRedisRepository redisRepository, IOtpService otpService)
         {
             _customerRepository = customerRepository;
             _tokenService = tokenService;
             _redisRepository = redisRepository;
-            _configuration = configuration;
             _otpService = otpService;
         }
 
@@ -48,40 +47,53 @@ namespace api.Services
             await _redisRepository.SetAsync($"signup:count:{dto.email}", "1", TimeSpan.FromMinutes(10));
             return new OtpResponseDto { verificationCode = verificationCode, email = dto.email };
         }
-        public async Task<LoginGoogleResponseDto> LoginWithGoogle(GoogleUserDto dto)
+        public async Task<(string accessToken, string refreshToken)> LoginWithGoogle(ClaimsPrincipal principal)
         {
-            var customer = await _customerRepository.FindByEmail(dto.email);
-            if (customer == null)
+
+            var email = principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (email == null || name == null)
+                throw new AppException("Invalid Google data");
+
+            var user = await _customerRepository.FindByEmail(email);
+            user ??= await _customerRepository.CreateUser(new User
             {
-                customer = new User
-                {
-                    email = dto.email,
-                    name = dto.name,
-                };
-                await _customerRepository.CreateUser(customer);
-            }
-            var token = _tokenService.GenerateToken(customer._id.ToString());
-            return new LoginGoogleResponseDto
-            {
-                accessToken = token.accessToken,
-                user = new CustomerResponseDto { id = customer._id.ToString(), name = customer.name, email = customer.email, avatar = dto.picture }
-            };
+                name = name,
+                email = email,
+            });
+
+            var tokens = _tokenService.GenerateToken(user._id.ToString());
+            var accessToken = tokens.accessToken;
+            var refreshToken = tokens.refreshToken;
+            await _tokenService.StoreRefreshToken(user._id.ToString(), refreshToken.ToString());
+
+            return (accessToken, refreshToken);
         }
-        public async Task<User> VerifyAccount(VerifyOtpDto dto)
+        public async Task<VerifiedSignUpDto> VerifyAccount(VerifyOtpDto dto, HttpResponse res)
         {
-            var otpDto = await _otpService.VerifyOtp(dto.email, dto.otp);
-            var newCustomer = await _customerRepository.CreateUser(new User
+            var otpDto = await _otpService.VerifyOtp(dto.otp, dto.email) ?? throw new AppException("Verified Account Failed", 400);
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(otpDto.password);
+            var customer = await _customerRepository.CreateUser(new models.User
             {
                 name = otpDto.name,
                 email = otpDto.email,
-                password = otpDto.password,
+                password = hashedPassword,
             });
             //create first promotion 
-            return newCustomer;
+            var token = _tokenService.GenerateToken(customer._id.ToString());
+            CookieUtil.SetCookie(res, "refreshToken", token.refreshToken);
+            await _tokenService.StoreRefreshToken(customer._id.ToString(), token.refreshToken);
+
+            return new VerifiedSignUpDto { accessToken = token.accessToken, name = customer.name, message = "Verified successfully" };
         }
         public async Task<string> ResendOtp(string email)
         {
-            var customer = await _customerRepository.FindByEmail(email) ?? throw new AppException("Customer not found", 404);
+            var customer = await _customerRepository.FindByEmail(email);
+            if (customer != null)
+            {
+                throw new AppException("Customer already exists", 400);
+            }
             var verificationCode = await _otpService.CheckAndResendOtp(email);
             return verificationCode;
         }
@@ -139,13 +151,24 @@ namespace api.Services
 
             var tokens = _tokenService.GenerateToken(userId.ToString()!);
             CookieUtil.SetCookie(res, "refreshToken", tokens.refreshToken);
+            await _redisRepository.SetAsync($"refresh_token:{userId}", tokens.refreshToken, TimeSpan.FromDays(7));
             return new RefreshTokenResponseDto { newAccessToken = tokens.accessToken, message = "Token refreshed" };
         }
-        public async Task<User> GetProfile(string userId)
+        public async Task<UserProfileDto> GetProfile(string userId)
         {
-            return await _customerRepository.FindById(userId) ?? throw new AppException("Customer not found");
+            var customer = await _customerRepository.FindById(userId) ?? throw new AppException("Customer not found");
+            UserProfileDto dto = new UserProfileDto
+            {
+                _id = customer._id.ToString(),
+                email = customer.email,
+                name = customer.name,
+                phoneNumber = customer.phoneNumber,
+                Address = customer.address,
+                role = customer.role.ToString()
+            };
+            return dto;
         }
-        public async Task<User> UpdateProfile(string userId, UpdateCustomerProfileDto dto)
+        public async Task<UserProfileDto> UpdateProfile(string userId, UpdateCustomerProfileDto dto)
         {
             var customer = await _customerRepository.FindById(userId);
             if (customer == null)
@@ -153,7 +176,7 @@ namespace api.Services
 
             customer.name = dto.name;
             customer.phoneNumber = dto.phoneNumber;
-            customer.address = new Address
+            customer.address = new api.models.Address
             {
                 street = dto.address.street,
                 ward = dto.address.ward,
@@ -167,23 +190,28 @@ namespace api.Services
             {
                 throw new AppException("Update profile failed", 400);
             }
-            return result;
+            return new UserProfileDto
+            {
+                _id = result._id.ToString(),
+                email = result.email,
+                name = result.name,
+                phoneNumber = result.phoneNumber,
+                Address = result.address,
+                role = result.role.ToString()
+            }; ;
         }
 
         public async Task<string> ChangePassword(string email)
         {
-            var customer = await _customerRepository.FindByEmail(email);
-            if (customer == null) throw new AppException("Customer not found");
+            var customer = await _customerRepository.FindByEmail(email) ?? throw new AppException("Customer not found");
             var resetToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(20));
-            await _redisRepository.SetAsync($"resetpassword:{resetToken}", JsonSerializer.Serialize(new { userId = customer._id }), TimeSpan.FromMinutes(5));
+            await _redisRepository.SetAsync($"resetpassword:{resetToken}", JsonSerializer.Serialize(new { userId = customer._id.ToString() }), TimeSpan.FromMinutes(5));
             return resetToken;
         }
 
         public async Task<string> ResetPassword(string token, string newPassword)
         {
-            var stored = await _redisRepository.GetAsync($"resetpassword:{token}");
-            if (stored == null) throw new AppException("Token expired", 400);
-
+            var stored = await _redisRepository.GetAsync($"resetpassword:{token}") ?? throw new AppException("Token expired", 400);
             var data = JsonSerializer.Deserialize<Dictionary<string, string>>(stored);
             var customer = await _customerRepository.FindById(data["userId"]);
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);

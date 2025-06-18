@@ -65,9 +65,24 @@ public class LoginResponseDto
     public string name { get; set; } = string.Empty;
     public string message { get; set; } = string.Empty;
 }
-
-
-
+public class VerifiedSignUpDto
+{
+    public string accessToken { get; set; } = string.Empty;
+    public string name { get; set; } = string.Empty;
+    public string message { get; set; } = string.Empty;
+}
+public class EmailDto
+{
+    public string email { get; set; } = string.Empty;
+}
+public class ForgotPasswordDto
+{
+    public string email { get; set; } = string.Empty;
+}
+public class ResetPasswordDto
+{
+    public string password { get; set; } = string.Empty;
+}
 public enum Role
 {
     user,

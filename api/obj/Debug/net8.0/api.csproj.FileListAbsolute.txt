@@ -66,3 +66,4 @@
 /home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/obj/Debug/net8.0/api.pdb
 /home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/obj/Debug/net8.0/api.genruntimeconfig.cache
 /home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/obj/Debug/net8.0/ref/api.dll
+/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.Google.dll

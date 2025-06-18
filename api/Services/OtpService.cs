@@ -25,8 +25,7 @@ namespace api.Services
         public async Task<(OtpDto data, DateTime createdAt)> CheckExpiredOtp(string email)
         {
             var stored = await _redis.GetAsync($"signup:{email}");
-            Console.WriteLine($"🧩 Raw Redis OTP data: {stored}");
-            if (stored == null)
+            if (string.IsNullOrEmpty(stored))
             {
                 throw new AppException("OTP doesn't exist", 404);
             }
@@ -34,7 +33,8 @@ namespace api.Services
             if (parsed == null || !parsed.ContainsKey("createdAt"))
                 throw new AppException("Invalid OTP data", 500);
 
-            var createdAt = DateTime.Parse(parsed["createdAt"]); var timeElapsed = (DateTime.UtcNow - createdAt).TotalSeconds;
+            var createdAt = DateTime.Parse(parsed["createdAt"]);
+            var timeElapsed = (DateTime.UtcNow - createdAt).TotalSeconds;
 
             if (timeElapsed > 60)
             {
@@ -48,16 +48,31 @@ namespace api.Services
                 email = email,
             }, createdAt);
         }
-        public async Task<OtpDto> VerifyOtp(string email, string otp)
+        public async Task<OtpDto> VerifyOtp(string otp, string email)
         {
             var (otpDto, _) = await CheckExpiredOtp(email);
             var wrongOtpRaw = await _redis.GetAsync($"wrongOtp:{email}");
-            var wrongOtp = string.IsNullOrEmpty(wrongOtpRaw) ? 0 : int.Parse(wrongOtpRaw);
+            int wrongOtp = 0;
+            if (!string.IsNullOrEmpty(wrongOtpRaw) && int.TryParse(wrongOtpRaw, out var parsed))
+            {
+                wrongOtp = parsed;
+            }
 
             if (wrongOtp >= 5)
             {
                 throw new AppException("Too many failed attempts, try again in 5 minutes", 429);
             }
+
+            if (string.IsNullOrEmpty(otp))
+            {
+                throw new AppException("OTP cannot be empty", 400);
+            }
+
+            if (string.IsNullOrEmpty(otpDto.verificationCode))
+            {
+                throw new AppException("Stored verification code is empty", 500);
+            }
+
             if (otp != otpDto.verificationCode)
             {
                 wrongOtp++;
@@ -83,13 +98,16 @@ namespace api.Services
             var password = value;
 
             var resendCountRaw = await _redis.GetAsync($"signup:count:{email}");
-            var resendCount = string.IsNullOrEmpty(resendCountRaw) ? 0 : int.Parse(resendCountRaw);
+            int resendCount = 0;
+            if (!string.IsNullOrEmpty(resendCountRaw) && int.TryParse(resendCountRaw, out var parsedCount))
+            {
+                resendCount = parsedCount;
+            }
 
             if (resendCount > 2)
                 throw new AppException("You have reached the limit for resending OTP. Please try after 10 mins.", 429);
 
             var (verificationCode, createdAt) = GenerateOtp();
-
             var newData = JsonSerializer.Serialize(new Dictionary<string, string>
         {
             {"name", name},
