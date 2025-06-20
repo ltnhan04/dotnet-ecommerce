@@ -50,8 +50,8 @@ namespace api.models
 
     public enum Role
     {
-        user,
-        admin
+        user = 0,
+        admin = 1
     }
 }
 

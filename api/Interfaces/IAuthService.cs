@@ -13,7 +13,7 @@ namespace api.Interfaces
         Task<OtpResponseDto> SignUp(RegisterDto dto);
         Task<VerifiedSignUpDto> VerifyAccount(VerifyOtpDto dto, HttpResponse res);
         Task<LoginResponseDto> Login(LoginDto dto, HttpResponse res);
-        Task<(string accessToken, string refreshToken)> LoginWithGoogle(ClaimsPrincipal principal);
+        Task<(string accessToken, string refreshToken)> LoginWithGoogle(string email, string name);
 
         Task<RefreshTokenResponseDto> RefreshToken(string refreshToken, HttpResponse res);
         Task<string> Logout(string refreshToken, HttpResponse res);

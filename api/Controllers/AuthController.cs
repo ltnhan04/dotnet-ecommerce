@@ -1,18 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 using api.Dtos;
 using api.Interfaces;
 using api.Services;
 using api.Utils;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 
 namespace api.Controllers
 {
@@ -93,62 +89,95 @@ namespace api.Controllers
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
-
         [HttpGet("login-google")]
         public IActionResult GoogleLogin()
         {
-            Console.WriteLine("Starting Google OAuth login...");
-            var properties = new AuthenticationProperties
+            var clientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
+            var redirectUri = Environment.GetEnvironmentVariable("GOOGLE_REDIRECT_URI");
+            var scope = "openid email profile";
+            var state = Guid.NewGuid().ToString();
+            Response.Cookies.Append("GoogleOAuthState", state, new CookieOptions
             {
-                RedirectUri = "/api/v1/auth/login-google/callback",
-                Items =
-                {
-                    { ".xsrf", Guid.NewGuid().ToString() }
-                }
-            };
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        }
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddMinutes(15)
+            });
 
+            var authUrl = $"https://accounts.google.com/o/oauth2/v2/auth" +
+                          $"?client_id={clientId}" +
+                          $"&redirect_uri={Uri.EscapeDataString(redirectUri!)}" +
+                          $"&response_type=code" +
+                          $"&scope={Uri.EscapeDataString(scope)}" +
+                          $"&state={state}";
+
+            return Redirect(authUrl);
+        }
         [HttpGet("login-google/callback")]
-        public async Task<IActionResult> GoogleCallback()
+        public async Task<IActionResult> GoogleCallback(string code, string state)
         {
-            try
+            var storedState = Request.Cookies["GoogleOAuthState"];
+            if (string.IsNullOrEmpty(state) || state != storedState)
             {
-                Console.WriteLine("Google callback received");
-
-                var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                Console.WriteLine("Result xxxx:     " + result);
-                if (!result.Succeeded)
-                {
-                    Console.WriteLine($"Authentication failed: {result.Failure?.Message}");
-                    return Redirect($"{Environment.GetEnvironmentVariable("CLIENT_URL")}/login?error=auth_failed");
-                }
-
-                Console.WriteLine($"Authentication succeeded for user: {result.Principal?.Identity?.Name}");
-
-                var (accessToken, refreshToken) = await _authService.LoginWithGoogle(result.Principal!);
-
-                Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    SameSite = SameSiteMode.Lax,
-                    Secure = false,
-                    Expires = DateTime.UtcNow.AddDays(7)
-                });
-
-                var name = result.Principal?.FindFirst(ClaimTypes.Name)?.Value;
-                var email = result.Principal?.FindFirst(ClaimTypes.Email)?.Value;
-
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-                return Redirect($"{Environment.GetEnvironmentVariable("CLIENT_URL")}/?accessToken={accessToken}&name={name}&email={email}");
+                return Redirect($"{Environment.GetEnvironmentVariable("CLIENT_URL")}/login?error=invalid_state");
             }
-            catch (Exception ex)
+
+            var client = new HttpClient();
+            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
             {
-                Console.WriteLine($"Google callback error: {ex.Message}");
-                return Redirect($"{Environment.GetEnvironmentVariable("CLIENT_URL")}/login?error=callback_failed");
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            { "code", code },
+            { "client_id", Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")! },
+            { "client_secret", Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")! },
+            { "redirect_uri", "https://localhost:8000/api/v1/auth/login-google/callback" },
+            { "grant_type", "authorization_code" }
+        })
+            };
+
+            var tokenResponse = await client.SendAsync(tokenRequest);
+            if (!tokenResponse.IsSuccessStatusCode)
+            {
+                return Redirect($"{Environment.GetEnvironmentVariable("CLIENT_URL")}/login?error=token_exchange_failed");
             }
+
+            var tokenData = await tokenResponse.Content.ReadFromJsonAsync<TokenResponseDto>();
+            if (tokenData?.IdToken == null)
+            {
+                return Redirect($"{Environment.GetEnvironmentVariable("CLIENT_URL")}/login?error=no_id_token");
+            }
+
+            var userInfo = await GetUserInfo(tokenData.AccessToken);
+            var name = userInfo["name"]?.ToString();
+            var email = userInfo["email"]?.ToString();
+            var (accessToken, refreshToken) = await _authService.LoginWithGoogle(email!, name!);
+            Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
+
+            var frontendUrl = Environment.GetEnvironmentVariable("CLIENT_URL") ?? "http://localhost:3000";
+            var redirectUrl = $"{frontendUrl}/login?success=true&accessToken={Uri.EscapeDataString(accessToken)}&name={Uri.EscapeDataString(name ?? "")}&email={Uri.EscapeDataString(email ?? "")}";
+            return Redirect(redirectUrl);
         }
+
+        private async Task<Dictionary<string, object>> GetUserInfo(string accessToken)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            var response = await client.GetAsync("https://www.googleapis.com/oauth2/v2/userinfo");
+            response.EnsureSuccessStatusCode();
+            var userInfo = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+
+            if (userInfo == null)
+                throw new Exception("Failed to deserialize user info from Google");
+
+            return userInfo;
+        }
+
 
         [HttpPost("logout")]
         public async Task Logout()
@@ -214,7 +243,6 @@ namespace api.Controllers
 
         }
 
-
         [HttpPost("forgot-password")]
         public async Task ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
@@ -246,4 +274,5 @@ namespace api.Controllers
             }
         }
     }
+
 }

@@ -47,16 +47,14 @@ namespace api.Services
             await _redisRepository.SetAsync($"signup:count:{dto.email}", "1", TimeSpan.FromMinutes(10));
             return new OtpResponseDto { verificationCode = verificationCode, email = dto.email };
         }
-        public async Task<(string accessToken, string refreshToken)> LoginWithGoogle(ClaimsPrincipal principal)
+        public async Task<(string accessToken, string refreshToken)> LoginWithGoogle(string email, string name)
         {
-
-            var email = principal.FindFirst(ClaimTypes.Email)?.Value;
-            var name = principal.FindFirst(ClaimTypes.Name)?.Value;
 
             if (email == null || name == null)
                 throw new AppException("Invalid Google data");
 
             var user = await _customerRepository.FindByEmail(email);
+            Console.WriteLine("User: " + user);
             user ??= await _customerRepository.CreateUser(new User
             {
                 name = name,

@@ -1,4 +1,3 @@
-
 using api.configurations;
 using Microsoft.AspNetCore.DataProtection;
 using DotNetEnv;
@@ -13,13 +12,13 @@ using api.Interfaces;
 using api.Services.Customer;
 using api.models;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
-builder.WebHost.UseUrls("http://localhost:8000");
+
+builder.WebHost.UseUrls("https://localhost:8000");
 
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
@@ -44,7 +43,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer("Bearer", options =>
 {
     var secret = Environment.GetEnvironmentVariable("ACCESS_TOKEN_SECRET");
     options.TokenValidationParameters = new TokenValidationParameters
@@ -55,8 +59,8 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
-});
-
+})
+.AddCookie();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AdminOny", policy => policy.RequireRole("admin"));
 
@@ -102,56 +106,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
-})
-.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-{
-    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")!;
-    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")!;
-    options.CallbackPath = "/api/v1/auth/login-google/callback";
-    options.SaveTokens = true;
-    options.Scope.Add("email");
-    options.Scope.Add("profile");
-
-    options.Events = new OAuthEvents
-    {
-        OnRedirectToAuthorizationEndpoint = context =>
-        {
-            Console.WriteLine($"Redirecting to Google: {context.RedirectUri}");
-            context.Response.Redirect(context.RedirectUri);
-            return Task.CompletedTask;
-        },
-        OnRemoteFailure = context =>
-        {
-            Console.WriteLine($"OAuth Failure: {context.Failure?.Message}");
-            Console.WriteLine($"Failure Type: {context.Failure?.GetType().Name}");
-            Console.WriteLine($"All Cookies: {string.Join(", ", context.HttpContext.Request.Cookies.Keys)}");
-            context.Response.Redirect($"{Environment.GetEnvironmentVariable("CLIENT_URL")}/login?error=oauth_failed");
-            context.HandleResponse();
-            return Task.CompletedTask;
-        },
-        OnCreatingTicket = context =>
-        {
-            Console.WriteLine($"Creating ticket for user: {context.Identity?.Name}");
-            Console.WriteLine($"Access token: {context.AccessToken}");
-            return Task.CompletedTask;
-        },
-        OnTicketReceived = context =>
-        {
-            Console.WriteLine($"Ticket received for user: {context.Principal?.Identity?.Name}");
-            return Task.CompletedTask;
-        }
-    };
-});
-
 var app = builder.Build();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
@@ -170,7 +124,6 @@ else
 app.UseRouting();
 
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
