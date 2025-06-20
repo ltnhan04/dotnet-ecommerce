@@ -20,14 +20,12 @@ namespace api.models
         public int totalAmount { get; set; }
 
         [BsonElement("status")]
-        [BsonRepresentation(BsonType.String)]
         public OrderStatus status { get; set; } = OrderStatus.pending;
 
         [BsonElement("shippingAddress")]
         public string shippingAddress { get; set; } = string.Empty;
 
         [BsonElement("paymentMethod")]
-        [BsonRepresentation(BsonType.String)]
         public PaymentMethod paymentMethod { get; set; } = PaymentMethod.ship_cod;
 
         [BsonElement("stripeSessionId")]
@@ -51,32 +49,24 @@ namespace api.models
 
     public enum PaymentMethod
     {
-        [BsonRepresentation(BsonType.String)]
         stripe,
 
-        [BsonRepresentation(BsonType.String)]
         momo,
 
-        [BsonRepresentation(BsonType.String)]
         [BsonElement("ship-cod")]
         ship_cod
     }
 
     public enum OrderStatus
     {
-        [BsonRepresentation(BsonType.String)]
         pending,
 
-        [BsonRepresentation(BsonType.String)]
         processing,
 
-        [BsonRepresentation(BsonType.String)]
         shipped,
 
-        [BsonRepresentation(BsonType.String)]
         delivered,
 
-        [BsonRepresentation(BsonType.String)]
         cancel
     }
 }

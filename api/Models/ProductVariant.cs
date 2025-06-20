@@ -27,7 +27,6 @@ namespace api.models
         [BsonElement("slug"), MaxLength(255)]
         public required string slug { get; set; }
         [BsonElement("status")]
-        [BsonRepresentation(BsonType.String)]
 
         public Status status { get; set; } = Status.in_stock;
         [BsonElement("images")]

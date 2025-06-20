@@ -231,6 +231,9 @@ export default function RegisterForm() {
         <Button
           type="button"
           variant="outline"
+          onClick={() =>
+            (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/login-google?returnUrl=${process.env.NEXT_PUBLIC_CLIENT_ENDPOINT}`)
+          }
           className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-900 border-gray-300"
         >
           <FcGoogle className="w-5 h-5" />

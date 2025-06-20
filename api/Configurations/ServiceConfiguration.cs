@@ -15,21 +15,35 @@ namespace api.configurations
 
         private static void ConfigureRedis(IServiceCollection services)
         {
-            var redisConnection = Environment.GetEnvironmentVariable("UPSTASH_REDIS_URL");
-            if (string.IsNullOrEmpty(redisConnection))
+            var redisUrl = Environment.GetEnvironmentVariable("UPSTASH_REDIS_URL");
+
+            if (string.IsNullOrEmpty(redisUrl))
             {
                 throw new InvalidOperationException("Redis connection string is not configured");
             }
 
-            var options = ConfigurationOptions.Parse(redisConnection);
-            options.Ssl = true;
-            options.AbortOnConnectFail = false;
+            var uri = new Uri(redisUrl);
 
-            var redis = ConnectionMultiplexer.Connect(options);
+            var userInfo = uri.UserInfo.Split(':');
+            var username = userInfo[0];
+            var password = userInfo.Length > 1 ? userInfo[1] : string.Empty;
+
+            var config = new ConfigurationOptions
+            {
+                EndPoints = { $"{uri.Host}:{uri.Port}" },
+                Ssl = true,
+                User = username,
+                Password = password,
+                AbortOnConnectFail = false,
+                ConnectTimeout = 10000,
+            };
+
+            var redis = ConnectionMultiplexer.Connect(config);
             services.AddSingleton<IConnectionMultiplexer>(redis);
 
             Console.WriteLine("✅ Connected to Upstash Redis");
         }
+
 
         private static void ConfigureCloudinary(IServiceCollection services)
         {

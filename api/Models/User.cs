@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -23,7 +24,6 @@ namespace api.models
         [BsonElement("address")]
         public Address address { get; set; } = new();
         [BsonElement("role")]
-        [BsonRepresentation(BsonType.String)]
 
         public Role role { get; set; } = Role.user;
 
@@ -33,6 +33,7 @@ namespace api.models
         [BsonElement("updatedAt")]
         public DateTime updatedAt { get; set; } = DateTime.UtcNow;
     }
+    [Owned]
     public class Address
     {
         [MaxLength(50)]
@@ -49,8 +50,8 @@ namespace api.models
 
     public enum Role
     {
-        user,
-        admin
+        user = 0,
+        admin = 1
     }
 }
 

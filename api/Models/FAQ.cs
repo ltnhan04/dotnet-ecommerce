@@ -20,7 +20,6 @@ namespace api.models
         public string answer { get; set; } = string.Empty;
 
         [BsonElement("category")]
-        [BsonRepresentation(BsonType.String)]
         public FAQCategory category { get; set; } = FAQCategory.general;
 
         [BsonElement("keywords")]
