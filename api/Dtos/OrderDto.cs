@@ -2,22 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace api.Dtos
 {
     public class OrderDto
     {
         public string _id { get; set; } = string.Empty;
+        public List<OrderVariant> variants { get; set; }
         public DateTime createdAt { get; set; }
         public int totalAmount { get; set; }
         public string shippingAddress { get; set; } = string.Empty;
+        public string paymentMethod { get; set; } = "pending";
 
     }
-    public class OrderItem
-    {
-        public int quantity { get; set; } = 0;
-        public Variant variant { get; set; } = new();
-
+    public class OrderVariant
+    {   
+        public string variant { get; set; }
+        public int quantity { get; set; }
+        
     }
 
     public class Variant

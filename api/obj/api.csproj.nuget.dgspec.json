@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/api.csproj": {}
+    "C:\\dotnet-ecommerce\\dotnet-ecommerce\\api\\api.csproj": {}
   },
   "projects": {
-    "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/api.csproj": {
+    "C:\\dotnet-ecommerce\\dotnet-ecommerce\\api\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/api.csproj",
+        "projectUniqueName": "C:\\dotnet-ecommerce\\dotnet-ecommerce\\api\\api.csproj",
         "projectName": "api",
-        "projectPath": "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/api.csproj",
-        "packagesPath": "/home/l4x/.nuget/packages/",
-        "outputPath": "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/obj/",
+        "projectPath": "C:\\dotnet-ecommerce\\dotnet-ecommerce\\api\\api.csproj",
+        "packagesPath": "C:\\Users\\sangd\\.nuget\\packages\\",
+        "outputPath": "C:\\dotnet-ecommerce\\dotnet-ecommerce\\api\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/l4x/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\sangd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -102,7 +108,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.117/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
