@@ -39,9 +39,12 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IRedisRepository, RedisRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -120,6 +123,9 @@ else
 {
     app.UseHttpsRedirection();
 }
+
+
+
 
 app.UseRouting();
 

@@ -7408,24 +7408,27 @@
     ]
   },
   "packageFolders": {
-    "/home/l4x/.nuget/packages/": {}
+    "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/api.csproj",
+      "projectUniqueName": "D:\\itribe_nam3\\dotnet-ecommerce\\api\\api.csproj",
       "projectName": "api",
-      "projectPath": "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/api.csproj",
-      "packagesPath": "/home/l4x/.nuget/packages/",
-      "outputPath": "/home/l4x/Documents/SE/project/dotnet-project/dotnet-ecommerce/api/obj/",
+      "projectPath": "D:\\itribe_nam3\\dotnet-ecommerce\\api\\api.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "D:\\itribe_nam3\\dotnet-ecommerce\\api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/l4x/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -7438,6 +7441,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -7508,7 +7516,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.117/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
