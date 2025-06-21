@@ -8,10 +8,10 @@ namespace api.models
     public class Order
     {
         [BsonId]
-        public ObjectId _id { get; set; }
+        public string _id { get; set; } = ObjectId.GenerateNewId().ToString();
 
         [BsonElement("user")]
-        public ObjectId user { get; set; }
+        public string user { get; set; }
 
         [BsonElement("variants")]
         public List<OrderVariant> variants { get; set; } = new();
@@ -20,13 +20,13 @@ namespace api.models
         public int totalAmount { get; set; }
 
         [BsonElement("status")]
-        public OrderStatus status { get; set; } = OrderStatus.pending;
+        public string status { get; set; } = "pending";
 
         [BsonElement("shippingAddress")]
         public string shippingAddress { get; set; } = string.Empty;
 
         [BsonElement("paymentMethod")]
-        public PaymentMethod paymentMethod { get; set; } = PaymentMethod.ship_cod;
+        public string paymentMethod { get; set; } = "ship_cod";
 
         [BsonElement("stripeSessionId")]
         public string? stripeSessionId { get; set; }
@@ -36,12 +36,13 @@ namespace api.models
 
         [BsonElement("updatedAt")]
         public DateTime updatedAt { get; set; } = DateTime.UtcNow;
+
     }
 
     public class OrderVariant
     {
         [BsonElement("variant")]
-        public ObjectId variant { get; set; }
+        public string variant { get; set; }
 
         [BsonElement("quantity")]
         public int quantity { get; set; }
