@@ -9,6 +9,6 @@ namespace api.Interfaces.Repositories
 {
     public interface IReviewRepository
     {
-        Task<List<Review>> GetByVariantId(ObjectId variantId);
+        Task<List<Review>> GetReviewByVariantId(ObjectId variantId);
     }
 }

@@ -25,7 +25,7 @@ namespace api.models
         public Address address { get; set; } = new();
         [BsonElement("role")]
 
-        public Role role { get; set; } = Role.user;
+        public string role { get; set; } = "user";
 
         [BsonElement("createdAt")]
         public DateTime createdAt { get; set; } = DateTime.UtcNow;
@@ -48,10 +48,5 @@ namespace api.models
         public string country { get; set; } = string.Empty;
     }
 
-    public enum Role
-    {
-        user = 0,
-        admin = 1
-    }
 }
 

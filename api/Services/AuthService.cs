@@ -106,7 +106,7 @@ namespace api.Services
         }
         public async Task<LoginResponseDto> Login(LoginDto dto, HttpResponse res)
         {
-            var customer = await VerifyRole(dto.email, dto.role.ToString());
+            var customer = await VerifyRole(dto.email, dto.role ?? "user");
             if (!BCrypt.Net.BCrypt.Verify(dto.password, customer.password))
             {
                 var value = await _redisRepository.GetAsync($"wrongPassword:{dto.email}");

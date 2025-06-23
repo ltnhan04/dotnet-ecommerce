@@ -11,7 +11,7 @@ namespace api.Dtos
         public required string email { get; set; }
         public string phoneNumber { get; set; } = string.Empty;
         public Address address { get; set; } = new();
-        public Role role { get; set; } = Role.user;
+        public string role { get; set; } = string.Empty;
         public class Address
         {
             public string street { get; set; } = string.Empty;
@@ -44,7 +44,7 @@ namespace api.Dtos
     {
         public string email { get; set; } = string.Empty;
         public string password { get; set; } = string.Empty;
-        public Role role { get; set; } = new();
+        public string role { get; set; } = string.Empty;
     }
     public class UserProfileDto
     {
@@ -55,6 +55,4 @@ namespace api.Dtos
         public Address Address { get; set; } = new();
         public string role { get; set; } = string.Empty;
     }
-
-
 }

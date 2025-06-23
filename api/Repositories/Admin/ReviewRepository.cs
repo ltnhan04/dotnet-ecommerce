@@ -18,7 +18,7 @@ namespace api.Repositories.Admin
             _context = context;
         }
 
-        public async Task<List<Review>> GetByVariantId(ObjectId variantId)
+        public async Task<List<Review>> GetReviewByVariantId(ObjectId variantId)
         {
             return await _context.Reviews.Where(r => r.variant == variantId).ToListAsync();
         }

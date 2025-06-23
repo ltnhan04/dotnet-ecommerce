@@ -11,6 +11,6 @@ namespace api.Interfaces.Services
         Task<List<ProductDto>> GetAllProducts();
         Task<List<ProductDto>> GetProductByCategory(string categoryId);
         Task<ProductDto> CreateProduct(CreateProductDto dto);
-        Task<ProductDto> UpdateAsync(string id, UpdateProductDto dto);
+        Task<ProductDto> UpdateProduct(string id, UpdateProductDto dto);
     }
 }

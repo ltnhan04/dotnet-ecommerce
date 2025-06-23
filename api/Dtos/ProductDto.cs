@@ -29,7 +29,7 @@ namespace api.Dtos
     public class VariantDto
     {
         public string _id { get; set; } = string.Empty;
-        public Color color { get; set; } = new();
+        public ColorDto color { get; set; } = new();
         public string product { get; set; } = string.Empty;
         public int rating { get; set; } = 0;
         public string storage { get; set; } = string.Empty;
