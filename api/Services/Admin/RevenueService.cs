@@ -30,5 +30,6 @@ namespace api.Services.Admin
         {
             return await revenueRespository.GetTop10BestSellingProducts();
         }
+        
     }
 }
