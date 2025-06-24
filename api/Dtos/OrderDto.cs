@@ -28,8 +28,9 @@ namespace api.Dtos
         public List<OrderCreateVariantDetail> variants { get; set; } = new();
         public DateTime createdAt { get; set; }
         public int totalAmount { get; set; }
+        public string status { get; set; } = "pending";
         public string shippingAddress { get; set; } = string.Empty;
-        public string paymentMethod { get; set; } = "pending";
+        public string paymentMethod { get; set; } = "ship_cod";
 
     }
     public class OrderCreateVariantDetail
@@ -68,8 +69,7 @@ namespace api.Dtos
 
     public class OrderDtoResponse
     {
-        public string _id { get; set; }
-
+        public string _id { get; set; } = string.Empty;
         public string user { get; set; } =  string.Empty;
         public List<OrderVariantDetail> variants { get; set; } = new();
         public decimal totalAmount { get; set; }
