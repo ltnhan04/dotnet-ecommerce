@@ -8,9 +8,9 @@ namespace api.Interfaces
 {
     public interface ITokenService
     {
-        TokenDto GenerateToken(string userId);
-        TokenDto GenerateNewToken(string userId);
+        TokenDto GenerateToken(string userId, string role);
+        TokenDto GenerateNewToken(string userId, string role);
         Task StoreRefreshToken(string userId, string refreshToken);
-        string ValidateRefreshToken(string refreshToken);
+        ResponseRefreshTokenDto ValidateRefreshToken(string refreshToken);
     }
 }

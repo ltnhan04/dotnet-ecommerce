@@ -38,7 +38,6 @@ namespace api.Services.Admin
             {
                 var category = await _categoryRepo.GetCategoryById(product.category.ToString());
                 var variants = await _variantRepo.GetByProductId(product._id);
-
                 var variantsDtos = new List<VariantDto>();
 
                 foreach (var variant in variants)
@@ -55,6 +54,7 @@ namespace api.Services.Admin
                         rating = (int)Math.Round(variant.rating),
                         storage = variant.storage,
                         price = variant.price,
+                        status = variant.status,
                         stock_quantity = variant.stock_quantity,
                         slug = variant.slug,
                         images = variant.images,
@@ -67,8 +67,8 @@ namespace api.Services.Admin
                     description = product.description,
                     category = new CategoryDto
                     {
-                        _id = category?._id.ToString() ?? string.Empty,
-                        name = category?.name ?? string.Empty
+                        _id = category._id.ToString(),
+                        name = category.name
                     },
                     variants = variantsDtos,
                     createdAt = product.createdAt,

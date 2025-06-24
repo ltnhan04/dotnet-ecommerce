@@ -31,7 +31,7 @@ namespace api.models
             modelBuilder.Entity<ShippingMethod>().ToCollection("shippingmethods");
             modelBuilder.Entity<Review>().ToCollection("reviews");
             modelBuilder.Entity<ProductVariant>().ToCollection("productvariants");
-            modelBuilder.Entity<Product>().ToCollection("points");
+            modelBuilder.Entity<Product>().ToCollection("products");
             modelBuilder.Entity<PointVoucher>().ToCollection("pointvouchers");
             modelBuilder.Entity<Point>().ToCollection("points");
             modelBuilder.Entity<Order>().ToCollection("orders");

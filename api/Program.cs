@@ -57,8 +57,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer("Bearer", options =>
 {
@@ -71,9 +72,24 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync("{\"message\":\"You're not authenticated\"}");
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync("{\"message\":\"Access denied\"}");
+        }
+    };
 
-})
-.AddCookie();
+});
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AdminOny", policy => policy.RequireRole("admin"));
 
@@ -139,6 +155,7 @@ app.UseRouting();
 
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
+app.UseMiddleware<UnauthorizedMiddleware>();
 app.UseAuthorization();
 
 app.MapGet("/", () => "Backend is running!").AllowAnonymous();
