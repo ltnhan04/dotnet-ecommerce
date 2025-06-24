@@ -10,7 +10,7 @@ namespace api.Interfaces
 {
     public interface IOrderService
     {
-        Task<Order> HandleCreateOrder(OrderCreateDto order, string userId);
+        Task<OrderCreateDto> HandleCreateOrder(OrderCreateDto order, string userId);
         Task<List<OrderDtoResponse>> HandleGetOrderUser(string userId);
 
     }

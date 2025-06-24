@@ -19,7 +19,7 @@ namespace api.Services.Customer
             _orderRepository = orderRepository;
         }
 
-        public async Task<Order> HandleCreateOrder(OrderCreateDto dto, string userId)
+        public async Task<OrderCreateDto> HandleCreateOrder(OrderCreateDto dto, string userId)
         {
             if (dto.variants == null || !dto.variants.Any())
             {
@@ -28,7 +28,7 @@ namespace api.Services.Customer
 
             var order = new Order
             {   
-                user = userId,
+                user = ObjectId.Parse(userId),
                 variants = dto.variants.Select(item => new OrderVariant
                 {
                     variant = ObjectId.Parse(item.variant),
@@ -41,7 +41,20 @@ namespace api.Services.Customer
             };
 
             var createOrder = await _orderRepository.CreateOrder(order) ?? throw new AppException("Failed to create order", 400);
-            return createOrder;
+            return new OrderCreateDto
+            {
+                _id = createOrder._id.ToString(),
+                variants = createOrder.variants.Select(v => new OrderCreateVariantDetail
+                {
+                    variant = v.variant.ToString(),
+                    quantity = v.quantity
+                }).ToList(),
+                createdAt = createOrder.createdAt,
+                totalAmount = createOrder.totalAmount,
+                shippingAddress = createOrder.shippingAddress,
+                status = createOrder.status,
+                paymentMethod = createOrder.paymentMethod
+            };
         }
 
         public async Task<List<OrderDtoResponse>> HandleGetOrderUser(string userId)
