@@ -77,12 +77,12 @@ namespace api.Dtos
 
     public class TopProductDtoRes
     {
-            public string variantId { get; set; }
-            public string productId { get; set; }
-            public string productName { get; set; }
-            public string image { get; set; }
-            public int price { get; set; }
-            public int totalSold { get; set; }
+        public string variantId { get; set; } = string.Empty;
+        public string productId { get; set; } = string.Empty;
+        public string productName { get; set; } = string.Empty;
+        public string image { get; set; } = string.Empty;
+        public int price { get; set; } = 0;
+        public int totalSold { get; set; } = 0;
     }
 
 }
