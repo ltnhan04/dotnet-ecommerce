@@ -30,7 +30,7 @@ namespace api.Repositories.Admin
                 .Where(o => o.status == "delivered")
                 .Sum(o => o.totalAmount);
             var totalPendingOrder = orders.Count(o => o.status == "pending");
-            var totalCustomer = await _context.Users.CountAsync(u => u.role == "user");
+            var totalCustomer = await _context.Users.CountAsync(u => u.role =="user");
 
             return new TotalDto
             {

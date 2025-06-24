@@ -27,9 +27,10 @@ namespace api.Repositories.Customer
         }
 
         public async Task<List<OrderDtoResponse>> GetOrderByUser(string userId)
-        {
+        {   
+            var userObjectId = ObjectId.Parse(userId);
             var orders = await _context.Orders
-                .Where(item => item.user == userId)
+                .Where(item => item.user == userObjectId)
                 .ToListAsync();
 
             if (orders == null || !orders.Any())
@@ -38,7 +39,7 @@ namespace api.Repositories.Customer
             }
 
             var variantIds = orders
-                .SelectMany(o => o.variants.Select(v => ObjectId.Parse(v.variant)))
+                .SelectMany(o => o.variants.Select(v => ObjectId.Parse(v.variant.ToString())))
                 .Distinct()
                 .ToList();
 
@@ -61,11 +62,11 @@ namespace api.Repositories.Customer
 
             var result = orders.Select(order => new OrderDtoResponse
             {
-                _id = order._id,
+                _id = order._id.ToString(),
                 user = order.user.ToString(),
                 variants = order.variants.Select(v =>
                 {
-                    var variantData = variantMap.GetValueOrDefault(v.variant);
+                    var variantData = variantMap.GetValueOrDefault(v.variant.ToString());
                     var productId = variantData?.product;
                     var productData = productMap.GetValueOrDefault(productId!.Value);
 
@@ -74,7 +75,7 @@ namespace api.Repositories.Customer
                         quantity = v.quantity,
                         variant = new VariantOrderDto
                         {
-                            _id = v.variant,
+                            _id = v.variant.ToString(),
                             product = productId.ToString()!,
                             productName = productData?.name ?? "null",
                             colorName = variantData?.color.colorName!,
@@ -90,6 +91,7 @@ namespace api.Repositories.Customer
                 shippingAddress = order.shippingAddress,
                 paymentMethod = order.paymentMethod,
                 stripeSessionId = order.stripeSessionId!,
+                status = order.status,
                 createdAt = order.createdAt,
                 updatedAt = order.updatedAt
             }).ToList();
