@@ -54,6 +54,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
 
 builder.Services.AddScoped<RevenueService>();
 builder.Services.AddEndpointsApiExplorer();
