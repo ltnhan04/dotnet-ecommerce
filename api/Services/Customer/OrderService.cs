@@ -31,7 +31,7 @@ namespace api.Services.Customer
                 user = userId,
                 variants = dto.variants.Select(item => new OrderVariant
                 {
-                    variant = item.variant,
+                    variant = ObjectId.Parse(item.variant),
                     quantity = item.quantity
                 }).ToList(),
                 totalAmount = dto.totalAmount,

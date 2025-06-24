@@ -8,10 +8,10 @@ namespace api.models
     public class Order
     {
         [BsonId]
-        public string _id { get; set; } = ObjectId.GenerateNewId().ToString();
+        public ObjectId _id { get; set; } = ObjectId.GenerateNewId();
 
         [BsonElement("user")]
-        public string user { get; set; }
+        public ObjectId user { get; set; }
 
         [BsonElement("variants")]
         public List<OrderVariant> variants { get; set; } = new();
@@ -42,7 +42,7 @@ namespace api.models
     public class OrderVariant
     {
         [BsonElement("variant")]
-        public string variant { get; set; }
+        public ObjectId variant { get; set; }
 
         [BsonElement("quantity")]
         public int quantity { get; set; }
