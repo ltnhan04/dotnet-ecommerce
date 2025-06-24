@@ -10,4 +10,9 @@ namespace api.Dtos
         public string accessToken { get; set; } = string.Empty;
         public string refreshToken { get; set; } = string.Empty;
     }
+    public class ResponseRefreshTokenDto
+    {
+        public string userId { get; set; } = string.Empty;
+        public string role { get; set; } = string.Empty;
+    }
 }

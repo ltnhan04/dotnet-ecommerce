@@ -45,9 +45,4 @@ namespace api.models
         public string colorName { get; set; } = string.Empty;
         public string colorCode { get; set; } = string.Empty;
     }
-    public enum Status
-    {
-        in_stock,
-        out_of_stock
-    }
 }
