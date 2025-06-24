@@ -12,11 +12,11 @@ using Microsoft.Extensions.Logging;
 
 namespace api.Repositories.Admin
 {
-    public class RevenueRespository : IRevenueRespository
+    public class RevenueRepository : IRevenueRepository
     {
         private readonly iTribeDbContext _context;
-        private readonly ILogger<RevenueRespository> _logger;
-        public RevenueRespository(iTribeDbContext context, ILogger<RevenueRespository> logger)
+        private readonly ILogger<RevenueRepository> _logger;
+        public RevenueRepository(iTribeDbContext context, ILogger<RevenueRepository> logger)
         {
             _context = context;
             _logger = logger;
