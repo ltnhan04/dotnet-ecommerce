@@ -11,24 +11,24 @@ namespace api.Services.Admin
 {
     public class RevenueService
     {
-        private readonly IRevenueRespository revenueRespository;
+        private readonly IRevenueRepository revenueRepository;
 
-        public RevenueService(IRevenueRespository revenueRespository)
+        public RevenueService(IRevenueRepository revenueRepository)
         {
-            this.revenueRespository = revenueRespository;
+            this.revenueRepository = revenueRepository;
         }
 
         public async Task<TotalDto> getTotalRevenue()
         {
-            return await revenueRespository.getTotalRevenue();
+            return await revenueRepository.getTotalRevenue();
         }
         public async Task<List<RevenueDto>> getRevenueChart(string type, DateTime from, DateTime to)
         {
-            return await revenueRespository.getRevenueChart(type, from, to);
+            return await revenueRepository.getRevenueChart(type, from, to);
         }
         public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts()
         {
-            return await revenueRespository.GetTop10BestSellingProducts();
+            return await revenueRepository.GetTop10BestSellingProducts();
         }
         
     }

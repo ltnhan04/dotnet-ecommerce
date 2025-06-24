@@ -6,7 +6,7 @@ using api.Dtos;
 
 namespace api.Interfaces.Repositories
 {
-    public interface IRevenueRespository
+    public interface IRevenueRepository
     {
         Task<TotalDto> getTotalRevenue();
         Task<List<RevenueDto>> getRevenueChart(string type, DateTime from, DateTime to);
