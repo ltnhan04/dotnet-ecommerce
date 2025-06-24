@@ -9,7 +9,7 @@ namespace api.Dtos
     public class OrderDto
     {
         public string _id { get; set; } = string.Empty;
-        public List<OrderVariant> variants { get; set; }
+        public List<OrderVariant> variants { get; set; } = new();
         public DateTime createdAt { get; set; }
         public int totalAmount { get; set; }
         public string shippingAddress { get; set; } = string.Empty;
@@ -17,10 +17,10 @@ namespace api.Dtos
 
     }
     public class OrderVariant
-    {   
-        public string variant { get; set; }
+    {
+        public string variant { get; set; } = string.Empty;
         public int quantity { get; set; }
-        
+
     }
 
     public class Variant

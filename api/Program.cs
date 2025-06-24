@@ -13,6 +13,10 @@ using api.Services.Customer;
 using api.models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using api.Interfaces.Repositories;
+using api.Repositories.Admin;
+using api.Interfaces.Services;
+using api.Services.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -42,13 +46,20 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer("Bearer", options =>
 {
@@ -61,8 +72,24 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
-})
-.AddCookie();
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync("{\"message\":\"You're not authenticated\"}");
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync("{\"message\":\"Access denied\"}");
+        }
+    };
+
+});
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AdminOny", policy => policy.RequireRole("admin"));
 
@@ -108,6 +135,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
 var app = builder.Build();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
@@ -127,6 +155,7 @@ app.UseRouting();
 
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
+app.UseMiddleware<UnauthorizedMiddleware>();
 app.UseAuthorization();
 
 app.MapGet("/", () => "Backend is running!").AllowAnonymous();

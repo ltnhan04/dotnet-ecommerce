@@ -61,7 +61,7 @@ namespace api.Services
                 email = email,
             });
 
-            var tokens = _tokenService.GenerateToken(user._id.ToString());
+            var tokens = _tokenService.GenerateToken(user._id.ToString(), user.role);
             var accessToken = tokens.accessToken;
             var refreshToken = tokens.refreshToken;
             await _tokenService.StoreRefreshToken(user._id.ToString(), refreshToken.ToString());
@@ -79,7 +79,7 @@ namespace api.Services
                 password = hashedPassword,
             });
             //create first promotion 
-            var token = _tokenService.GenerateToken(customer._id.ToString());
+            var token = _tokenService.GenerateToken(customer._id.ToString(), customer.role);
             CookieUtil.SetCookie(res, "refreshToken", token.refreshToken);
             await _tokenService.StoreRefreshToken(customer._id.ToString(), token.refreshToken);
 
@@ -106,7 +106,7 @@ namespace api.Services
         }
         public async Task<LoginResponseDto> Login(LoginDto dto, HttpResponse res)
         {
-            var customer = await VerifyRole(dto.email, dto.role.ToString());
+            var customer = await VerifyRole(dto.email, dto.role ?? "user");
             if (!BCrypt.Net.BCrypt.Verify(dto.password, customer.password))
             {
                 var value = await _redisRepository.GetAsync($"wrongPassword:{dto.email}");
@@ -119,7 +119,7 @@ namespace api.Services
                 await _redisRepository.SetAsync($"wrongPassword:{dto.email}", (wrong + 1).ToString(), TimeSpan.FromMinutes(5));
                 throw new AppException($"Wrong password. {5 - wrong - 1} attempts left");
             }
-            var token = _tokenService.GenerateToken(customer._id.ToString());
+            var token = _tokenService.GenerateToken(customer._id.ToString(), customer.role);
             CookieUtil.SetCookie(res, "refreshToken", token.refreshToken);
             await _tokenService.StoreRefreshToken(customer._id.ToString(), token.refreshToken);
 
@@ -143,13 +143,13 @@ namespace api.Services
             if (string.IsNullOrEmpty(refreshToken))
                 throw new AppException("No refresh token provided", 404);
 
-            var userId = _tokenService.ValidateRefreshToken(refreshToken);
-            var stored = await _redisRepository.GetAsync($"refresh_token:{userId}");
+            var decodedToken = _tokenService.ValidateRefreshToken(refreshToken);
+            var stored = await _redisRepository.GetAsync($"refresh_token:{decodedToken.userId}");
             if (stored != refreshToken) throw new AppException("Invalid token");
 
-            var tokens = _tokenService.GenerateToken(userId.ToString()!);
+            var tokens = _tokenService.GenerateToken(decodedToken.userId.ToString()!, decodedToken.role);
             CookieUtil.SetCookie(res, "refreshToken", tokens.refreshToken);
-            await _redisRepository.SetAsync($"refresh_token:{userId}", tokens.refreshToken, TimeSpan.FromDays(7));
+            await _redisRepository.SetAsync($"refresh_token:{decodedToken.userId}", tokens.refreshToken, TimeSpan.FromDays(7));
             return new RefreshTokenResponseDto { newAccessToken = tokens.accessToken, message = "Token refreshed" };
         }
         public async Task<UserProfileDto> GetProfile(string userId)

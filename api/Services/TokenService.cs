@@ -23,7 +23,7 @@ namespace api.Services
 
         }
 
-        public TokenDto GenerateToken(string userId)
+        public TokenDto GenerateToken(string userId, string role)
         {
             var accessTokenSecret = Environment.GetEnvironmentVariable("ACCESS_TOKEN_SECRET");
             var refreshTokenSecret = Environment.GetEnvironmentVariable("REFRESH_TOKEN_SECRET");
@@ -38,8 +38,8 @@ namespace api.Services
                 throw new AppException("REFRESH_TOKEN_SECRET is not configured", 500);
             }
 
-            var accessToken = JwtUtils.GenerateToken(userId, accessTokenSecret, 1);
-            var refreshToken = JwtUtils.GenerateToken(userId, refreshTokenSecret, 7);
+            var accessToken = JwtUtils.GenerateToken(userId, role, accessTokenSecret, 1);
+            var refreshToken = JwtUtils.GenerateToken(userId, role, refreshTokenSecret, 7);
 
             return new TokenDto
             {
@@ -47,7 +47,7 @@ namespace api.Services
                 refreshToken = refreshToken
             };
         }
-        public TokenDto GenerateNewToken(string userId)
+        public TokenDto GenerateNewToken(string userId, string role)
         {
             var accessTokenSecret = Environment.GetEnvironmentVariable("ACCESS_TOKEN_SECRET");
             var refreshTokenSecret = Environment.GetEnvironmentVariable("REFRESH_TOKEN_SECRET");
@@ -62,8 +62,8 @@ namespace api.Services
                 throw new AppException("REFRESH_TOKEN_SECRET is not configured", 500);
             }
 
-            var accessToken = JwtUtils.GenerateToken(userId, accessTokenSecret, 1);
-            var refreshToken = JwtUtils.GenerateToken(userId, refreshTokenSecret, 7);
+            var accessToken = JwtUtils.GenerateToken(userId, role, accessTokenSecret, 1);
+            var refreshToken = JwtUtils.GenerateToken(userId, role, refreshTokenSecret, 7);
             return new TokenDto
             {
                 accessToken = accessToken,
@@ -74,7 +74,7 @@ namespace api.Services
         {
             await _redisRepository.SetAsync($"refresh_token:{userId}", refreshToken, TimeSpan.FromDays(7));
         }
-        public string ValidateRefreshToken(string refreshToken)
+        public ResponseRefreshTokenDto ValidateRefreshToken(string refreshToken)
         {
             var refreshTokenSecret = Environment.GetEnvironmentVariable("REFRESH_TOKEN_SECRET");
 
@@ -99,10 +99,15 @@ namespace api.Services
                 }, out SecurityToken validatedToken);
 
                 var userId = principal.FindFirst("userId")?.Value;
+                var role = principal.FindFirst(ClaimTypes.Role)?.Value;
                 if (userId == null)
                     throw new AppException("Invalid token", 400);
 
-                return userId;
+                return new ResponseRefreshTokenDto
+                {
+                    userId = userId,
+                    role = role!,
+                };
             }
             catch
             {

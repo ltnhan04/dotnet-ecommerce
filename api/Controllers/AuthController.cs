@@ -85,7 +85,6 @@ namespace api.Controllers
             }
             catch (Exception ex)
             {
-
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
