@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using api.Repositories.Admin;
 using api.Services.Admin;
 using api.Interfaces.Repositories;
+using api.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -47,6 +48,14 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
+
 builder.Services.AddScoped<RevenueService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

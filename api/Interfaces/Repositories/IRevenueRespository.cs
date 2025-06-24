@@ -11,5 +11,6 @@ namespace api.Interfaces.Repositories
         Task<TotalDto> getTotalRevenue();
         Task<List<RevenueDto>> getRevenueChart(string type, DateTime from, DateTime to);
         Task<List<TopProductDtoRes>> GetTop10BestSellingProducts();
+        
     }
 }
