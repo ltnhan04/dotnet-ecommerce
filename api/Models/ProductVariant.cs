@@ -28,7 +28,7 @@ namespace api.models
         public required string slug { get; set; }
         [BsonElement("status")]
 
-        public Status status { get; set; } = Status.in_stock;
+        public string status { get; set; } = "in_stock";
         [BsonElement("images")]
         public List<string> images { get; set; } = new();
         [BsonElement("reviews")]

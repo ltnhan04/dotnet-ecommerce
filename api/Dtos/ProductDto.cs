@@ -60,4 +60,28 @@ namespace api.Dtos
         public string description { get; set; } = string.Empty;
         public string category { get; set; } = string.Empty;
     }
+    // public class TopProductDto
+    // {
+    //     public ObjectId variantId { get; set; }
+    //     // public string productName { get; set; } = string.Empty;
+    //     public int totalSold { get; set; }
+    //     // public string image { get; set; } = string.Empty;
+    //     // public int price { get; set; }
+    // }
+    public class TopProductDto
+    {
+        public ObjectId variantId { get; set; }
+        public int totalSold { get; set; }
+    }
+
+    public class TopProductDtoRes
+    {
+            public string variantId { get; set; }
+            public string productId { get; set; }
+            public string productName { get; set; }
+            public string image { get; set; }
+            public int price { get; set; }
+            public int totalSold { get; set; }
+    }
+
 }

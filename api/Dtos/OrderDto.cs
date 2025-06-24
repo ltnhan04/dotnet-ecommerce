@@ -17,10 +17,10 @@ namespace api.Dtos
 
     }
     public class OrderVariant
-    {   
+    {
         public string variant { get; set; }
         public int quantity { get; set; }
-        
+
     }
 
     public class Variant

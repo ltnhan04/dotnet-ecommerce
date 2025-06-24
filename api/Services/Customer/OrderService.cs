@@ -27,10 +27,10 @@ namespace api.Services.Customer
 
             var order = new Order
             {   
-                user = userId,
+                user = ObjectId.Parse(userId),
                 variants = dto.variants.Select(item => new models.OrderVariant
                 {
-                    variant = item.variant,
+                    variant = ObjectId.Parse(item.variant),
                     quantity = item.quantity
                 }).ToList(),
                 totalAmount = dto.totalAmount,

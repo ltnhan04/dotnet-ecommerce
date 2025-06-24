@@ -13,6 +13,9 @@ using api.Services.Customer;
 using api.models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using api.Repositories.Admin;
+using api.Services.Admin;
+using api.Interfaces.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -23,6 +26,7 @@ builder.WebHost.UseUrls("https://localhost:8000");
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
+builder.Logging.AddConsole();
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")))
@@ -42,6 +46,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IRevenueRespository, RevenueRespository>();
+builder.Services.AddScoped<RevenueService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
