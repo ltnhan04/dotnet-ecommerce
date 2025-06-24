@@ -19,13 +19,27 @@ namespace api.Controllers
         private readonly IOrderService _orderService = orderService;
 
         [HttpPost]
-        public async Task CreateOrder([FromBody] OrderDto dto)
+        public async Task CreateOrder([FromBody] OrderCreateDto dto)
         {
             try
             {
                 var userId = User.FindFirst("userId")?.Value;
                 var data = await _orderService.HandleCreateOrder(dto!, userId!);
                 await ResponseHandler.SendSuccess(Response, data, 201, "Create order successfully");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
+        [HttpGet]
+        public async Task GetOrderByUser()
+        {
+            try
+            {
+                var userId = User.FindFirst("userId")?.Value;
+                var data = await _orderService.HandleGetOrderUser(userId!);
+                await ResponseHandler.SendSuccess(Response, data, 200, "Get order successfully");
             }
             catch (Exception ex)
             {
