@@ -16,6 +16,7 @@ using api.Repositories.Admin;
 using api.Services.Admin;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
+using api.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -36,6 +37,7 @@ DatabaseConfiguration.ConfigurationMongoDb(builder.Services, builder.Configurati
 ServiceConfiguration.ConfigureServices(builder.Services);
 
 builder.Services.AddScoped<iTribeDbContext>();
+builder.Services.AddScoped<CloudinaryUtils>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IOtpService, OtpService>();

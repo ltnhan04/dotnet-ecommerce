@@ -30,10 +30,10 @@ namespace api.models
         public ChatbotStatus status { get; set; } = ChatbotStatus.active;
 
         [BsonElement("createdAt")]
-        public DateTime createdAt { get; set; } = DateTime.UtcNow;
+        public DateTime createdAt { get; set; }
 
         [BsonElement("updatedAt")]
-        public DateTime updatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime updatedAt { get; set; }
     }
 
     public class ChatMessage
