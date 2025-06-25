@@ -30,7 +30,7 @@ namespace api.Repositories.Admin
                 .Where(o => o.status == "delivered")
                 .Sum(o => o.totalAmount);
             var totalPendingOrder = orders.Count(o => o.status == "pending");
-            var totalCustomer = await _context.Users.CountAsync(u => u.role =="user");
+            var totalCustomer = await _context.Users.CountAsync(u => u.role == "user");
 
             return new TotalDto
             {
@@ -123,7 +123,7 @@ namespace api.Repositories.Admin
                 .Select(g => new TopProductDto
                 {
                     variantId = g.Key,
-                    totalSold = g.Sum(x => x.quantity)
+                    totalSold = g.Sum(x => x.quantity),
                 })
                 .OrderByDescending(x => x.totalSold)
                 .Take(10)
@@ -133,7 +133,7 @@ namespace api.Repositories.Admin
             List<TopProductDtoRes> listVariants = variantSales.Select(x => new TopProductDtoRes
             {
                 variantId = x.variantId.ToString(),
-                totalSold = x.totalSold
+                totalSold = x.totalSold,
             }).ToList();
 
             var variantIds = listVariants.Select(r => ObjectId.Parse(r.variantId)).ToList();
@@ -160,11 +160,42 @@ namespace api.Repositories.Admin
                     item.price = variant.price;
 
                     var product = products.FirstOrDefault(p => p._id.ToString() == variant.product.ToString());
-                    item.productName = (product?.name+" "+variant.color.colorName+" "+variant.storage) ?? "Unknown";
+                    item.productName = (product?.name + " " + variant.color.colorName + " " + variant.storage) ?? "Unknown";
                 }
             }
 
             return listVariants;
+        }
+        public async Task<List<TopSalesByLocationDto>> GetTopSalesByLocation()
+        {
+            var deliveredOrders = await _context.Orders
+                .Where(o => o.status == "delivered")
+                .ToListAsync();
+
+            if (!deliveredOrders.Any())
+                return new List<TopSalesByLocationDto>();
+
+            var provinceCount = deliveredOrders
+                .Select(o =>
+                {
+                    var addressParts = o.shippingAddress.Split(',');
+                    string province = addressParts.Length >= 2
+                        ? addressParts[^2].Trim() 
+                        : "Unknown";
+
+                    return province;
+                })
+                .GroupBy(p => p)
+                .Select(g => new TopSalesByLocationDto
+                {
+                    city = g.Key,
+                    totalSold = g.Count()
+                })
+                .OrderByDescending(x => x.totalSold)
+                .Take(5)
+                .ToList();
+
+            return provinceCount;
         }
 
     }
