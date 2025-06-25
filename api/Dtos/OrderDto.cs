@@ -70,7 +70,7 @@ namespace api.Dtos
     public class OrderDtoResponse
     {
         public string _id { get; set; } = string.Empty;
-        public string user { get; set; } =  string.Empty;
+        public string user { get; set; } = string.Empty;
         public List<OrderVariantDetail> variants { get; set; } = new();
         public decimal totalAmount { get; set; }
         public string status { get; set; } = string.Empty;
@@ -97,6 +97,17 @@ namespace api.Dtos
     }
 
     public class CancelOrderDto
+    {
+        public string message { get; set; } = string.Empty;
+    }
+
+    public class UpdateOrderPaymentDto
+    {
+        public string stripeSessionId { get; set; } = string.Empty;
+        public string orderId { get; set; } = string.Empty;
+    }
+
+    public class UpdateOrderPaymentResponseDto
     {
         public string message { get; set; } = string.Empty;
     }
