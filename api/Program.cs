@@ -11,7 +11,6 @@ using api.Repositories;
 using api.Interfaces;
 using api.Services.Customer;
 using api.models;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using api.Repositories.Admin;
 using api.Services.Admin;
@@ -41,24 +40,29 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IOtpService, OtpService>();
 builder.Services.AddScoped<EmailService>();
-builder.Services.AddScoped<IRedisRepository, RedisRepository>();
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
+// builder.Services.AddScoped<IShippingService, ShippingService>();
+// builder.Services.AddScoped<IPaymentService, PaymentService>();
+// builder.Services.AddScoped<IPointService, PointService>();
+builder.Services.AddScoped<RevenueService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Services.AddScoped<IRedisRepository, RedisRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-
-
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
-builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
+// builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
+// builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+// builder.Services.AddScoped<IPointRepository, PointRepository>();
 
-builder.Services.AddScoped<RevenueService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -27,7 +27,7 @@ namespace api.Services.Customer
             }
 
             var order = new Order
-            {   
+            {
                 user = ObjectId.Parse(userId),
                 variants = dto.variants.Select(item => new OrderVariant
                 {
@@ -61,6 +61,30 @@ namespace api.Services.Customer
         {
             var orders = await _orderRepository.GetOrderByUser(userId);
             return orders;
+        }
+
+        public async Task<CancelOrderDto> HandleCancelOrder(string orderId)
+        {
+            var orders = await _orderRepository.CancelOrder(orderId);
+            return orders;
+        }
+
+        public async Task<UpdateOrderPaymentResponseDto> HandleUpdateOrderPayment(UpdateOrderPaymentDto dto)
+        {
+            if (string.IsNullOrEmpty(dto.orderId) || string.IsNullOrEmpty(dto.stripeSessionId))
+            {
+                throw new AppException("Missing orderId or sessionId", 400);
+            }
+
+            var stripeUtil = new StripeUtil();
+            var sessionStripe = await stripeUtil.GetSessionAsync(dto.stripeSessionId);
+            if (sessionStripe == null || sessionStripe.PaymentStatus != "paid")
+            {
+                throw new AppException("Payment not successful", 400);
+            }
+
+            var data = await _orderRepository.UpdateOrderPayment(dto);
+            return data;
         }
     }
 
