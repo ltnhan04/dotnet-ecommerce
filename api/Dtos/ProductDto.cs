@@ -20,6 +20,12 @@ namespace api.Dtos
     {
         public string _id { get; set; } = string.Empty;
         public string name { get; set; } = string.Empty;
+        public string? parent_category { get; set; }
+    }
+    public class CreateCategoryDto
+    {
+        public string name { get; set; } = string.Empty;
+        public string? parent_category { get; set; }
     }
     public class ColorDto
     {
@@ -84,5 +90,9 @@ namespace api.Dtos
             public int price { get; set; }
             public int totalSold { get; set; }
     }
-
+    public class TopSalesByLocationDto
+    {
+        public string city { get; set; } = string.Empty;
+        public int totalSold { get; set; }
+    }
 }

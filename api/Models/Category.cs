@@ -18,8 +18,8 @@ namespace api.models
         public ObjectId? parent_category { get; set; }
 
         [BsonElement("createdAt")]
-        public DateTime createdAt { get; set; } = DateTime.UtcNow;
+        public DateTime? createdAt { get; set; } = DateTime.UtcNow;
         [BsonElement("updatedAt")]
-        public DateTime updatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? updatedAt { get; set; } = DateTime.UtcNow;
     }
 }
