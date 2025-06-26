@@ -58,5 +58,11 @@ namespace api.Repositories.Admin
             await _context.SaveChangesAsync();
             return true;
         }
+        public void DeleteVariants(string productId)
+        {
+            var relatedVariants = _context.ProductVariants.Where(v => v.product == ObjectId.Parse(productId));
+            _context.ProductVariants.RemoveRange(relatedVariants);
+            return;
+        }
     }
 }

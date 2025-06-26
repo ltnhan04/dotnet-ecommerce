@@ -12,7 +12,7 @@ namespace api.Dtos
         public CategoryDto category { get; set; } = new();
         public string name { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
-        public List<VariantDto> variants = new();
+        public List<VariantDto> variants { get; set; } = new();
         public DateTime? createdAt { get; set; }
         public DateTime? updatedAt { get; set; }
     }
