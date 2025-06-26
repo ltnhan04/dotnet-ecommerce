@@ -11,5 +11,7 @@ namespace api.Interfaces
     {
         Task<Order> CreateOrder(Order order);
         Task<List<OrderDtoResponse>> GetOrderByUser(string userId);
+        Task<CancelOrderDto> CancelOrder(string orderId);
+        Task<UpdateOrderPaymentResponseDto> UpdateOrderPayment(UpdateOrderPaymentDto dto);
     }
 }

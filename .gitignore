@@ -5,3 +5,4 @@ api/bin
 api/obj
 api/.env
 frontend/.env.local
+.fake

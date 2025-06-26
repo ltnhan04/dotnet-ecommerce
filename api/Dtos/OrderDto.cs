@@ -100,4 +100,15 @@ namespace api.Dtos
     {
         public string message { get; set; } = string.Empty;
     }
+
+    public class UpdateOrderPaymentDto
+    {
+        public string stripeSessionId { get; set; } = string.Empty;
+        public string orderId { get; set; } = string.Empty;
+    }
+
+    public class UpdateOrderPaymentResponseDto
+    {
+        public string message { get; set; } = string.Empty;
+    }
 }

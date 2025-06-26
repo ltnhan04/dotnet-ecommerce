@@ -38,5 +38,11 @@ namespace api.Controllers
             var result = await _revenueService.GetTop10BestSellingProducts();
             return Ok(result);
         }
+        [HttpGet("top-sales-by-location")]
+        public async Task<IActionResult> GetTopSalesByLocation()
+        {
+            var result = await _revenueService.GetTopSalesByLocation();
+            return Ok(result);
+        }
     }
 }
