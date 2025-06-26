@@ -19,13 +19,15 @@ namespace api.Controllers.Admin
         {
             _productService = productService;
         }
+
         [Authorize(Roles = "admin")]
-        [HttpGet("")]
-        public async Task GetAllProducts()
+
+        [HttpGet]
+        public async Task GetAllProducts([FromQuery] int size, int page)
         {
             try
             {
-                var products = await _productService.GetAllProducts();
+                var products = await _productService.GetAllProducts(page, size);
                 await ResponseHandler.SendSuccess(Response, products, 200, "Get products successfully!");
             }
             catch (Exception ex)
@@ -48,12 +50,27 @@ namespace api.Controllers.Admin
             }
         }
         [Authorize(Roles = "admin")]
-        [HttpPost("")]
+        [HttpGet("filter")]
+        public async Task GetProductByCategory([FromQuery] string categoryId)
+        {
+            try
+            {
+                var products = await _productService.GetProductByCategory(categoryId);
+                await ResponseHandler.SendSuccess(Response, products, 200, "Get product by category successfully");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost]
         public async Task CreateProduct([FromBody] CreateProductDto dto)
         {
             try
             {
-                var product = _productService.CreateProduct(dto) ?? throw new AppException("Create product failed");
+                var product = await _productService.CreateProduct(dto);
                 await ResponseHandler.SendSuccess(Response, product, 200, "Created Product Successfully");
             }
             catch (Exception ex)
@@ -67,7 +84,7 @@ namespace api.Controllers.Admin
         {
             try
             {
-                var updatedProduct = _productService.UpdateProduct(id, dto) ?? throw new AppException("Update product failed");
+                var updatedProduct = await _productService.UpdateProduct(id, dto) ?? throw new AppException("Update product failed");
                 await ResponseHandler.SendSuccess(Response, updatedProduct, 200, "Updated Product Successfully");
             }
             catch (Exception ex)
@@ -81,8 +98,8 @@ namespace api.Controllers.Admin
         {
             try
             {
-                var updatedProduct = _productService.DeleteProduct(id) ?? throw new AppException("Delete product failed");
-                await ResponseHandler.SendSuccess(Response, updatedProduct, 200, "Deleted Product Successfully");
+                var deletedProduct = await _productService.DeleteProduct(id) ?? throw new AppException("Delete product failed");
+                await ResponseHandler.SendSuccess(Response, null, 200, "Deleted Product Successfully");
             }
             catch (Exception ex)
             {

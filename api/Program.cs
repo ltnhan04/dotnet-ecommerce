@@ -50,6 +50,7 @@ builder.Services.AddScoped<ILocationService, LocationService>();
 // builder.Services.AddScoped<IPointService, PointService>();
 builder.Services.AddScoped<RevenueService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddScoped<IRedisRepository, RedisRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();

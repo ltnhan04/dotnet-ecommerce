@@ -20,17 +20,17 @@ namespace api.Repositories.Admin
 
         public async Task<Category?> GetCategoryById(string id)
         {
-            return await _context.Categories.FindAsync(ObjectId.Parse(id));
+            var objectId = ObjectId.Parse(id);
+            var categories = await _context.Categories.ToListAsync();
+            return categories.FirstOrDefault(c => c._id == objectId);
         }
-        public async Task<Category?> GetSubCategoryById(string subCategoryId)
-        {
-            return await _context.Categories.FindAsync(ObjectId.Parse(subCategoryId));
-        }
+
         public async Task<List<CategoryDto>> GetAllCategories()
         {
             var categories = await _context.Categories.ToListAsync();
             return categories.Select(c => new CategoryDto
             {
+                _id = c._id.ToString(),
                 name = c.name,
                 parent_category = c.parent_category?.ToString()
             }).ToList();

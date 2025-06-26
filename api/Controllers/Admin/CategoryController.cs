@@ -9,22 +9,22 @@ using api.Services.Admin;
 using api.Interfaces.Repositories;
 using api.models;
 using api.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace api.Controllers.Admin
 {
     [Route("api/v1/admin/categories")]
-    public class CategoryController : Controller
+    public class CategoryController : ControllerBase
     {
-        private readonly ILogger<CategoryController> _logger;
         private readonly ICategoryService _categoryService;
 
-        public CategoryController(ICategoryService categoryService, ILogger<CategoryController> logger)
+        public CategoryController(ICategoryService categoryService)
         {
-            _logger = logger;
             _categoryService = categoryService;
         }
-        [HttpGet("get-all")]
+
+        [HttpGet]
         public async Task GetAllCategories()
         {
             try
@@ -37,7 +37,8 @@ namespace api.Controllers.Admin
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
-        [HttpPost("create")]
+        [Authorize(Roles = "admin")]
+        [HttpPost]
         public async Task CreateCategory([FromBody] Dtos.CreateCategoryDto categoryDto)
         {
             try
@@ -55,8 +56,8 @@ namespace api.Controllers.Admin
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
-
-        [HttpPut("update/{categoryId}")]
+        [Authorize(Roles = "admin")]
+        [HttpPut("{categoryId}")]
         public async Task UpdateCategory(string categoryId, [FromBody] Dtos.CreateCategoryDto categoryDto)
         {
             try
@@ -79,7 +80,8 @@ namespace api.Controllers.Admin
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
-        [HttpDelete("delete/{categoryId}")]
+        [Authorize(Roles = "admin")]
+        [HttpDelete("{categoryId}")]
         public async Task DeleteCategory(string categoryId)
         {
             try
@@ -96,29 +98,6 @@ namespace api.Controllers.Admin
                     return;
                 }
                 await ResponseHandler.SendSuccess(Response, null, 200, "Category deleted successfully!");
-            }
-            catch (Exception ex)
-            {
-                await ResponseHandler.SendError(Response, ex.Message, 500);
-            }
-        }
-        [HttpGet("get-subCategory/{subCategoryId}")]
-        public async Task GetSubCategoryById(string subCategoryId)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(subCategoryId))
-                {
-                    await ResponseHandler.SendError(Response, "Invalid sub-category ID", 400);
-                    return;
-                }
-                var subCategory = await _categoryService.GetSubCategoryById(subCategoryId);
-                if (subCategory == null)
-                {
-                    await ResponseHandler.SendError(Response, "Sub-category not found", 404);
-                    return;
-                }
-                await ResponseHandler.SendSuccess(Response, subCategory, 200, "Get sub-category successfully!");
             }
             catch (Exception ex)
             {
