@@ -31,8 +31,12 @@ namespace api.Repositories.Admin
         }
         public async Task<Product?> GetProductById(string productId)
         {
-            return await _context.Products.FindAsync(ObjectId.Parse(productId));
+            var objectId = ObjectId.Parse(productId);
+            return await _context.Products
+                                         .Where(p => p._id == objectId)
+                                         .FirstOrDefaultAsync();
         }
+
         public async Task<Product> Create(Product dto)
         {
             _context.Products.Add(dto);

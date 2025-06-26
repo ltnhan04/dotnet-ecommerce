@@ -24,6 +24,7 @@ namespace api.Dtos
     }
     public class CreateCategoryDto
     {
+        public string? _id { get; set; }
         public string name { get; set; } = string.Empty;
         public string? parent_category { get; set; }
     }
@@ -65,7 +66,7 @@ namespace api.Dtos
     {
         public string name { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
-        public string category { get; set; } = string.Empty;
+        public string? category { get; set; }
     }
     // public class TopProductDto
     // {

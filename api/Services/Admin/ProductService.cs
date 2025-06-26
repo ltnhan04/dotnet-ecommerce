@@ -30,9 +30,9 @@ namespace api.Services.Admin
             _categoryRepo = categoryRepo;
         }
 
-        public async Task<List<ProductDto>> GetAllProducts()
+        public async Task<List<ProductDto>> GetAllProducts(int page = 1, int size = 10)
         {
-            var products = await _productRepo.GetProducts();
+            var products = (await _productRepo.GetProducts()).Skip((page - 1) * size).Take(size).ToList();
 
             var result = new List<ProductDto>();
 
@@ -82,7 +82,6 @@ namespace api.Services.Admin
         public async Task<ProductDto> GetProductById(string id)
         {
             var product = await _productRepo.GetProductById(id) ?? throw new AppException("Product not found", 404);
-            Console.WriteLine("Product: " + product);
             var category = await _categoryRepo.GetCategoryById(product.category.ToString());
             var variants = await _variantRepo.GetByProductId(product._id);
             var variantsDtos = new List<VariantDto>();
@@ -178,33 +177,60 @@ namespace api.Services.Admin
                 description = dto.description,
                 category = ObjectId.Parse(dto.category),
                 createdAt = DateTime.UtcNow,
+                updatedAt = DateTime.UtcNow,
             };
-
-            var newProduct = await _productRepo.Create(product);
+            var newProduct = await _productRepo.Create(product) ?? throw new AppException("Create product failed");
+            var category = await _categoryRepo.GetCategoryById(newProduct.category.ToString());
             return new ProductDto
             {
                 _id = newProduct._id.ToString(),
                 name = newProduct.name,
                 description = newProduct.description,
+                category = new CategoryDto
+                {
+                    _id = category._id.ToString(),
+                    name = category.name
+                }
+
             };
         }
         public async Task<ProductDto> UpdateProduct(string id, UpdateProductDto dto)
         {
-            var updates = new models.Product
-            {
-                name = dto.name,
-                description = dto.description,
-                category = ObjectId.Parse(dto.category),
-            };
+            var existingProduct = await _productRepo.GetProductById(id)
+                                    ?? throw new AppException("Product not found", 404);
+            var category = await _categoryRepo.GetCategoryById(existingProduct.category.ToString());
 
-            var updatedProduct = await _productRepo.Update(id, updates);
+            if (!string.IsNullOrWhiteSpace(dto.name))
+                existingProduct.name = dto.name;
+
+            if (!string.IsNullOrWhiteSpace(dto.description))
+                existingProduct.description = dto.description;
+
+            if (!string.IsNullOrWhiteSpace(dto.category))
+            {
+                if (dto.category.Length != 24)
+                    throw new AppException("Invalid category id", 400);
+
+                existingProduct.category = ObjectId.Parse(dto.category);
+            }
+
+            existingProduct.updatedAt = DateTime.UtcNow;
+
+            var updated = await _productRepo.Update(id, existingProduct);
+
             return new ProductDto
             {
-                _id = updatedProduct._id.ToString(),
-                name = updatedProduct.name,
-                description = updatedProduct.description,
+                _id = updated._id.ToString(),
+                name = updated.name,
+                description = updated.description,
+                category = new CategoryDto
+                {
+                    _id = category._id.ToString(),
+                    name = category.name
+                }
             };
         }
+
         public async Task<string> DeleteProduct(string id)
         {
             var product = await _productRepo.GetProductById(id) ?? throw new AppException("Product not found", 404);

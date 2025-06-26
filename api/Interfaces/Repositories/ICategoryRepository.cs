@@ -11,7 +11,6 @@ namespace api.Interfaces.Repositories
     public interface ICategoryRepository
     {
         Task<Category?> GetCategoryById(string categoryId);
-        Task<Category> GetSubCategoryById(string subCategoryId);
         Task<List<CategoryDto>> GetAllCategories();
         Task<Category> Create(Category dto);
         Task<Category?> Update(string categoryId, Category dto);
