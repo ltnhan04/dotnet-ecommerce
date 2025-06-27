@@ -12,7 +12,7 @@ namespace api.Dtos
         public CategoryDto category { get; set; } = new();
         public string name { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
-        public List<VariantDto> variants = new();
+        public List<VariantDto> variants { get; set; } = new();
         public DateTime? createdAt { get; set; }
         public DateTime? updatedAt { get; set; }
     }
@@ -20,6 +20,13 @@ namespace api.Dtos
     {
         public string _id { get; set; } = string.Empty;
         public string name { get; set; } = string.Empty;
+        public string? parent_category { get; set; }
+    }
+    public class CreateCategoryDto
+    {
+        public string? _id { get; set; }
+        public string name { get; set; } = string.Empty;
+        public string? parent_category { get; set; }
     }
     public class ColorDto
     {
@@ -59,7 +66,7 @@ namespace api.Dtos
     {
         public string name { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
-        public string category { get; set; } = string.Empty;
+        public string? category { get; set; }
     }
     // public class TopProductDto
     // {
@@ -84,5 +91,9 @@ namespace api.Dtos
         public int price { get; set; } = 0;
         public int totalSold { get; set; } = 0;
     }
-
+    public class TopSalesByLocationDto
+    {
+        public string city { get; set; } = string.Empty;
+        public int totalSold { get; set; }
+    }
 }

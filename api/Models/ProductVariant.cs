@@ -19,11 +19,11 @@ namespace api.models
         [BsonElement("color")]
         public Color color { get; set; } = new();
         [BsonElement("storage")]
-        public required string storage { get; set; }
+        public string storage { get; set; } = string.Empty;
         [BsonElement("price")]
-        public required int price { get; set; }
+        public int price { get; set; } = 0;
         [BsonElement("stock_quantity")]
-        public required int stock_quantity { get; set; } = 1;
+        public int stock_quantity { get; set; } = 1;
         [BsonElement("slug"), MaxLength(255)]
         public required string slug { get; set; }
         [BsonElement("status")]

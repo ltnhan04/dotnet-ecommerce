@@ -15,5 +15,6 @@ namespace api.Interfaces
         Task<Product> Create(Product dto);
         Task<Product> Update(string productId, Product dto);
         Task<bool> Delete(string productId);
+        void DeleteVariants(string productId);
     }
 }

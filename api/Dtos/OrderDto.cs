@@ -41,7 +41,7 @@ namespace api.Dtos
     }
     public class VariantOrderDto
     {
-        public string _id { get; set; }
+        public string _id { get; set; } = string.Empty;
         public string product { get; set; } = string.Empty;
         public string productName { get; set; } = string.Empty;
         public string colorName { get; set; } = string.Empty;
@@ -83,9 +83,9 @@ namespace api.Dtos
 
     public class OrderDtoResponseCreate
     {
-        public string _id { get; set; }
+        public string _id { get; set; } = string.Empty;
 
-        public string user { get; set; }
+        public string user { get; set; } = string.Empty;
         public List<OrderCreateDto> variants { get; set; } = new();
         public decimal totalAmount { get; set; }
         public string status { get; set; } = string.Empty;

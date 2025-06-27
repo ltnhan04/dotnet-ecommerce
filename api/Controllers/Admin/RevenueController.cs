@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using api.Services.Admin;
 using api.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api.Controllers
 {
     [ApiController]
     [Route("api/v1/revenue")]
-    // [Authorize]
+    [Authorize(Roles = "admin")]
+
     public class RevenueController : ControllerBase
     {
         private readonly RevenueService _revenueService;
@@ -36,6 +38,12 @@ namespace api.Controllers
         public async Task<IActionResult> GetTop10BestSellingProducts()
         {
             var result = await _revenueService.GetTop10BestSellingProducts();
+            return Ok(result);
+        }
+        [HttpGet("top-sales-by-location")]
+        public async Task<IActionResult> GetTopSalesByLocation()
+        {
+            var result = await _revenueService.GetTopSalesByLocation();
             return Ok(result);
         }
     }

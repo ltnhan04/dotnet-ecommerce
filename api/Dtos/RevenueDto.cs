@@ -7,7 +7,7 @@ namespace api.Dtos
 {
     public class RevenueDto
     {
-        public string label { get; set; }
+        public string label { get; set; } = string.Empty;
         public int totalRevenue { get; set; }
     }
 }

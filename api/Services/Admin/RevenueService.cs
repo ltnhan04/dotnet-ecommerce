@@ -30,6 +30,9 @@ namespace api.Services.Admin
         {
             return await revenueRepository.GetTop10BestSellingProducts();
         }
-        
+        public async Task<List<TopSalesByLocationDto>> GetTopSalesByLocation()
+        {
+            return await revenueRepository.GetTopSalesByLocation();
+        }
     }
 }

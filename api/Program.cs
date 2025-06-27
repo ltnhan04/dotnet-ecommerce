@@ -16,7 +16,7 @@ using api.Repositories.Admin;
 using api.Services.Admin;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
+using api.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -37,6 +37,7 @@ DatabaseConfiguration.ConfigurationMongoDb(builder.Services, builder.Configurati
 ServiceConfiguration.ConfigureServices(builder.Services);
 
 builder.Services.AddScoped<iTribeDbContext>();
+builder.Services.AddScoped<CloudinaryUtils>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IOtpService, OtpService>();
@@ -50,6 +51,7 @@ builder.Services.AddScoped<ILocationService, LocationService>();
 // builder.Services.AddScoped<IPointService, PointService>();
 builder.Services.AddScoped<RevenueService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddScoped<IRedisRepository, RedisRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();

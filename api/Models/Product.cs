@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -21,9 +22,9 @@ namespace api.models
         [BsonElement("variants")]
         public List<ObjectId> variants { get; set; } = new();
         [BsonElement("createdAt")]
-        public DateTime createdAt { get; set; } = DateTime.UtcNow;
+        public DateTime? createdAt { get; set; }
         [BsonElement("updatedAt")]
-        public DateTime updatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? updatedAt { get; set; }
 
     }
 

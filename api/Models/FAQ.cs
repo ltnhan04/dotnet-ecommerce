@@ -32,10 +32,9 @@ namespace api.models
         public DateTime lastUsed { get; set; } = DateTime.UtcNow;
 
         [BsonElement("createdAt")]
-        public DateTime createdAt { get; set; } = DateTime.UtcNow;
-
+        public DateTime createdAt { get; set; }
         [BsonElement("updatedAt")]
-        public DateTime updatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime updatedAt { get; set; }
     }
 
     public enum FAQCategory
