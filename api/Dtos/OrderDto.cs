@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.models;
 using MongoDB.Bson;
 
 namespace api.Dtos
@@ -37,7 +38,6 @@ namespace api.Dtos
     {
         public string variant { get; set; } = string.Empty;
         public int quantity { get; set; }
-
     }
     public class VariantOrderDto
     {
@@ -110,5 +110,68 @@ namespace api.Dtos
     public class UpdateOrderPaymentResponseDto
     {
         public string message { get; set; } = string.Empty;
+    }
+
+    public class AdminGetAllOrder
+    {
+        public string _id { get; set; } = string.Empty;
+        public AdminResponseUserDto user { get; set; } = new();
+        public List<AdminResponseVariantDto>? variants { get; set; } = new();
+        public decimal totalAmount { get; set; }
+        public string status { get; set; } = string.Empty;
+        public string paymentMethod { get; set; } = string.Empty;
+    }
+
+    public class AdminResponseUserDto
+    {
+        public string name { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
+        public string phoneNumber { get; set; } = string.Empty;
+        public AdminAddressDto address { get; set; } = new();
+    }
+    public class AdminAddressDto
+    {
+        public string? street { get; set; }
+        public string? ward { get; set; }
+        public string? district { get; set; }
+        public string? city { get; set; }
+        public string? country { get; set; }
+    }
+
+    public class AdminResponseVariantDto
+    {
+        public AdminResponseColorDto color { get; set; } = new();
+        public string storage { get; set; } = string.Empty;
+        public string images { get; set; } = string.Empty;
+        public int quantity { get; set; }
+    }
+
+    public class AdminResponseColorDto
+    {
+        public string colorName { get; set; } = string.Empty;
+        public string colorCode { get; set; } = string.Empty;
+    }
+    public class AdminResponseUpdateOrderStatus
+    {
+        public string _id { get; set; } = string.Empty;
+        public string user { get; set; } = string.Empty;
+        public List<AdminOrderUpdated> variants { get; set; } = new();
+        public int totalAmount { get; set; }
+        public string status { get; set; } = string.Empty;
+        public string shippingAddress { get; set; } = string.Empty;
+        public string paymentMethod { get; set; } = string.Empty;
+        public string stripeSessionId { get; set; } = string.Empty;
+
+    }
+
+    public class AdminOrderUpdated
+    {
+        public string variant { get; set; } = string.Empty;
+        public int quantity { get; set; }
+    }
+
+    public class stateDto
+    {
+        public string status { get; set; } = string.Empty;
     }
 }

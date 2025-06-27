@@ -10,7 +10,7 @@ namespace api.Dtos
     {
         public string email { get; set; } = string.Empty;
         public string name { get; set; } = string.Empty;
-        public string password { get; set; } = string.Empty;
+        public string? password { get; set; }
     }
     public class VerifyOtpDto
     {
@@ -21,7 +21,7 @@ namespace api.Dtos
     public class LoginDto
     {
         public string email { get; set; } = string.Empty;
-        public string password { get; set; } = string.Empty;
+        public string? password { get; set; }
         public string? role { get; set; } = string.Empty;
     }
     public class RefreshTokenDto
@@ -82,7 +82,7 @@ public class ForgotPasswordDto
 }
 public class ResetPasswordDto
 {
-    public string password { get; set; } = string.Empty;
+    public string? password { get; set; }
 }
 public class TokenResponseDto
 {

@@ -19,7 +19,7 @@ namespace api.models
         [BsonElement("description")]
         public required string description { get; set; }
         [BsonElement("variants")]
-        public List<ObjectId> variants = new();
+        public List<ObjectId> variants { get; set; } = new();
         [BsonElement("createdAt")]
         public DateTime createdAt { get; set; } = DateTime.UtcNow;
         [BsonElement("updatedAt")]

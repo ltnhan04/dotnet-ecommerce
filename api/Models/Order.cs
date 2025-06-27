@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -8,7 +9,7 @@ namespace api.models
     public class Order
     {
         [BsonId]
-        public ObjectId _id { get; set; } = ObjectId.GenerateNewId();
+        public ObjectId _id { get; set; } 
 
         [BsonElement("user")]
         public ObjectId user { get; set; }
@@ -40,7 +41,7 @@ namespace api.models
     }
 
     public class OrderVariant
-    {
+    {   
         [BsonElement("variant")]
         public ObjectId variant { get; set; }
 
