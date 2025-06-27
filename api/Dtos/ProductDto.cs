@@ -76,6 +76,10 @@ namespace api.Dtos
     //     // public string image { get; set; } = string.Empty;
     //     // public int price { get; set; }
     // }
+    public class ProductSlug
+    {
+        public string slug { get; set; } = string.Empty;
+    }
     public class TopProductDto
     {
         public ObjectId variantId { get; set; }

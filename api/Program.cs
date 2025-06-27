@@ -51,7 +51,9 @@ builder.Services.AddScoped<ILocationService, LocationService>();
 // builder.Services.AddScoped<IPointService, PointService>();
 builder.Services.AddScoped<RevenueService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductVariantService, ProductVariantService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICProductService, CProductService>();
 
 builder.Services.AddScoped<IRedisRepository, RedisRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -63,6 +65,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
+builder.Services.AddScoped<ICProductRepository, CProductRepository>();
 // builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 // builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 // builder.Services.AddScoped<IPointRepository, PointRepository>();
