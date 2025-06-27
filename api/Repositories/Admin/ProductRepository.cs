@@ -32,9 +32,8 @@ namespace api.Repositories.Admin
         public async Task<Product?> GetProductById(string productId)
         {
             var objectId = ObjectId.Parse(productId);
-            return await _context.Products
-                                         .Where(p => p._id == objectId)
-                                         .FirstOrDefaultAsync();
+            var products = await _context.Products.ToListAsync();
+            return products.FirstOrDefault(p => p._id == objectId);
         }
 
         public async Task<Product> Create(Product dto)

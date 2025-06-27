@@ -17,21 +17,19 @@ namespace api.Utils
         private readonly string _displayName = "iTribe.huflit";
         public async Task SendEmailAsync(string to, string subject, string htmlBody)
         {
-            using (var client = new SmtpClient(_smtpHost, _smtpPort))
-            {
-                client.EnableSsl = true;
-                client.Credentials = new NetworkCredential(_emailUsername, _emailPassword);
+            using var client = new SmtpClient(_smtpHost, _smtpPort);
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential(_emailUsername, _emailPassword);
 
-                var mail = new MailMessage
-                {
-                    From = new MailAddress(_emailFrom, _displayName),
-                    Subject = subject,
-                    Body = htmlBody,
-                    IsBodyHtml = true,
-                };
-                mail.To.Add(to);
-                await client.SendMailAsync(mail);
-            }
+            var mail = new MailMessage
+            {
+                From = new MailAddress(_emailFrom, _displayName),
+                Subject = subject,
+                Body = htmlBody,
+                IsBodyHtml = true,
+            };
+            mail.To.Add(to);
+            await client.SendMailAsync(mail);
         }
     }
 }
