@@ -21,7 +21,7 @@ namespace api.Utils
         {
             var service = new SessionService();
             var session = await service.GetAsync(sessionId);
-            return session; 
+            return session;
         }
     }
 }

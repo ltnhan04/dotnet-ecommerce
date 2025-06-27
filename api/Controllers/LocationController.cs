@@ -36,8 +36,6 @@ public class LocationController : ControllerBase
 	}
 		
 
-		
-
 	[HttpGet("wards/:{code}")]
 	public async Task<IActionResult> GetWardsByDistrictCode(int code)
 	{

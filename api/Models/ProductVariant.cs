@@ -41,8 +41,10 @@ namespace api.models
     }
     public class Color
     {
-
+        [BsonElement("colorName")]
         public string colorName { get; set; } = string.Empty;
+        
+        [BsonElement("colorCode")]
         public string colorCode { get; set; } = string.Empty;
     }
 }

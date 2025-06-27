@@ -18,13 +18,13 @@ namespace api.models
         [MaxLength(100), BsonElement("email")]
         public string email { get; set; } = string.Empty;
         [MinLength(8), BsonElement("password")]
-        public string password { get; set; } = string.Empty;
+        public string? password { get; set; } 
         [BsonElement("phoneNumber")]
-        public string phoneNumber { get; set; } = string.Empty;
+        public string? phoneNumber { get; set; }
         [BsonElement("address")]
-        public Address address { get; set; } = new();
+        [BsonIgnoreIfNull]
+        public Address? address { get; set; } = new();
         [BsonElement("role")]
-
         public string role { get; set; } = "user";
 
         [BsonElement("createdAt")]
@@ -33,19 +33,28 @@ namespace api.models
         [BsonElement("updatedAt")]
         public DateTime updatedAt { get; set; } = DateTime.UtcNow;
     }
-    [Owned]
+    
     public class Address
     {
         [MaxLength(50)]
-        public string street { get; set; } = string.Empty;
+        [BsonElement("street")]
+        public string? street { get; set; }
+
         [MaxLength(50)]
-        public string ward { get; set; } = string.Empty;
+        [BsonElement("ward")]
+        public string? ward { get; set; }
+
         [MaxLength(50)]
-        public string district { get; set; } = string.Empty;
+        [BsonElement("district")]
+        public string? district { get; set; }
+
         [MaxLength(50)]
-        public string city { get; set; } = string.Empty;
+        [BsonElement("city")]
+        public string? city { get; set; } 
+
         [MaxLength(30)]
-        public string country { get; set; } = string.Empty;
+        [BsonElement("country")]
+        public string? country { get; set; }
     }
 
 }
