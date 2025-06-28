@@ -29,11 +29,7 @@ namespace api.Repositories.Customer
                 throw new AppException("No variants found");
             }
             var products = await _context.Products.ToListAsync();
-            var product = products.FirstOrDefault(p => p._id == variants[0].product);
-            // var productId = variants[0].product;
-            // var product = await _context.Products
-            //     .Where(p => p._id == productId)
-            //     .FirstOrDefaultAsync() ?? throw new AppException("Product not found");
+            var product = products.FirstOrDefault(p => p._id == variants[0].product) ?? throw new AppException("Product not found");
             var allVariants = await _context.ProductVariants
                 .Where(v => v.product == product._id)
                 .ToListAsync();
