@@ -2,6 +2,7 @@ using api.Dtos;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
 using api.models;
+using api.Utils;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace api.Services.Customer
         {
             if (!ObjectId.TryParse(reviewDto.variant, out var variantId))
             {
-                throw new ArgumentException("Invalid variant ID format");
+                throw new AppException("Invalid variant ID format");
             }
 
             var review = new Review
@@ -51,6 +52,7 @@ namespace api.Services.Customer
 
             return new ReviewDto
             {
+                _id = review._id.ToString(),
                 variant = review.variant.ToString(),
                 rating = review.rating,
                 comment = review.comment
@@ -62,7 +64,7 @@ namespace api.Services.Customer
             var review = await _reviewRepository.GetReviewByIdAsync(id);
             if (review == null || review.user != userId)
             {
-                throw new Exception("Review not found or user not authorized");
+                throw new AppException("Review not found or user not authorized");
             }
 
             review.rating = reviewDto.rating;
@@ -73,6 +75,7 @@ namespace api.Services.Customer
 
             return new ReviewDto
             {
+                _id = review._id.ToString(),
                 variant = review.variant.ToString(),
                 rating = review.rating,
                 comment = review.comment
@@ -84,13 +87,14 @@ namespace api.Services.Customer
             var review = await _reviewRepository.GetReviewByIdAsync(id);
             if (review == null || review.user != userId)
             {
-                throw new Exception("Review not found or user not authorized");
+                throw new AppException("Review not found or user not authorized");
             }
 
             await _reviewRepository.DeleteReviewAsync(id);
 
             return new ReviewDto
             {
+                _id = review._id.ToString(),
                 variant = review.variant.ToString(),
                 rating = review.rating,
                 comment = review.comment

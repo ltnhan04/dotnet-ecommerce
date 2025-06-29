@@ -57,6 +57,7 @@ namespace api.Dtos
 
     public class CreateReviewDto
     {
+        public string _id { get; set; } = string.Empty;
         public string variant { get; set; } = string.Empty;
         public int rating { get; set; } = 0;
         public string comment { get; set; } = string.Empty;
@@ -64,6 +65,8 @@ namespace api.Dtos
 
     public class UpdateReviewDto
     {
+        public string _id { get; set; } = string.Empty;
+
         public int rating { get; set; } = 0;
         public string comment { get; set; } = string.Empty;
     }
