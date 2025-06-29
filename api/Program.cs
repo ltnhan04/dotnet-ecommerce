@@ -166,6 +166,7 @@ else
 }
 
 app.UseRouting();
+app.UseStaticFiles();
 
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
@@ -173,7 +174,15 @@ app.UseMiddleware<UnauthorizedMiddleware>();
 app.UseAuthorization();
 
 app.MapGet("/", () => "Backend is running!").AllowAnonymous();
+app.MapWhen(context => context.Request.Path.StartsWithSegments("/admin"), builder =>
+{
+    builder.UseRouting();
+    builder.UseAuthorization();
+    builder.UseEndpoints(endpoints =>
+    {
+        endpoints.MapRazorPages();
+    });
+});
 app.MapControllers();
-app.MapRazorPages();
 
 app.Run();
