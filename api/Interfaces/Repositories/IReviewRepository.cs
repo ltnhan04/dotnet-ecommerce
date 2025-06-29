@@ -14,5 +14,7 @@ namespace api.Interfaces.Repositories
         Task CreateReviewAsync(Review review);
         Task UpdateReviewAsync(Review review);
         Task DeleteReviewAsync(ObjectId id);
+        Task<List<Review>> GetAllReviews();
+        Task<List<Review>> GetReviewsByVariant(string variant);
     }
 }
