@@ -38,7 +38,7 @@ namespace api.Services
             {
                 {"name", dto.name},
                 {"email", dto.email},
-                {"password", dto.password},
+                {"password", dto.password!},
                 { "verificationCode", verificationCode },
                 { "createdAt", createdAt.ToString("o") }
 
@@ -160,8 +160,8 @@ namespace api.Services
                 _id = customer._id.ToString(),
                 email = customer.email,
                 name = customer.name,
-                phoneNumber = customer.phoneNumber,
-                Address = customer.address,
+                phoneNumber = customer.phoneNumber!,
+                Address = customer.address!,
                 role = customer.role.ToString()
             };
             return dto;
@@ -193,8 +193,8 @@ namespace api.Services
                 _id = result._id.ToString(),
                 email = result.email,
                 name = result.name,
-                phoneNumber = result.phoneNumber,
-                Address = result.address,
+                phoneNumber = result.phoneNumber!,
+                Address = result.address!,
                 role = result.role.ToString()
             }; ;
         }
