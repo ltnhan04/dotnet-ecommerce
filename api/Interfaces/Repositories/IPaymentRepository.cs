@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos;
+using Stripe.Checkout;
 
 namespace api.Interfaces.Repositories
 {
     public interface IPaymentRepository
     {
-        Task<VariantPaymentDto> createCheckoutSession(string orderId, List<VariantPaymentDto> variants);
+        Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants);
+
+        Task<UrlMomo> CreateMomoPayment(PaymentMomoDto dto);
+
+        Task<ResponseMomoCallBackDto> MomoCallback(MomoCallbackDto dto);
     }
 }

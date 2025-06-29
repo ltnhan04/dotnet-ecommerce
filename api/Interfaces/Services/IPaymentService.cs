@@ -8,6 +8,8 @@ namespace api.Interfaces.Services
 {
     public interface IPaymentService
     {
-        Task<PaymentDto> HandleCreateCheckoutSession(string orderId, List<VariantPaymentDto> variants);
+        Task<UrlStripe> HandleCreateCheckoutSession(string orderId, List<VariantPaymentDto> variants);
+        Task<UrlMomo> HandleCreateMomoPayment(PaymentMomoDto dto);
+        Task<ResponseMomoCallBackDto> HandleMomoCallback(MomoCallbackDto dto);
     }
 }

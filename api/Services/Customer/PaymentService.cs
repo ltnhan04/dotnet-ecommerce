@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos;
 using api.Interfaces.Repositories;
+using api.Interfaces.Services;
 
 namespace api.Services.Customer
 {
-    public class PaymentService : IPaymentRepository
+    public class PaymentService : IPaymentService
     {
         public readonly IPaymentRepository _paymentRepository;
 
@@ -16,9 +17,27 @@ namespace api.Services.Customer
             _paymentRepository = paymentRepository;
         }
 
-        public async Task<VariantPaymentDto> createCheckoutSession(string orderId, List<VariantPaymentDto> variants)
+        public async Task<UrlStripe> HandleCreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
         {
-            return await _paymentRepository.createCheckoutSession(orderId, variants);
+            var session = await _paymentRepository.CreateCheckoutSession(orderId, variants);
+            return new UrlStripe
+            {
+                url = session.Url
+            };
+        }
+
+        public async Task<UrlMomo> HandleCreateMomoPayment(PaymentMomoDto dto)
+        {
+            var momoUrl = await _paymentRepository.CreateMomoPayment(dto);
+            return new UrlMomo
+            {
+                url = momoUrl.url
+            };
+        }
+
+        public async Task<ResponseMomoCallBackDto> HandleMomoCallback(MomoCallbackDto dto)
+        {
+            return await _paymentRepository.MomoCallback(dto);
         }
     }
 }
