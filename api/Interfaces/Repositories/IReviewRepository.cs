@@ -10,5 +10,9 @@ namespace api.Interfaces.Repositories
     public interface IReviewRepository
     {
         Task<List<Review>> GetReviewByVariantId(ObjectId variantId);
+        Task<Review> GetReviewByIdAsync(ObjectId id);
+        Task CreateReviewAsync(Review review);
+        Task UpdateReviewAsync(Review review);
+        Task DeleteReviewAsync(ObjectId id);
     }
 }
