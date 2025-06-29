@@ -61,11 +61,12 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IAdminOrderRepository, AdminOrderRepository>();
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewRepository, CustomerReviewRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
 builder.Services.AddScoped<ICProductRepository, CProductRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 // builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 // builder.Services.AddScoped<IPointRepository, PointRepository>();
@@ -169,6 +170,7 @@ else
 }
 
 app.UseRouting();
+app.UseStaticFiles();
 
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
@@ -176,7 +178,15 @@ app.UseMiddleware<UnauthorizedMiddleware>();
 app.UseAuthorization();
 
 app.MapGet("/", () => "Backend is running!").AllowAnonymous();
+app.MapWhen(context => context.Request.Path.StartsWithSegments("/admin"), builder =>
+{
+    builder.UseRouting();
+    builder.UseAuthorization();
+    builder.UseEndpoints(endpoints =>
+    {
+        endpoints.MapRazorPages();
+    });
+});
 app.MapControllers();
-app.MapRazorPages();
 
 app.Run();
