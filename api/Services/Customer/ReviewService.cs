@@ -27,7 +27,7 @@ namespace api.Services.Customer
             {
                 variant = r.variant.ToString(),
                 rating = r.rating,
-                comment = r.comment
+                comment = r.comment!
             }).ToList();
         }
 
@@ -97,7 +97,7 @@ namespace api.Services.Customer
                 _id = review._id.ToString(),
                 variant = review.variant.ToString(),
                 rating = review.rating,
-                comment = review.comment
+                comment = review.comment!
             };
         }
     }
