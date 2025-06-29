@@ -37,7 +37,6 @@ namespace api.models
 
         [BsonElement("updatedAt")]
         public DateTime updatedAt { get; set; } = DateTime.UtcNow;
-
     }
 
     public class OrderVariant

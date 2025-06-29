@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Interfaces.Repositories;
 using api.models;
 using api.Utils;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +15,17 @@ using Stripe.Checkout;
 
 namespace api.Repositories.Customer
 {
-    public class PaymentRepository
+    public class PaymentRepository : IPaymentRepository
     {
         private readonly iTribeDbContext _context;
-        public PaymentRepository(iTribeDbContext context)
+        private readonly IHttpClientFactory _httpClientFactory;
+        public PaymentRepository(iTribeDbContext context, IHttpClientFactory httpClientFactory)
         {
             _context = context;
+            _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<string> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
+        public async Task<Session> createCheckoutSession(string orderId, List<VariantPaymentDto> variants)
         {
             if (variants == null || variants.Count == 0)
             {
@@ -43,8 +49,138 @@ namespace api.Repositories.Customer
                     image = productVariants.images.FirstOrDefault()! ?? "null"
                 });
             }
-            
-            return "sad";
+
+            var lineItems = variant.Select(v =>
+            {
+                var priceUSD = ChangeRate.priceInUSD(v.price);
+                var unitAmount = (long)Math.Round((double)priceUSD * 100);
+
+                return new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        Currency = "usd",
+                        UnitAmount = unitAmount,
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = v.name,
+                            Images = new List<string> { v.image }
+                        }
+                    },
+                    Quantity = v.quantity
+                };
+            }).ToList();
+
+            var totalAmount = lineItems.Sum(x => x.PriceData.UnitAmount * x.Quantity);
+
+            if (totalAmount > ChangeRate.vndLimit)
+            {
+                throw new AppException("Total amount exceed the limit", 400);
+            }
+
+            var domain = Environment.GetEnvironmentVariable("CLIENT_URL");
+
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                Mode = "payment",
+                LineItems = lineItems,
+                SuccessUrl = $"{domain}/payment/success?session_id={{CHECKOUT_SESSION_ID}}&&orderId={orderId}",
+                CancelUrl = $"{domain}/payment/cancel"
+            };
+            var service = new SessionService();
+            var session = await service.CreateAsync(options);
+            return session;
+        }
+
+        public Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<UrlMomo> CreateMomoPayment(PaymentMomoDto dto)
+        {
+            var accessKey = Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY");
+            var secretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY");
+            var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
+            var redirectUrl = Environment.GetEnvironmentVariable("CLIENT_URL") + "/payment/success";
+            var callbackUrl = Environment.GetEnvironmentVariable("SERVER_URL") + "/api/v1/payment/momo/callback";
+
+            var infoPayment = $"Thanh toán đơn hàng {dto.orderId}";
+            var rawSignature =
+                $"accessKey={accessKey}&amount={dto.amount}&extraData=&ipnUrl={callbackUrl}" +
+                $"&orderId={dto.orderId}&orderInfo={infoPayment}&partnerCode={partnerCode}" +
+                $"&redirectUrl={redirectUrl}&requestId={dto.orderId}&requestType=payWithMethod";
+
+            var signature = Momo.ComputerSHA256(secretKey!, rawSignature);
+
+            var requestBody = new
+            {
+                partnerCode,
+                requestId = dto.orderId,
+                dto.amount,
+                dto.orderId,
+                orderInfo = infoPayment,
+                redirectUrl,
+                ipnUrl = callbackUrl,
+                lang = "vi",
+                requestType = "payWithMethod",
+                autoCapture = true,
+                extraData = "",
+                signature
+            };
+
+            var client = _httpClientFactory.CreateClient();
+            var httpContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("https://test-payment.momo.vn/v2/gateway/api/create", httpContent);
+            var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+            var resultCode = json.RootElement.GetProperty("resultCode").GetInt32();
+            if (resultCode != 0)
+            {
+                throw new AppException("Error result momo", 400);
+            }
+
+            return new UrlMomo
+            {
+                url = json.RootElement.GetProperty("payUrl").GetString()!
+            };
+        }
+
+        public async Task<ResponseMomoCallBackDto> MomoCallback(MomoCallbackDto dto)
+        {
+            var accessKey = Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY");
+            var secretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY");
+            var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
+
+            var rawSignature =
+            $"accessKey={accessKey}&amount={dto.amount}&extraData={dto.extraData}" +
+            $"&message={dto.message}&orderId={dto.orderId}&orderInfo={dto.orderInfo}" +
+            $"&orderType={dto.orderType}&partnerCode={partnerCode}&payType={dto.payType}" +
+            $"&requestId={dto.requestId}&responseTime={dto.responseTime}&resultCode={dto.resultCode}" +
+            $"&transId={dto.transId}";
+
+            var computerSignature = Momo.ComputerSHA256(secretKey!, rawSignature);
+
+            if (!computerSignature.Equals(dto.signature, StringComparison.OrdinalIgnoreCase))
+            {
+                return await Task.FromResult(new ResponseMomoCallBackDto
+                {
+                    success = "false",
+                    orderId = dto.orderId,
+                    message = "Invalid signature"
+                });
+            }
+
+            var isSuccess = dto.resultCode = 0;
+            return await Task.FromResult(new ResponseMomoCallBackDto
+            {
+                success = isSuccess.ToString().ToLower(),
+                orderId = dto.orderId,
+                transId = dto.transId.ToString(),
+                message = dto.message
+            });
         }
     }
 }
