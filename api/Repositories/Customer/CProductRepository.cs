@@ -58,8 +58,6 @@ namespace api.Repositories.Customer
                     images = variant.images,
                     reviews = [.. reviews.Select(r => new ReviewDto
             {
-                _id = r._id.ToString(),
-                user = r.user.ToString(),
                 variant = r.variant.ToString(),
                 rating = r.rating,
                 comment = r.comment ?? ""
