@@ -67,6 +67,7 @@ builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>(
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
 builder.Services.AddScoped<ICProductRepository, CProductRepository>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IAdminReviewService, AdminReviewService>();
 // builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 // builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 // builder.Services.AddScoped<IPointRepository, PointRepository>();
