@@ -3,6 +3,7 @@ data-protection-keys
 api/DataProtection-Keys
 api/bin
 api/obj
+api/node_modules
 api/.env
 frontend/.env.local
 .fake
