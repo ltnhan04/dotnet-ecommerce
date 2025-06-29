@@ -29,12 +29,12 @@ namespace api.Controllers
             {
                 var reviews = await _reviewService.GetReviewsByVariantIdAsync(ObjectId.Parse(variantId));
                 await ResponseHandler.SendSuccess(Response, reviews, 200, "Reviews fetched successfully");
-                
+
             }
             catch (Exception ex)
             {
                 await ResponseHandler.SendError(Response, ex.Message, 500);
-                
+
             }
         }
 
@@ -48,12 +48,12 @@ namespace api.Controllers
             {
                 var savedReview = await _reviewService.CreateReviewAsync(reviewDto, ObjectId.Parse(userId));
                 await ResponseHandler.SendSuccess(Response, savedReview, 201, "Review created successfully");
-                
+
             }
             catch (Exception ex)
             {
                 await ResponseHandler.SendError(Response, ex.Message, 500);
-                
+
             }
         }
 
@@ -62,17 +62,17 @@ namespace api.Controllers
         public async Task UpdateReview(string id, [FromBody] UpdateReviewDto reviewDto)
         {
 
-           var userId = User.FindFirst("userId")?.Value;
+            var userId = User.FindFirst("userId")?.Value;
             try
             {
                 var updatedReview = await _reviewService.UpdateReviewAsync(ObjectId.Parse(id), ObjectId.Parse(userId), reviewDto);
                 await ResponseHandler.SendSuccess(Response, updatedReview, 200, "Review updated successfully");
-                
+
             }
             catch (Exception ex)
             {
                 await ResponseHandler.SendError(Response, ex.Message, 500);
-                
+
             }
         }
 
@@ -81,18 +81,18 @@ namespace api.Controllers
         public async Task DeleteReview(string id)
         {
 
-           var userId = User.FindFirst("userId")?.Value;
+            var userId = User.FindFirst("userId")?.Value;
 
             try
             {
                 var deletedReview = await _reviewService.DeleteReviewAsync(ObjectId.Parse(id), ObjectId.Parse(userId));
                 await ResponseHandler.SendSuccess(Response, deletedReview, 200, "Review deleted successfully");
-                
+
             }
             catch (Exception ex)
             {
                 await ResponseHandler.SendError(Response, ex.Message, 500);
-                
+
             }
         }
     }
