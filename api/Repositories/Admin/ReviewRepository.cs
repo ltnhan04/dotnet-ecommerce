@@ -23,9 +23,10 @@ namespace api.Repositories.Admin
             return await _context.Reviews.Where(r => r.variant == variantId).ToListAsync();
         }
 
-        public async Task<Review> GetReviewByIdAsync(ObjectId id)
+        public async Task<Review?> GetReviewByIdAsync(ObjectId id)
         {
-            return await _context.Reviews.FirstOrDefaultAsync(r => r._id == id);
+            return await _context.Reviews
+                .FirstOrDefaultAsync(r => r._id == id);
         }
 
         public async Task CreateReviewAsync(Review review)

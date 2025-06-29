@@ -25,7 +25,7 @@ namespace api.Repositories.Customer
                 .ToListAsync();
         }
 
-        public async Task<Review> GetReviewByIdAsync(ObjectId id)
+        public async Task<Review?> GetReviewByIdAsync(ObjectId id)
         {
             return await _context.Reviews
                 .FirstOrDefaultAsync(r => r._id == id);
