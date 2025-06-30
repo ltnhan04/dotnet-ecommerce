@@ -1,0 +1,249 @@
+@page "{id}"
+@model api.Pages.Admin.Products.DetailsModel
+@{
+    ViewData["Title"] = "Product Details";
+    ViewData["PageTitle"] = "Product Details";
+    Layout = "_Layout";
+}
+
+<div class="max-w-6xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="/admin/products" class="text-gray-400 hover:text-white">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">@Model.Product.name</h1>
+                    <p class="text-gray-400">Product ID: @Model.Product._id</p>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <a href="/admin/products/edit/@Model.Product._id" 
+                   class="bg-[#4CAF50] hover:bg-[#45A049] text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <i data-lucide="edit" class="w-4 h-4"></i>
+                    <span>Edit</span>
+                </a>
+                <a href="/admin/products/delete/@Model.Product._id" 
+                   class="bg-[#F44336] hover:bg-[#D32F2F] text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Delete</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Product Information -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Basic Information -->
+            <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-white mb-4">Basic Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Product Name</label>
+                        <p class="text-white font-medium">@Model.Product.name</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Category</label>
+                        <p class="text-white">@Model.Product.category.name</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+                        <p class="text-gray-300">@Model.Product.description</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Created At</label>
+                        <p class="text-gray-300">@Model.Product.createdAt?.ToString("MMM dd, yyyy")</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Last Updated</label>
+                        <p class="text-gray-300">@Model.Product.updatedAt?.ToString("MMM dd, yyyy")</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Variants -->
+            <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-semibold text-white mb-4">Product Variants</h2>
+                <div class="space-y-4">
+                    @foreach (var variant in Model.Product.variants)
+                    {
+                        <div class="border border-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-medium text-white">Variant: @variant.color.colorName</h3>
+                                @{
+                                    var statusClass = variant.status == "in_stock" ? "bg-[#4CAF50] text-white" : "bg-[#F44336] text-white";
+                                    var statusText = variant.status == "in_stock" ? "In Stock" : "Out of Stock";
+                                }
+                                <span class="px-3 py-1 text-sm font-medium rounded-full @statusClass">
+                                    @statusText
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">Color</label>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded border border-gray-600" style="background-color: @variant.color.colorCode;"></div>
+                                        <span class="text-white">@variant.color.colorName</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">Storage/Size</label>
+                                    <p class="text-white">@variant.storage</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">Price</label>
+                                    <p class="text-white font-semibold">$@variant.price</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">Stock</label>
+                                    <p class="text-white">@variant.stock_quantity units</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">Rating</label>
+                                    <div class="flex items-center space-x-1">
+                                        <span class="text-white">@variant.rating</span>
+                                        <div class="flex">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= variant.rating)
+                                                {
+                                                    <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-current"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i data-lucide="star" class="w-4 h-4 text-gray-600"></i>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">Slug</label>
+                                    <p class="text-gray-300 text-sm">@variant.slug</p>
+                                </div>
+                                
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">Images</label>
+                                    @if (variant.images.Any())
+                                    {
+                                        <div class="flex space-x-2">
+                                            @foreach (var image in variant.images.Take(3))
+                                            {
+                                                <div class="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
+                                                    <i data-lucide="image" class="w-6 h-6 text-gray-400"></i>
+                                                </div>
+                                            }
+                                            @if (variant.images.Count > 3)
+                                            {
+                                                <div class="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
+                                                    <span class="text-xs text-gray-400">+@(variant.images.Count - 3)</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-gray-500 text-sm">No images available</p>
+                                    }
+                                </div>
+                            </div>
+                            
+                            @if (variant.reviews.Any())
+                            {
+                                <div class="mt-4 pt-4 border-t border-gray-700">
+                                    <h4 class="text-sm font-medium text-gray-300 mb-2">Reviews (@variant.reviews.Count)</h4>
+                                    <div class="space-y-2">
+                                        @foreach (var review in variant.reviews.Take(3))
+                                        {
+                                            <div class="bg-gray-800 rounded p-3">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <div class="flex items-center space-x-1">
+                                                        @for (int i = 1; i <= 5; i++)
+                                                        {
+                                                            if (i <= review.rating)
+                                                            {
+                                                                <i data-lucide="star" class="w-3 h-3 text-yellow-400 fill-current"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i data-lucide="star" class="w-3 h-3 text-gray-600"></i>
+                                                            }
+                                                        }
+                                                    </div>
+                                                    <span class="text-xs text-gray-400">@review.rating/5</span>
+                                                </div>
+                                                <p class="text-sm text-gray-300">@review.comment</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Quick Stats -->
+            <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Quick Stats</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">Total Variants</span>
+                        <span class="text-white font-semibold">@Model.Product.variants.Count</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">Total Stock</span>
+                        <span class="text-white font-semibold">@Model.Product.variants.Sum(v => v.stock_quantity)</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">Average Price</span>
+                        <span class="text-white font-semibold">$@(Model.Product.variants.Any() ? Model.Product.variants.Average(v => v.price).ToString("F2") : "0.00")</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">Average Rating</span>
+                        <span class="text-white font-semibold">@(Model.Product.variants.Any() ? Model.Product.variants.Average(v => v.rating).ToString("F1") : "0.0")/5.0</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">In Stock Variants</span>
+                        <span class="text-[#4CAF50] font-semibold">@Model.Product.variants.Count(v => v.status == "in_stock")</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-400">Out of Stock</span>
+                        <span class="text-[#F44336] font-semibold">@Model.Product.variants.Count(v => v.status == "out_of_stock")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                    <button class="w-full bg-[#2196F3] hover:bg-[#1E88E5] text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add Variant</span>
+                    </button>
+                    <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        <span>Duplicate Product</span>
+                    </button>
+                    <button class="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Export Data</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

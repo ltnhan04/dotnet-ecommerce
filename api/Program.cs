@@ -1,7 +1,6 @@
 using api.configurations;
 using Microsoft.AspNetCore.DataProtection;
 using DotNetEnv;
-using api.Middlewares;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
@@ -67,6 +66,7 @@ builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>(
 builder.Services.AddScoped<IRevenueRepository, RevenueRepository>();
 builder.Services.AddScoped<ICProductRepository, CProductRepository>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IAdminReviewService, AdminReviewService>();
 // builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 // builder.Services.AddScoped<IPointRepository, PointRepository>();
@@ -92,6 +92,10 @@ builder.Services.AddAuthentication(options =>
     };
     options.Events = new JwtBearerEvents
     {
+        OnMessageReceived = context => {
+            context.Token = context.Request.Cookies["accessToken"];
+            return Task.CompletedTask;
+        },
         OnChallenge = async context =>
         {
             context.HandleResponse();
@@ -116,7 +120,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "https://localhost:8000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -156,9 +160,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseDeveloperExceptionPage();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -169,24 +170,26 @@ else
     app.UseHttpsRedirection();
 }
 
-app.UseRouting();
 app.UseStaticFiles();
-
+app.UseRouting();
 app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
-app.UseMiddleware<UnauthorizedMiddleware>();
 app.UseAuthorization();
 
 app.MapGet("/", () => "Backend is running!").AllowAnonymous();
-app.MapWhen(context => context.Request.Path.StartsWithSegments("/admin"), builder =>
+
+app.MapControllers();
+
+app.MapWhen(context => context.Request.Path.StartsWithSegments("/Admin"), builder =>
 {
     builder.UseRouting();
+    builder.UseAuthentication();
     builder.UseAuthorization();
     builder.UseEndpoints(endpoints =>
     {
-        endpoints.MapRazorPages();
+        endpoints.MapRazorPages().RequireAuthorization(policy => policy.RequireRole("admin"));
     });
 });
-app.MapControllers();
 
 app.Run();

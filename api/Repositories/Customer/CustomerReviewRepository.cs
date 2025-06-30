@@ -80,5 +80,20 @@ namespace api.Repositories.Customer
 
             return reviews.Average(r => r.rating);
         }
+
+        public async Task<List<Review>> GetAllReviews()
+        {
+            return await _context.Reviews
+                .OrderByDescending(r => r.createdAt)
+                .ToListAsync();
+        }
+
+        public async Task<List<Review>> GetReviewsByVariant(string variant)
+        {
+            return await _context.Reviews
+                .Where(r => r.variant.ToString() == variant)
+                .OrderByDescending(r => r.createdAt)
+                .ToListAsync();
+        }
     }
 }
