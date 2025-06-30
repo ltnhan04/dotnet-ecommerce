@@ -1,6 +1,96 @@
 @page
-@model api.Pages.Admin.Index
+@model api.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Login";
+    Layout = null;
+}
 
-<div class="bg-red-500 text-white text-7xl px-5 py-28 underline">
-    <h1 class="text-3xl font-bold">Test Tailwind CSS v4</h1>
-</div>
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - E-commerce Admin</title>
+    <link rel="stylesheet" href="~/css/output.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body class="h-full bg-[#0F172A] text-white">
+    <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="mx-auto h-12 w-12 bg-[#2196F3] rounded-full flex items-center justify-center">
+                    <img src="~/images/i-Tribe-logo.png" alt="i-Tribe Logo" class="rounded-full">
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
+                    Admin Panel
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-400">
+                    Sign in to your admin account
+                </p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="bg-[#F44336] bg-opacity-20 border border-[#F44336] text-white px-4 py-3 rounded-lg">
+                    <div class="flex items-center">
+                        <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+                        <span>@Model.ErrorMessage</span>
+                    </div>
+                </div>
+            }
+
+            <form class="mt-8 space-y-6" method="post">
+                @Html.AntiForgeryToken()
+                <div class="space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-300">
+                            Email address
+                        </label>
+                        <div class="mt-1 relative">
+                            <input id="email" name="Email" asp-for="Email" type="email" required
+                                class="appearance-none relative block w-full px-3 py-3 pl-10 border border-gray-600 placeholder-gray-400 text-white bg-[#1E293B] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2196F3] focus:border-transparent"
+                                placeholder="Enter your email">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Email" class="text-sm text-[#F44336]"></span>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-300">
+                            Password
+                        </label>
+                        <div class="mt-1 relative">
+                            <input id="password" name="Password" asp-for="Password" type="password" required
+                                class="appearance-none relative block w-full px-3 py-3 pl-10 border border-gray-600 placeholder-gray-400 text-white bg-[#1E293B] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2196F3] focus:border-transparent"
+                                placeholder="Enter your password">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Password" class="text-sm text-[#F44336]"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#2196F3] hover:bg-[#1E88E5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2196F3] transition-colors">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i data-lucide="log-in" class="w-5 h-5 text-[#1E88E5] group-hover:text-white"></i>
+                        </span>
+                        Sign in
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
