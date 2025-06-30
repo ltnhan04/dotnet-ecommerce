@@ -31,6 +31,9 @@ namespace api.models
 
         [BsonElement("stripeSessionId")]
         public string? stripeSessionId { get; set; }
+        
+        [BsonElement("isPaymentMomo")]
+        public bool? isPaymentMomo { get; set; } = false;
 
         [BsonElement("createdAt")]
         public DateTime createdAt { get; set; } = DateTime.UtcNow;

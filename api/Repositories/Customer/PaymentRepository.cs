@@ -25,7 +25,7 @@ namespace api.Repositories.Customer
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<Session> createCheckoutSession(string orderId, List<VariantPaymentDto> variants)
+        public async Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
         {
             if (variants == null || variants.Count == 0)
             {
@@ -93,13 +93,9 @@ namespace api.Repositories.Customer
             return session;
         }
 
-        public Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<UrlMomo> CreateMomoPayment(PaymentMomoDto dto)
-        {
+        {   
+            Console.WriteLine("Callback Momo received");
             var accessKey = Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY");
             var secretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY");
             var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
@@ -165,22 +161,29 @@ namespace api.Repositories.Customer
 
             if (!computerSignature.Equals(dto.signature, StringComparison.OrdinalIgnoreCase))
             {
-                return await Task.FromResult(new ResponseMomoCallBackDto
+                return new ResponseMomoCallBackDto
                 {
                     success = "false",
                     orderId = dto.orderId,
                     message = "Invalid signature"
-                });
+                };
             }
 
-            var isSuccess = dto.resultCode = 0;
-            return await Task.FromResult(new ResponseMomoCallBackDto
+            var isSuccess = dto.resultCode == 0;
+            if (isSuccess)
+            {
+                var orders = await _context.Orders.ToListAsync();
+                var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId));
+                order.isPaymentMomo = true;
+                await _context.SaveChangesAsync();
+            }
+            return new ResponseMomoCallBackDto
             {
                 success = isSuccess.ToString().ToLower(),
                 orderId = dto.orderId,
                 transId = dto.transId.ToString(),
                 message = dto.message
-            });
+            };
         }
     }
 }

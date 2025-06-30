@@ -49,11 +49,12 @@ namespace api.Controllers
             }
         }
 
-        [HttpPost("mmomo/callback")]
+        [AllowAnonymous]
+        [HttpPost("momo/callback")]
         public async Task MomoCallback([FromBody] MomoCallbackDto dto)
         {
             try
-            {
+            {   
                 var data = await _paymentService.HandleMomoCallback(dto);
                 await ResponseHandler.SendSuccess(Response, data, 200, "Callback momo payment successfully");
             }
