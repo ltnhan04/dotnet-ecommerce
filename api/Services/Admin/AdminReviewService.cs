@@ -22,64 +22,62 @@ namespace api.Services.Admin
         public async Task<List<ReviewDto>> GetAllReviewsAsync()
         {
             var reviews = await _reviewRepository.GetAllReviews();
-            return reviews.Select(r => new ReviewDto
+            return [.. reviews.Select(r => new ReviewDto
             {
                 _id = r._id.ToString(),
                 variant = r.variant.ToString(),
                 rating = r.rating,
-                comment = r.comment
-            }).ToList();
+                comment = r.comment!
+            })];
         }
 
         public async Task<ReviewDto> GetReviewByIdAsync(ObjectId id)
         {
-            var review = await _reviewRepository.GetReviewByIdAsync(id);
-            if (review == null) throw new AppException("Review not found");
+            var review = await _reviewRepository.GetReviewByIdAsync(id) ?? throw new AppException("Review not found");
             return new ReviewDto
             {
                 _id = review._id.ToString(),
                 variant = review.variant.ToString(),
                 rating = review.rating,
-                comment = review.comment
+                comment = review.comment!
             };
         }
 
         public async Task<List<ReviewDto>> GetReviewsByVariantIdAsync(ObjectId variantId)
         {
             var reviews = await _reviewRepository.GetReviewByVariantId(variantId);
-            return reviews.Select(r => new ReviewDto
+            return [.. reviews.Select(r => new ReviewDto
             {
                 _id = r._id.ToString(),
                 variant = r.variant.ToString(),
                 rating = r.rating,
-                comment = r.comment
-            }).ToList();
+                comment = r.comment!
+            })];
         }
 
         public async Task<ReviewDto> DeleteReviewAsync(ObjectId id)
         {
-            var review = await _reviewRepository.GetReviewByIdAsync(id);
-            if (review == null) throw new AppException("Review not found");
+            var review = await _reviewRepository.GetReviewByIdAsync(id) ?? throw new AppException("Review not found");
             await _reviewRepository.DeleteReviewAsync(id);
             return new ReviewDto
             {
                 _id = review._id.ToString(),
                 variant = review.variant.ToString(),
                 rating = review.rating,
-                comment = review.comment
+                comment = review.comment!
             };
         }
 
         public async Task<List<ReviewDto>> GetReviewsByVariantAsync(string variant)
         {
             var reviews = await _reviewRepository.GetReviewsByVariant(variant);
-            return reviews.Select(r => new ReviewDto
+            return [.. reviews.Select(r => new ReviewDto
             {
                 _id = r._id.ToString(),
                 variant = r.variant.ToString(),
                 rating = r.rating,
-                comment = r.comment
-            }).ToList();
+                comment = r.comment!
+            })];
         }
     }
-} 
+}

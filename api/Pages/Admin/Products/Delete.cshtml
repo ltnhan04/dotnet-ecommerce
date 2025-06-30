@@ -1,0 +1,120 @@
+@page "{id}"
+@model api.Pages.Admin.Products.DeleteModel
+@{
+    ViewData["Title"] = "Delete Product";
+    ViewData["PageTitle"] = "Delete Product";
+}
+
+<div class="max-w-2xl mx-auto">
+    <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-white">Delete Product</h2>
+            <a href="/admin/products" class="text-gray-400 hover:text-white flex items-center space-x-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Back to Products</span>
+            </a>
+        </div>
+
+        <!-- Warning Alert -->
+        <div class="bg-[#F44336] bg-opacity-20 border border-[#F44336] rounded-lg p-4 mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-[#F44336] rounded-full flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white">Warning</h3>
+                    <p class="text-gray-300">This action cannot be undone. This will permanently delete the product and all its variants.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Information -->
+        <div class="bg-gray-800 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-medium text-white mb-4">Product Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Product Name</label>
+                    <p class="text-white font-medium">@Model.Product.name</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Category</label>
+                    <p class="text-white">@Model.Product.category.name</p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                    <p class="text-gray-300">@Model.Product.description</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Total Variants</label>
+                    <p class="text-white">@Model.Product.variants.Count variants</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Total Stock</label>
+                    <p class="text-white">@Model.Product.variants.Sum(v => v.stock_quantity) units</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Variants List -->
+        @if (Model.Product.variants.Any())
+        {
+            <div class="bg-gray-800 rounded-lg p-4 mb-6">
+                <h3 class="text-lg font-medium text-white mb-4">Product Variants</h3>
+                <div class="space-y-3">
+                    @foreach (var variant in Model.Product.variants)
+                    {
+                        <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-4 h-4 rounded border border-gray-600" style="background-color: @variant.color.colorCode;"></div>
+                                <div>
+                                    <p class="text-white font-medium">@variant.color.colorName - @variant.storage</p>
+                                    <p class="text-gray-400 text-sm">$@variant.price • @variant.stock_quantity units</p>
+                                </div>
+                            </div>
+                            @{
+                                var statusClass = variant.status == "in_stock" ? "bg-[#4CAF50] text-white" : "bg-[#F44336] text-white";
+                                var statusText = variant.status == "in_stock" ? "In Stock" : "Out of Stock";
+                            }
+                            <span class="px-2 py-1 text-xs font-medium rounded-full @statusClass">
+                                @statusText
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Confirmation Form -->
+        <form method="post" class="space-y-6">
+            <input type="hidden" name="id" value="@Model.Product._id" />
+            
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="flex items-start space-x-3">
+                    <input type="checkbox" id="confirm-delete" name="confirmDelete" required
+                           class="mt-1 w-4 h-4 text-[#F44336] focus:ring-[#F44336] border-gray-600 rounded bg-gray-700">
+                    <div>
+                        <label for="confirm-delete" class="text-sm font-medium text-white">
+                            I understand that this action cannot be undone
+                        </label>
+                        <p class="text-gray-400 text-sm mt-1">
+                            By checking this box, you confirm that you want to permanently delete this product and all its associated data.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-4">
+                <a href="/admin/products" 
+                   class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="bg-[#F44336] hover:bg-[#D32F2F] text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Delete Product</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

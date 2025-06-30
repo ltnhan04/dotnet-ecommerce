@@ -1,18 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using api.Dtos;
 using api.Interfaces.Repositories;
 using api.models;
 using api.Utils;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
-using api.Utils;
-using System.Text.Json;
-using Stripe;
-using api.Controllers.Admin;
-using CloudinaryDotNet.Core;
 using api.Services;
 
 namespace api.Repositories.Admin
@@ -187,7 +178,7 @@ namespace api.Repositories.Admin
             if (dto.status == "cancel")
             {
                 foreach (var item in order.variants)
-                {   
+                {
                     var productVariant = await _context.ProductVariants.ToListAsync();
                     var variant = productVariant
                         .FirstOrDefault(v => v._id == item.variant);
@@ -202,7 +193,7 @@ namespace api.Repositories.Admin
                 var users = await _context.Users.ToListAsync();
                 var user = users
                     .FirstOrDefault(item => item._id == order.user);
-                
+
                 var placeholders = new Dictionary<string, string>
                 {
                     {"customerName", user.name},

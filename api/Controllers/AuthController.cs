@@ -263,7 +263,7 @@ namespace api.Controllers
             try
             {
                 Console.WriteLine("Token: " + token);
-                var email = await _authService.ResetPassword(token, dto.password);
+                var email = await _authService.ResetPassword(token, dto.password!);
                 await _emailService.SendPasswordResetSuccessEmail(email, EmailTemplates.PasswordRestSuccessEmail());
                 await ResponseHandler.SendSuccess(Response, null, 200, "Password reset successful");
             }
