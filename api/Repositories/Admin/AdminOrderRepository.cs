@@ -5,6 +5,7 @@ using api.Utils;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using api.Services;
+using api.Interfaces.Services;
 
 namespace api.Repositories.Admin
 {
@@ -12,11 +13,13 @@ namespace api.Repositories.Admin
     {
         private readonly iTribeDbContext _context;
         private readonly EmailService _sendEmail;
+        private readonly IPointService _pointService;
 
-        public AdminOrderRepository(iTribeDbContext context, EmailService sendEmail)
+        public AdminOrderRepository(iTribeDbContext context, EmailService sendEmail, IPointService pointService)
         {
             _context = context;
             _sendEmail = sendEmail;
+            _pointService = pointService;
         }
         public async Task<PaginateDto<AdminGetAllOrder>> GetAllOrder(int page = 1, int size = 10)
         {
@@ -205,8 +208,8 @@ namespace api.Repositories.Admin
                     {"shippingAddress", order.shippingAddress},
 
                 };
-
                 await _sendEmail.SendOrderConfirmationEmail(user.email, EmailTemplates.OrderConfirmationEmail(user.name, order._id.ToString(), order.createdAt.ToString(), new DateTime().ToString(), order.totalAmount.ToString(), order.variants.ToString()!, order.shippingAddress.ToString()), placeholders);
+                await _pointService.HandleAddPointForOrder(order);
             }
             order.status = dto.status;
             await _context.SaveChangesAsync();
