@@ -15,7 +15,7 @@
         <aside class="w-64 bg-[#1E293B] border-r border-gray-700 hidden md:block">
             <div class="p-6">
                 <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-[#2196F3] rounded-lg flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center">
                         <img src="~/images/i-Tribe-logo.png" alt="i-Tribe Logo" class="rounded-lg">
                     </div>
                     <h1 class="text-xl font-bold text-white">Admin Panel</h1>
@@ -38,6 +38,11 @@
                         class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-[#0F172A] hover:text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["Page"]?.ToString()?.Contains("Categories") == true ? "bg-[#0F172A] text-white" : "")">
                         <i data-lucide="folder" class="w-5 h-5"></i>
                         <span>Categories</span>
+                    </a>
+                    <a href="/Admin/Variants"
+                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-[#0F172A] hover:text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["Page"]?.ToString()?.Contains("Variants") == true ? "bg-[#0F172A] text-white" : "")">
+                        <i data-lucide="layers" class="w-5 h-5"></i>
+                        <span>Variants</span>
                     </a>
                     <a href="/Admin/Orders"
                         class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-[#0F172A] hover:text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["Page"]?.ToString()?.Contains("Orders") == true ? "bg-[#0F172A] text-white" : "")">

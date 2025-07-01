@@ -98,7 +98,7 @@
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-400 mb-1">Price</label>
-                                    <p class="text-white font-semibold">$@variant.price</p>
+                                    <p class="text-white font-semibold">@((variant.price ?? 0).ToString("N0"))₫</p>
                                 </div>
                                 
                                 <div>
@@ -138,9 +138,7 @@
                                         <div class="flex space-x-2">
                                             @foreach (var image in variant.images.Take(3))
                                             {
-                                                <div class="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
-                                                    <i data-lucide="image" class="w-6 h-6 text-gray-400"></i>
-                                                </div>
+                                                <img src="@image" alt="Ảnh sản phẩm" class="w-16 h-16 object-cover rounded-lg border border-gray-700" />
                                             }
                                             @if (variant.images.Count > 3)
                                             {
@@ -209,7 +207,7 @@
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-gray-400">Average Price</span>
-                        <span class="text-white font-semibold">$@(Model.Product.variants.Any() ? Model.Product.variants.Average(v => v.price).ToString("F2") : "0.00")</span>
+                        <span class="text-white font-semibold">@((Model.Product.variants.Any() ? Model.Product.variants.Average(v => v.price).ToString("N0") : "0"))₫</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-gray-400">Average Rating</span>
