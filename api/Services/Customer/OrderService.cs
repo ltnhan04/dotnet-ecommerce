@@ -20,7 +20,7 @@ namespace api.Services.Customer
         }
 
         public async Task<OrderCreateDto> HandleCreateOrder(OrderCreateDto dto, string userId)
-        {
+        {   
             if (dto.variants == null || !dto.variants.Any())
             {
                 throw new AppException("Product variants is required", 400);
