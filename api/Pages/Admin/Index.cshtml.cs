@@ -58,10 +58,8 @@ namespace api.Pages.Admin
                     role = "admin"
                 };
 
-                _logger.LogInformation("Sending login request to {url}", _httpClient.BaseAddress);
                 var response = await _httpClient.PostAsJsonAsync("/api/v1/auth/login", loginDto);
                 var responseContent = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation("Response: {response}", responseContent);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -80,7 +78,7 @@ namespace api.Pages.Admin
                         return RedirectToPage("/admin/dashboard/index");
                     }
                 }
-                
+
                 var error = JsonSerializer.Deserialize<ErrorResponse>(responseContent);
                 ErrorMessage = error?.message ?? "Login failed";
                 return Page();

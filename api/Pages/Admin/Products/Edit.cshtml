@@ -16,6 +16,7 @@
         </div>
 
         <form method="post" class="space-y-6">
+        @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.Product._id" />
             
             <!-- Basic Information -->
@@ -24,7 +25,7 @@
                     <label for="name" class="block text-sm font-medium text-gray-300 mb-2">
                         Product Name *
                     </label>
-                    <input type="text" id="name" name="name" required value="@Model.Product.name"
+                    <input type="text" id="name" name="UpdateProduct.name" required value="@Model.UpdateProduct.name"
                            class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3] focus:border-transparent"
                            placeholder="Enter product name">
                 </div>
@@ -33,14 +34,13 @@
                     <label for="category" class="block text-sm font-medium text-gray-300 mb-2">
                         Category *
                     </label>
-                    <select id="category" name="category" required
+                    <select id="category" name="UpdateProduct.category" required
                             class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3] focus:border-transparent">
                         <option value="">Select a category</option>
-                        <option value="electronics" @(Model.Product.category.name == "Electronics" ? "selected" : "")>Electronics</option>
-                        <option value="clothing" @(Model.Product.category.name == "Clothing" ? "selected" : "")>Clothing</option>
-                        <option value="books" @(Model.Product.category.name == "Books" ? "selected" : "")>Books</option>
-                        <option value="home" @(Model.Product.category.name == "Home & Garden" ? "selected" : "")>Home & Garden</option>
-                        <option value="sports" @(Model.Product.category.name == "Sports & Outdoors" ? "selected" : "")>Sports & Outdoors</option>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <option value="@cat._id" @(Model.UpdateProduct.category == cat._id ? "selected" : "")>@cat.name</option>
+                        }
                     </select>
                 </div>
             </div>
@@ -49,9 +49,9 @@
                 <label for="description" class="block text-sm font-medium text-gray-300 mb-2">
                     Description *
                 </label>
-                <textarea id="description" name="description" rows="4" required
+                <textarea id="description" name="UpdateProduct.description" rows="4" required
                           class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3] focus:border-transparent"
-                          placeholder="Enter product description">@Model.Product.description</textarea>
+                          placeholder="Enter product description">@Model.UpdateProduct.description</textarea>
             </div>
 
             <!-- Product Variants -->
@@ -65,86 +65,79 @@
                         <div class="variant-item bg-gray-800 rounded-lg p-4 border border-gray-700">
                             <div class="flex justify-between items-center mb-4">
                                 <h4 class="text-sm font-medium text-gray-300">Variant @(i + 1)</h4>
-                                @if (i > 0)
-                                {
-                                    <button type="button" class="remove-variant text-[#F44336] hover:text-[#D32F2F]">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
-                                }
                             </div>
-                            
-                            <input type="hidden" name="variants[@i]._id" value="@variant._id" />
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-300 mb-2">Color</label>
-                                    <input type="text" name="variants[@i].colorName" value="@variant.color.colorName"
-                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]"
-                                           placeholder="e.g., Black">
+                                    <input type="text" value="@variant.color.colorName" readonly
+                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-300 mb-2">Color Code</label>
-                                    <input type="color" name="variants[@i].colorCode" value="@variant.color.colorCode"
-                                           class="w-full h-10 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
+                                    <input type="color" value="@variant.color.colorCode" readonly
+                                           class="w-full h-10 bg-gray-700 rounded border border-gray-600">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-300 mb-2">Storage/Size</label>
-                                    <input type="text" name="variants[@i].storage" value="@variant.storage"
-                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]"
-                                           placeholder="e.g., 256GB, L, US 10">
+                                    <input type="text" value="@variant.storage" readonly
+                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-300 mb-2">Price ($)</label>
-                                    <input type="number" name="variants[@i].price" min="0" step="0.01" required value="@variant.price"
-                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]"
-                                           placeholder="0.00">
+                                    <input type="number" value="@variant.price" readonly
+                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
                                 </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-300 mb-2">Stock Quantity</label>
-                                    <input type="number" name="variants[@i].stockQuantity" min="0" required value="@variant.stock_quantity"
-                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]"
-                                           placeholder="0">
+                                    <input type="number" value="@variant.stock_quantity" readonly
+                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
-                                    <select name="variants[@i].status" 
-                                            class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
-                                        <option value="in_stock" @(variant.status == "in_stock" ? "selected" : "")>In Stock</option>
-                                        <option value="out_of_stock" @(variant.status == "out_of_stock" ? "selected" : "")>Out of Stock</option>
-                                        <option value="discontinued" @(variant.status == "discontinued" ? "selected" : "")>Discontinued</option>
-                                    </select>
+                                    <input type="text" value="@variant.status" readonly
+                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-300 mb-2">Slug</label>
-                                    <input type="text" name="variants[@i].slug" required value="@variant.slug"
-                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]"
-                                           placeholder="product-variant-slug">
+                                    <input type="text" value="@variant.slug" readonly
+                                           class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">
                                 </div>
                             </div>
                             
                             <div class="mt-4">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Images (URLs)</label>
-                                <textarea name="variants[@i].images" rows="2"
-                                          class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3]"
-                                          placeholder="Enter image URLs separated by commas">@string.Join(",", variant.images)</textarea>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Images</label>
+                                @if (variant.images != null && variant.images.Count > 0)
+                                {
+                                    <div class="flex space-x-2">
+                                        @foreach (var img in variant.images.Take(3))
+                                        {
+                                            <img src="@img" class="w-16 h-16 object-cover rounded" />
+                                        }
+                                        @if (variant.images.Count > 3)
+                                        {
+                                            <div class="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
+                                                <span class="text-xs text-gray-400">+@(variant.images.Count - 3)</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-gray-500 text-sm">No images available</p>
+                                }
                             </div>
                         </div>
                     }
                 </div>
-                
-                <button type="button" id="add-variant" 
-                        class="mt-4 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>Add Another Variant</span>
-                </button>
             </div>
 
             <!-- Action Buttons -->
