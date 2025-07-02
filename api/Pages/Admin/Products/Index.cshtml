@@ -9,51 +9,46 @@
 <div class="space-y-6">
     <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+            <form method="get" class="flex flex-wrap gap-2 w-full items-end">
                 <div class="relative">
-                    <input type="text" placeholder="Search products..." 
+                    <input type="text" name="search" value="@Model.Search" placeholder="Search products..." 
                            class="bg-gray-800 text-white px-4 py-2 rounded-lg pl-10 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
-                
-                <select class="bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
-                    <option value="">All Categories</option>
-                    <option value="electronics">Electronics</option>
-                    <option value="clothing">Clothing</option>
-                    <option value="books">Books</option>
-                    <option value="home">Home & Garden</option>
+                <select name="categoryId" class="bg-gray-800 text-white px-4 py-2 rounded-lg">
+                    <option value="">Categories</option>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <option value="@cat._id" @(Model.CategoryId==cat._id?"selected":null)>@cat.name</option>
+                    }
                 </select>
-                
-                <select class="bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
-                    <option value="">All Brands</option>
-                    <option value="apple">Apple</option>
-                    <option value="samsung">Samsung</option>
-                    <option value="nike">Nike</option>
-                    <option value="adidas">Adidas</option>
+                <input  name="minPrice" value="@Request.Query["minPrice"]" placeholder="Min Price" class="bg-gray-800 text-white px-2 py-2 rounded-lg w-24" />
+                <input name="maxPrice" value="@Request.Query["maxPrice"]" placeholder="Max Price" class="bg-gray-800 text-white px-2 py-2 rounded-lg w-24" />
+                <select name="color" class="bg-gray-800 text-white px-2 py-2 rounded-lg">
+                    <option value="">Colors</option>
+                    <option value="Red" @(Request.Query["color"]=="Red"?"selected":null)>Red</option>
+                    <option value="Blue" @(Request.Query["color"]=="Blue"?"selected":null)>Blue</option>
+                    <option value="Black" @(Request.Query["color"]=="Black"?"selected":null)>Black</option>
+                    <option value="White" @(Request.Query["color"]=="White"?"selected":null)>White</option>
                 </select>
-                
-                <select class="bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
-                    <option value="">Price Range</option>
-                    <option value="0-100">$0 - $100</option>
-                    <option value="100-500">$100 - $500</option>
-                    <option value="500-1000">$500 - $1000</option>
-                    <option value="1000+">$1000+</option>
+                <select name="storage" class="bg-gray-800 text-white px-2 py-2 rounded-lg">
+                    <option value="">Storage</option>
+                    <option value="64GB" @(Request.Query["storage"]=="64GB"?"selected":null)>64GB</option>
+                    <option value="128GB" @(Request.Query["storage"]=="128GB"?"selected":null)>128GB</option>
+                    <option value="256GB" @(Request.Query["storage"]=="256GB"?"selected":null)>256GB</option>
+                    <option value="512GB" @(Request.Query["storage"]=="512GB"?"selected":null)>512GB</option>
                 </select>
-            </div>
+                <button type="submit" class="bg-[#2196F3] hover:bg-[#1E88E5] text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </button>
+            </form>
             
             <div class="flex space-x-3">
                 <a href="/Admin/Products/Create" 
                    class="bg-[#2196F3] hover:bg-[#1E88E5] text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                     <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>Add Product</span>
                 </a>
                 
-                <div class="relative">
-                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
-                        <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-                        <span>Actions</span>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -137,4 +132,22 @@
             </table>
         </div>
     </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="flex justify-center mt-6">
+            <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
+                <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-l-md @(Model.CurrentPage == 1 ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
+                   href="?search=@Model.Search&categoryId=@Model.CategoryId&page=@(Model.CurrentPage-1)&size=@Model.PageSize">Previous</a>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <a class="px-3 py-2 border-t border-b border-gray-700 bg-gray-800 text-gray-300 @(Model.CurrentPage == i ? "bg-[#2196F3] text-white" : "hover:bg-gray-700")"
+                       href="?search=@Model.Search&categoryId=@Model.CategoryId&page=@i&size=@Model.PageSize">@i</a>
+                }
+                <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-r-md @(Model.CurrentPage == Model.TotalPages ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
+                   href="?search=@Model.Search&categoryId=@Model.CategoryId&page=@(Model.CurrentPage+1)&size=@Model.PageSize">Next</a>
+            </nav>
+        </div>
+    }
 </div>

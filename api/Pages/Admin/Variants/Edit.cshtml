@@ -1,0 +1,97 @@
+@page "{id}"
+@model api.Pages.Admin.Variants.Edit
+@{
+    ViewData["Title"] = "Edit Variant";
+}
+
+<h1 class="text-2xl font-bold mb-6">Edit Variant</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="bg-red-500 text-white px-4 py-3 rounded-lg mb-4">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-green-500 text-white px-4 py-3 rounded-lg mb-4">@TempData["SuccessMessage"]</div>
+}
+
+<form method="post" enctype="multipart/form-data" class="space-y-4 max-w-xl">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="productNameInput" value="@Model.ProductName" />
+    <input type="hidden" name="EditVariant.variantId" value="@Model.EditVariant.variantId" />
+    <div>
+        <label class="block text-gray-400 mb-1">Product ID</label>
+        <input name="EditVariant.product" value="@Model.EditVariant.product" class="w-full rounded bg-gray-800 text-white px-3 py-2" readonly />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Color Name</label>
+        <input name="EditVariant.colorName" value="@Model.EditVariant.colorName" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Color Code</label>
+        <input name="EditVariant.colorCode" value="@Model.EditVariant.colorCode" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Storage/Size</label>
+        <input name="EditVariant.storage" id="storageInput" value="@Model.EditVariant.storage" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Price (VND)</label>
+        <input name="EditVariant.price" type="number" value="@Model.EditVariant.price" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Stock Quantity</label>
+        <input name="EditVariant.stock_quantity" type="number" value="@Model.EditVariant.stock_quantity" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Slug</label>
+        <input name="EditVariant.slug" id="slugInput" value="@Model.EditVariant.slug" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Images (max 5)</label>
+        <input name="images" type="file" multiple accept="image/*" class="w-full text-gray-300" />
+    </div>
+    @if (Model.EditVariant.existingImages != null && Model.EditVariant.existingImages.Count > 0)
+    {
+        <div>
+            <label class="block text-gray-400 mb-1">Existing Images</label>
+            <div class="flex flex-wrap gap-2">
+                @for (int i = 0; i < Model.EditVariant.existingImages.Count; i++)
+                {
+                    <div class="relative group">
+                        <img src="@Model.EditVariant.existingImages[i]" alt="Ảnh sản phẩm" class="w-16 h-16 object-cover rounded border border-gray-700" />
+                        <input type="checkbox" name="DeleteImages" value="@Model.EditVariant.existingImages[i]" class="absolute top-0 right-0 m-1 bg-white group-hover:scale-110" title="Xóa ảnh này" />
+                        <input type="hidden" name="EditVariant.existingImages" value="@Model.EditVariant.existingImages[i]" />
+                    </div>
+                }
+            </div>
+            <div class="text-xs text-gray-400 mt-1">Tick vào ảnh muốn xóa</div>
+        </div>
+    }
+    <div class="flex space-x-2">
+        <button type="submit" class="bg-[#2196F3] hover:bg-[#1E88E5] text-white px-4 py-2 rounded-lg">Save</button>
+        <a href="@(string.IsNullOrEmpty(Model.EditVariant.product) ? "/Admin/Products/Index" : $"/Admin/Products/Details/{Model.EditVariant.product}")" class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+function toSlug(str) {
+    return str.toLowerCase()
+        .normalize('NFD').replace(/\p{Diacritic}/gu, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+document.addEventListener('DOMContentLoaded', function () {
+    var storageInput = document.getElementById('storageInput');
+    var slugInput = document.getElementById('slugInput');
+    var productNameInput = document.getElementById('productNameInput');
+    if (storageInput && slugInput && productNameInput) {
+        storageInput.addEventListener('input', function () {
+            var slug = toSlug(productNameInput.value) + '-' + toSlug(storageInput.value);
+            slugInput.value = slug;
+        });
+    }
+});
+</script>
+}
