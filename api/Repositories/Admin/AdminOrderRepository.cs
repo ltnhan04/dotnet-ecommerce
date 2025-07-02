@@ -78,7 +78,7 @@ namespace api.Repositories.Admin
                     }).ToList(),
                     totalAmount = order.totalAmount,
                     status = order.status,
-                    paymentMethod = order.paymentMethod
+                    paymentMethod = order.paymentMethod,
                 }).ToList();
 
             return new PaginateDto<AdminGetAllOrder>

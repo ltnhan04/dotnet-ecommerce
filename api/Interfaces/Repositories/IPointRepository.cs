@@ -13,5 +13,10 @@ namespace api.Interfaces.Repositories
         Task<List<PointVoucher>> GetCustomerVoucher(string userId);
         Task ExchangePointForVoucher(PointVoucher voucher);
         Task AddPointForOrder(Point point);
+        Task<List<Point>> DeductPoint(string customerId);
+        Task UpdatePoint(List<Point> point);
+        Task DeletePoint(List<Point> point);
+        Task<PointVoucher> GetValidVoucher(ApplyVoucherDto dto, string userId);
+        Task<PointVoucher> UpdateStatusVoucher(UpdateStatusVoucherDto dto);
     }
 }

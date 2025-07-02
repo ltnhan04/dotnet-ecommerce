@@ -53,5 +53,55 @@ namespace api.Repositories.Customer
             _context.Points.Add(point);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Point>> DeductPoint(string customerId)
+        {
+            var points = await _context.Points
+                .Where(item => item.customer == ObjectId.Parse(customerId) &&
+                        !item.isExpired &&
+                            item.expiryDate > DateTime.Now)
+                .OrderBy(item => item.expiryDate)
+                .ToListAsync();
+
+            return points;
+        }
+
+        public async Task UpdatePoint(List<Point> point)
+        {
+            _context.Points.UpdateRange(point);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeletePoint(List<Point> point)
+        {
+            _context.Points.RemoveRange(point);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<PointVoucher> GetValidVoucher(ApplyVoucherDto dto, string userId)
+        {
+            var voucher = await _context.PointVouchers
+                .Where(item => item.code == dto.voucherCode &&
+                        item.customer == ObjectId.Parse(userId) && 
+                            item.status == "unused" &&
+                                item.validTo >= DateTime.Now)
+                .FirstOrDefaultAsync();
+
+            return voucher!;
+        }
+
+        public async Task<PointVoucher> UpdateStatusVoucher(UpdateStatusVoucherDto dto)
+        {
+            var pointVoucher = await _context.PointVouchers
+                .Where(item => item.code == dto.voucherCode &&
+                        item.status == "unused")
+                .FirstOrDefaultAsync();
+
+            pointVoucher.status = "used";
+            pointVoucher.usedOrder = ObjectId.Parse(dto.orderId.ToString());
+            await _context.SaveChangesAsync();
+
+            return pointVoucher;
+        }
     }
 }

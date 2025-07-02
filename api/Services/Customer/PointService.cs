@@ -78,7 +78,7 @@ namespace api.Services.Customer
             {
                 _id = ObjectId.GenerateNewId(),
                 customer = ObjectId.Parse(userId),
-                code = $"POINT- {Guid.NewGuid().ToString().Substring(0,8).ToLower()}",
+                code = $"POINT-{Guid.NewGuid().ToString().Substring(0, 8).ToLower()}",
                 discountAmount = discountAmount,
                 pointsUsed = dto.pointsToUse,
                 status = "unused",
@@ -87,6 +87,29 @@ namespace api.Services.Customer
             };
 
             await _pointRepository.ExchangePointForVoucher(voucher);
+            var points = await _pointRepository.DeductPoint(userId);
+            var pointDeduct = dto.pointsToUse;
+            var pointUpdate = new List<models.Point>();
+            var pointDelete = new List<models.Point>();
+            foreach (var item in points)
+            {
+                if (pointDeduct <= 0) break;
+                if (item.points <= pointDeduct)
+                {
+                    pointDeduct -= item.points;
+                    pointDelete.Add(item);
+
+                }
+                else
+                {
+                    item.points -= pointDeduct;
+                    pointUpdate.Add(item);
+                    pointDeduct = 0;
+                }
+            }
+
+            if (pointUpdate.Count > 0) await _pointRepository.UpdatePoint(pointUpdate);
+            if (pointDelete.Count > 0) await _pointRepository.DeletePoint(pointDelete);
             return new VoucherDto
             {
                 _id = voucher._id.ToString(),
@@ -124,6 +147,35 @@ namespace api.Services.Customer
 
             await _pointRepository.AddPointForOrder(point);
             return point;
+        }
+
+        public async Task<ApplyVoucherResponseDto> HandleApplyVoucher(ApplyVoucherDto dto, string userId)
+        {
+            var data = await _pointRepository.GetValidVoucher(dto, userId) ?? throw new AppException("Invalid or expired voucher", 400);
+            var discountedTotal = Math.Max(dto.orderTotal - data.discountAmount, 0);
+            return new ApplyVoucherResponseDto
+            {
+                voucherCode = data.code.ToString(),
+                discountAmount = (int)data.discountAmount,
+                discountedTotal = (int)discountedTotal
+            };
+        }
+
+        public async Task<PointVoucherDto> HandleUpdateStatusVoucher(UpdateStatusVoucherDto dto)
+        {
+            var data = await _pointRepository.UpdateStatusVoucher(dto) ?? throw new AppException("Voucher invalid or already used", 400);
+            return new PointVoucherDto
+            {
+                _id = data._id.ToString(),
+                code = data.code,
+                customer = data.customer.ToString(),
+                discountAmount = (int)data.discountAmount,
+                pointsUsed = data.pointsUsed,
+                status = data.status,
+                usedOrder = data.usedOrder.ToString(),
+                validFrom = data.validFrom,
+                validTo = data.validTo
+            };
         }
     }
 }

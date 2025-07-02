@@ -64,5 +64,34 @@ namespace api.Controllers
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
+
+        [HttpPost("apply-voucher")]
+        public async Task ApplyVoucher([FromBody] ApplyVoucherDto dto)
+        {
+            try
+            {
+                var userId = User.FindFirst("userId")?.Value;
+                var data = await _pointService.HandleApplyVoucher(dto, userId!);
+                await ResponseHandler.SendSuccess(Response, data, 200, "Applied voucher successfully");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
+
+        [HttpPut("status-voucher")]
+        public async Task UpdateStatusVoucher([FromBody] UpdateStatusVoucherDto dto)
+        {
+            try
+            {
+                var data = await _pointService.HandleUpdateStatusVoucher(dto);
+                await ResponseHandler.SendSuccess(Response, data, 200, "Updated status voucher successfully");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
     }
 }
