@@ -32,6 +32,7 @@ namespace api.Dtos
         public string status { get; set; } = "pending";
         public string shippingAddress { get; set; } = string.Empty;
         public string paymentMethod { get; set; } = "ship_cod";
+        public string? voucherCode { get; set; } = string.Empty;
 
     }
     public class OrderCreateVariantDetail

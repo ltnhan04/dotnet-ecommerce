@@ -13,5 +13,7 @@ namespace api.Interfaces.Services
         Task<List<GetCustomerVoucherDto>> HandleGetCustomerVoucher(string userId);
         Task<VoucherDto> HandleExchangePointForVoucher(ExchangePointForVoucherDto dto, string userId);
         Task<Point> HandleAddPointForOrder(Order order);
+        Task<ApplyVoucherResponseDto> HandleApplyVoucher(ApplyVoucherDto dto, string userId);
+        Task<PointVoucherDto> HandleUpdateStatusVoucher(UpdateStatusVoucherDto dto);
     }
 }
