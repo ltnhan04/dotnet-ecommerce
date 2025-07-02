@@ -106,5 +106,30 @@ namespace api.Controllers.Admin
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
+
+        [Authorize(Roles = "admin")]
+        [HttpGet("search")]
+        public async Task SearchProducts(
+            [FromQuery] string? search,
+            [FromQuery] string? categoryId,
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10,
+            [FromQuery] int? minPrice = null,
+            [FromQuery] int? maxPrice = null,
+            [FromQuery] string? color = null,
+            [FromQuery] string? storage = null,
+            [FromQuery] string? status = null,
+            [FromQuery] int? rating = null)
+        {
+            try
+            {
+                var result = await _productService.SearchProducts(search, categoryId, page, size, minPrice, maxPrice, color, storage, status, rating);
+                await ResponseHandler.SendSuccess(Response, result, 200, "Search products successfully!");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
     }
 }

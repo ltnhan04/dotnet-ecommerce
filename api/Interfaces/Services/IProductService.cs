@@ -14,5 +14,6 @@ namespace api.Interfaces.Services
         Task<ProductDto> CreateProduct(CreateProductDto dto);
         Task<ProductDto> UpdateProduct(string id, UpdateProductDto dto);
         Task<string> DeleteProduct(string id);
+        Task<PagedResult<ProductDto>> SearchProducts(string? search, string? categoryId, int page = 1, int size = 10, int? minPrice = null, int? maxPrice = null, string? color = null, string? storage = null, string? status = null, int? rating = null);
     }
 }

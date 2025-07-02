@@ -1,11 +1,79 @@
 @page
 @model api.Pages.Admin.Variants.Create
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Variant";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="text-2xl font-bold mb-6">Create Variant</h1>
 
-<div>
-    
-</div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="bg-red-500 text-white px-4 py-3 rounded-lg mb-4">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-green-500 text-white px-4 py-3 rounded-lg mb-4">@TempData["SuccessMessage"]</div>
+}
+
+<form method="post" enctype="multipart/form-data" class="space-y-4 max-w-xl">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="productNameInput" value="@Model.ProductName" />
+    <div>
+        <label class="block text-gray-400 mb-1">Product ID</label>
+        <input name="NewVariant.product" value="@Model.NewVariant.product" class="w-full rounded bg-gray-800 text-white px-3 py-2" @(string.IsNullOrEmpty(Model.NewVariant.product) ? "" : "readonly") required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Color Name</label>
+        <input name="NewVariant.colorName" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Color Code</label>
+        <input name="NewVariant.colorCode" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Storage/Size</label>
+        <input name="NewVariant.storage" id="storageInput" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Price (VND)</label>
+        <input name="NewVariant.price" type="number" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Stock Quantity</label>
+        <input name="NewVariant.stock_quantity" type="number" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Slug</label>
+        <input name="NewVariant.slug" id="slugInput" class="w-full rounded bg-gray-800 text-white px-3 py-2" required />
+    </div>
+    <div>
+        <label class="block text-gray-400 mb-1">Images (max 5)</label>
+        <input name="images" type="file" multiple accept="image/*" class="w-full text-gray-300" />
+    </div>
+    <div class="flex space-x-2">
+        <button type="submit" class="bg-[#2196F3] hover:bg-[#1E88E5] text-white px-4 py-2 rounded-lg">Create</button>
+        <a href="@(string.IsNullOrEmpty(Model.NewVariant.product) ? "/Admin/Products/Index" : $"/Admin/Products/Details/{Model.NewVariant.product}")" class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-lg">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+function toSlug(str) {
+    return str.toLowerCase()
+        .normalize('NFD').replace(/\p{Diacritic}/gu, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+document.addEventListener('DOMContentLoaded', function () {
+    var storageInput = document.getElementById('storageInput');
+    var slugInput = document.getElementById('slugInput');
+    var productNameInput = document.getElementById('productNameInput');
+    if (storageInput && slugInput && productNameInput) {
+        storageInput.addEventListener('input', function () {
+            var slug = toSlug(productNameInput.value) + '-' + toSlug(storageInput.value);
+            slugInput.value = slug;
+        });
+    }
+});
+</script>
+}

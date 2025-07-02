@@ -39,11 +39,6 @@
                         <i data-lucide="folder" class="w-5 h-5"></i>
                         <span>Categories</span>
                     </a>
-                    <a href="/Admin/Variants"
-                        class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-[#0F172A] hover:text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["Page"]?.ToString()?.Contains("Variants") == true ? "bg-[#0F172A] text-white" : "")">
-                        <i data-lucide="layers" class="w-5 h-5"></i>
-                        <span>Variants</span>
-                    </a>
                     <a href="/Admin/Orders"
                         class="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-[#0F172A] hover:text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["Page"]?.ToString()?.Contains("Orders") == true ? "bg-[#0F172A] text-white" : "")">
                         <i data-lucide="shopping-cart" class="w-5 h-5"></i>
@@ -83,13 +78,6 @@
                     </div>
 
                     <div class="flex items-center space-x-4">
-                        <div class="relative">
-                            <input type="text" placeholder="Search..."
-                                class="bg-gray-800 text-white px-4 py-2 rounded-lg pl-10 w-64 focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
-                            <i data-lucide="search"
-                                class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
-
                         <button class="text-gray-300 hover:text-white relative">
                             <i data-lucide="bell" class="w-6 h-6"></i>
                             <span

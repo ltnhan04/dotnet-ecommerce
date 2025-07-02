@@ -243,5 +243,90 @@ namespace api.Services.Admin
             var msg = "Product and its variants deleted successfully";
             return msg;
         }
+
+        public async Task<PagedResult<ProductDto>> SearchProducts(string? search, string? categoryId, int page = 1, int size = 10, int? minPrice = null, int? maxPrice = null, string? color = null, string? storage = null, string? status = null, int? rating = null)
+        {
+            var allProducts = await _productRepo.GetProducts();
+            if (!string.IsNullOrEmpty(categoryId))
+                allProducts = allProducts.Where(p => p.category.ToString() == categoryId).ToList();
+            if (!string.IsNullOrEmpty(search))
+                allProducts = allProducts.Where(p => p.name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            var filteredProducts = new List<models.Product>();
+            foreach (var product in allProducts)
+            {
+                var variants = await _variantRepo.GetByProductId(product._id);
+                var filteredVariants = variants.Where(v =>
+                    (!minPrice.HasValue || v.price >= minPrice.Value)
+                    && (!maxPrice.HasValue || v.price <= maxPrice.Value)
+                    && (string.IsNullOrEmpty(color) || v.color.colorName == color)
+                    && (string.IsNullOrEmpty(storage) || v.storage == storage)
+                    && (string.IsNullOrEmpty(status) || v.status == status)
+                    && (!rating.HasValue || Math.Round(v.rating) >= rating.Value)
+                ).ToList();
+                if (filteredVariants.Count != 0)
+                {
+                    product.variants = filteredVariants.Select(v => v._id).ToList();
+                    filteredProducts.Add(product);
+                }
+            }
+            var total = filteredProducts.Count;
+            var products = filteredProducts.Skip((page - 1) * size).Take(size).ToList();
+            var result = new List<ProductDto>();
+            foreach (var product in products)
+            {
+                var category = await _categoryRepo.GetCategoryById(product.category.ToString());
+                var variants = await _variantRepo.GetByProductId(product._id);
+                var filteredVariants = variants.Where(v =>
+                    (!minPrice.HasValue || v.price >= minPrice.Value)
+                    && (!maxPrice.HasValue || v.price <= maxPrice.Value)
+                    && (string.IsNullOrEmpty(color) || v.color.colorName == color)
+                    && (string.IsNullOrEmpty(storage) || v.storage == storage)
+                    && (string.IsNullOrEmpty(status) || v.status == status)
+                    && (!rating.HasValue || Math.Round(v.rating) >= rating.Value)
+                ).ToList();
+                var variantsDtos = new List<VariantDto>();
+                foreach (var variant in filteredVariants)
+                {
+                    variantsDtos.Add(new VariantDto
+                    {
+                        _id = variant._id.ToString(),
+                        product = variant.product.ToString(),
+                        color = new ColorDto
+                        {
+                            colorName = variant.color.colorName,
+                            colorCode = variant.color.colorCode
+                        },
+                        rating = (int)Math.Round(variant.rating),
+                        storage = variant.storage,
+                        price = variant.price,
+                        status = variant.status,
+                        stock_quantity = variant.stock_quantity,
+                        slug = variant.slug,
+                        images = variant.images,
+                    });
+                }
+                result.Add(new ProductDto
+                {
+                    _id = product._id.ToString(),
+                    name = product.name,
+                    description = product.description,
+                    category = new CategoryDto
+                    {
+                        _id = category._id.ToString(),
+                        name = category.name
+                    },
+                    variants = variantsDtos,
+                    createdAt = product.createdAt,
+                    updatedAt = product.updatedAt
+                });
+            }
+            return new PagedResult<ProductDto>
+            {
+                Items = result,
+                Total = total,
+                Page = page,
+                Size = size
+            };
+        }
     }
 }
