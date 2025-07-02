@@ -13,14 +13,16 @@ namespace api.Services.Customer
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IRedisRepository _redisRepository;
 
-        public OrderService(IOrderRepository orderRepository)
+        public OrderService(IOrderRepository orderRepository, IRedisRepository redisRepository)
         {
             _orderRepository = orderRepository;
+            _redisRepository = redisRepository;
         }
 
         public async Task<OrderCreateDto> HandleCreateOrder(OrderCreateDto dto, string userId)
-        {
+        {   
             if (dto.variants == null || !dto.variants.Any())
             {
                 throw new AppException("Product variants is required", 400);
@@ -37,10 +39,13 @@ namespace api.Services.Customer
                 totalAmount = dto.totalAmount,
                 shippingAddress = dto.shippingAddress,
                 paymentMethod = dto.paymentMethod,
-                status = "pending"
+                status = "pending",
             };
 
             var createOrder = await _orderRepository.CreateOrder(order) ?? throw new AppException("Failed to create order", 400);
+            if (!string.IsNullOrEmpty(dto.voucherCode)) {
+                var voucherCode = _redisRepository.SetAsync($"voucher-{createOrder._id}", dto.voucherCode, TimeSpan.FromMinutes(15));
+            }
             return new OrderCreateDto
             {
                 _id = createOrder._id.ToString(),
@@ -53,7 +58,8 @@ namespace api.Services.Customer
                 totalAmount = createOrder.totalAmount,
                 shippingAddress = createOrder.shippingAddress,
                 status = createOrder.status,
-                paymentMethod = createOrder.paymentMethod
+                paymentMethod = createOrder.paymentMethod,
+                voucherCode = dto.voucherCode
             };
         }
 

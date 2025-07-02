@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Interfaces;
 using api.Interfaces.Repositories;
 using api.models;
 using api.Utils;
@@ -19,10 +20,12 @@ namespace api.Repositories.Customer
     {
         private readonly iTribeDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
-        public PaymentRepository(iTribeDbContext context, IHttpClientFactory httpClientFactory)
+        private readonly IRedisRepository _redisRepository;
+        public PaymentRepository(iTribeDbContext context, IHttpClientFactory httpClientFactory, IRedisRepository redisRepository)
         {
             _context = context;
             _httpClientFactory = httpClientFactory;
+            _redisRepository = redisRepository;
         }
 
         public async Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
@@ -72,7 +75,7 @@ namespace api.Repositories.Customer
             }).ToList();
 
             var totalAmount = lineItems.Sum(x => x.PriceData.UnitAmount * x.Quantity);
-
+            var voucherCode = await _redisRepository.GetAsync($"voucher-{orderId}");
             if (totalAmount > ChangeRate.vndLimit)
             {
                 throw new AppException("Total amount exceed the limit", 400);
@@ -85,7 +88,7 @@ namespace api.Repositories.Customer
                 PaymentMethodTypes = new List<string> { "card" },
                 Mode = "payment",
                 LineItems = lineItems,
-                SuccessUrl = $"{domain}/payment/success?session_id={{CHECKOUT_SESSION_ID}}&&orderId={orderId}",
+                SuccessUrl = $"{domain}/payment/success?session_id={{CHECKOUT_SESSION_ID}}&&orderId={orderId}&&voucherCode={voucherCode}",
                 CancelUrl = $"{domain}/payment/cancel"
             };
             var service = new SessionService();
@@ -101,10 +104,11 @@ namespace api.Repositories.Customer
             var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
             var redirectUrl = Environment.GetEnvironmentVariable("CLIENT_URL") + "/payment/success";
             var callbackUrl = Environment.GetEnvironmentVariable("SERVER_URL") + "/api/v1/payment/momo/callback";
-
+            
             var infoPayment = $"Thanh toán đơn hàng {dto.orderId}";
+            var voucherCode = await _redisRepository.GetAsync($"voucher-{dto.orderId}");
             var rawSignature =
-                $"accessKey={accessKey}&amount={dto.amount}&extraData=&ipnUrl={callbackUrl}" +
+                $"accessKey={accessKey}&amount={dto.amount}&extraData={voucherCode}&ipnUrl={callbackUrl}" +
                 $"&orderId={dto.orderId}&orderInfo={infoPayment}&partnerCode={partnerCode}" +
                 $"&redirectUrl={redirectUrl}&requestId={dto.orderId}&requestType=payWithMethod";
 
@@ -122,7 +126,7 @@ namespace api.Repositories.Customer
                 lang = "vi",
                 requestType = "payWithMethod",
                 autoCapture = true,
-                extraData = "",
+                extraData = voucherCode,
                 signature
             };
 
