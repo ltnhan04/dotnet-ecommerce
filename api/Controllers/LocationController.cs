@@ -24,19 +24,19 @@ public class LocationController : ControllerBase
 	}
 		
 
-	[HttpGet("districts/:{code}")]
-	public async Task<IActionResult> GetDistrictsByProvinceCode(int code)
-	{
-		var districts = await _locationService.GetDistrictsByProvinceCodeAsync(code);
-		if (districts == null)
-		{
-		return NotFound();
-		}
-		return Ok(districts);
-	}
+[HttpGet("districts/{code}")]
+public async Task<IActionResult> GetDistrictsByProvinceCode(int code)
+{
+    var districts = await _locationService.GetDistrictsByProvinceCodeAsync(code);
+    if (districts == null || districts.Count == 0)
+    {
+        return NotFound();
+    }
+    return Ok(districts);
+}
 		
 
-	[HttpGet("wards/:{code}")]
+	[HttpGet("wards/{code}")]
 	public async Task<IActionResult> GetWardsByDistrictCode(int code)
 	{
 		var wards = await _locationService.GetWardsByDistrictCodeAsync(code);
