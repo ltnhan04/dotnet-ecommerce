@@ -36,7 +36,7 @@ namespace api.Services.Admin
                 "processing",
                 "shipped",
                 "delivered",
-                "cancel"
+                "cancelled"
             };
             if (!validStatus.Contains(dto.status))
             {
