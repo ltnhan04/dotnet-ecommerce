@@ -39,7 +39,6 @@ namespace api.Pages.Admin.Products
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            // Lấy danh sách category
             var catRes = await _httpClient.GetAsync("api/v1/admin/categories");
             if (catRes.IsSuccessStatusCode)
             {
