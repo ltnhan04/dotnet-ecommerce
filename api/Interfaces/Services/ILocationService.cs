@@ -4,6 +4,6 @@ using api.Dtos;
 public interface ILocationService
 {
 	Task<List<ProvinceDto>> GetProvincesAsync();
-	Task<DistrictDto> GetDistrictsByProvinceCodeAsync(int code);
+	Task<List<DistrictDto>> GetDistrictsByProvinceCodeAsync(int code);
 	Task<WardDto> GetWardsByDistrictCodeAsync(int code);
 }

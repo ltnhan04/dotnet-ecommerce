@@ -35,15 +35,29 @@ public async Task<List<ProvinceDto>> GetProvincesAsync()
 }
 		
 
-public async Task<DistrictDto> GetDistrictsByProvinceCodeAsync(int code)
+public async Task<List<DistrictDto>> GetDistrictsByProvinceCodeAsync(int code)
 {
-	var client = _httpClientFactory.CreateClient();
-	var response = await client.GetAsync($"{_baseUrl}p/{code}?depth=2");
-	response.EnsureSuccessStatusCode();
-		
+    var client = _httpClientFactory.CreateClient();
+    var url = $"{_baseUrl}p/{code}?depth=2";
+    var response = await client.GetAsync(url);
+    response.EnsureSuccessStatusCode();
 
-	var content = await response.Content.ReadAsStringAsync();
-	return JsonSerializer.Deserialize<DistrictDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+    var content = await response.Content.ReadAsStringAsync();
+    // Log nội dung trả về để debug
+    Console.WriteLine($"[DEBUG] API Response for {url}: {content}");
+
+    var province = JsonSerializer.Deserialize<ProvinceDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    if (province == null)
+    {
+        Console.WriteLine("[ERROR] Deserialize ProvinceDto failed!");
+        return new List<DistrictDto>();
+    }
+    if (province.districts == null)
+    {
+        Console.WriteLine("[ERROR] ProvinceDto.districts is null!");
+        return new List<DistrictDto>();
+    }
+    return province.districts;
 }
 		
 
