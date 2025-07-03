@@ -145,15 +145,15 @@ namespace api.Repositories.Admin
                 .FirstOrDefaultAsync();
 
             var currentStatus = order.status;
-            if (currentStatus == "delivered" || currentStatus == "cancel")
+            if (currentStatus == "delivered" || currentStatus == "cancelled")
             {
                 throw new AppException("Order cannot be updated from its current status", 400);
             }
 
             var validTransitions = new Dictionary<string, List<string>>
             {
-                ["pending"] = new List<string> { "processing", "cancel" },
-                ["processing"] = new List<string> { "shipped", "cancel" },
+                ["pending"] = new List<string> { "processing", "cancelled" },
+                ["processing"] = new List<string> { "shipped", "cancelled" },
                 ["shipped"] = new List<string> { "delivered" }
             };
             if (!validTransitions[currentStatus].Contains(dto.status))
@@ -178,7 +178,7 @@ namespace api.Repositories.Admin
                 }
             }
 
-            if (dto.status == "cancel")
+            if (dto.status == "cancelled")
             {
                 foreach (var item in order.variants)
                 {
