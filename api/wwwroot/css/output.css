@@ -7,7 +7,6 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-700: oklch(50.5% 0.213 27.518);
     --color-yellow-400: oklch(85.2% 0.199 91.936);
@@ -371,6 +370,12 @@
   .w-24 {
     width: calc(var(--spacing) * 24);
   }
+  .w-36 {
+    width: calc(var(--spacing) * 36);
+  }
+  .w-48 {
+    width: calc(var(--spacing) * 48);
+  }
   .w-64 {
     width: calc(var(--spacing) * 64);
   }
@@ -591,9 +596,6 @@
   .border-\[\#F44336\] {
     border-color: #F44336;
   }
-  .border-\[\#FBBF24\] {
-    border-color: #FBBF24;
-  }
   .border-gray-600 {
     border-color: var(--color-gray-600);
   }
@@ -615,23 +617,14 @@
   .bg-\[\#9C27B0\] {
     background-color: #9C27B0;
   }
-  .bg-\[\#635BFF\] {
-    background-color: #635BFF;
-  }
   .bg-\[\#2196F3\] {
     background-color: #2196F3;
-  }
-  .bg-\[\#D82D8B\] {
-    background-color: #D82D8B;
   }
   .bg-\[\#F44336\] {
     background-color: #F44336;
   }
   .bg-\[\#FF9800\] {
     background-color: #FF9800;
-  }
-  .bg-blue-600 {
-    background-color: var(--color-blue-600);
   }
   .bg-gray-600 {
     background-color: var(--color-gray-600);
@@ -770,38 +763,20 @@
   .text-\[\#1E88E5\] {
     color: #1E88E5;
   }
-  .text-\[\#3B82F6\] {
-    color: #3B82F6;
-  }
   .text-\[\#4CAF50\] {
     color: #4CAF50;
-  }
-  .text-\[\#8B5CF6\] {
-    color: #8B5CF6;
   }
   .text-\[\#9C27B0\] {
     color: #9C27B0;
   }
-  .text-\[\#22C55E\] {
-    color: #22C55E;
-  }
   .text-\[\#2196F3\] {
     color: #2196F3;
-  }
-  .text-\[\#EF4444\] {
-    color: #EF4444;
   }
   .text-\[\#F44336\] {
     color: #F44336;
   }
-  .text-\[\#FBBF24\] {
-    color: #FBBF24;
-  }
   .text-\[\#FF9800\] {
     color: #FF9800;
-  }
-  .text-\[\#fdcf00fd\] {
-    color: #fdcf00fd;
   }
   .text-gray-300 {
     color: var(--color-gray-300);
@@ -902,13 +877,6 @@
       }
     }
   }
-  .hover\:bg-blue-700 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-blue-700);
-      }
-    }
-  }
   .hover\:bg-gray-500 {
     &:hover {
       @media (hover: hover) {
@@ -955,13 +923,6 @@
     &:hover {
       @media (hover: hover) {
         color: #D32F2F;
-      }
-    }
-  }
-  .hover\:text-\[\#fdcf00fd\] {
-    &:hover {
-      @media (hover: hover) {
-        color: #fdcf00fd;
       }
     }
   }

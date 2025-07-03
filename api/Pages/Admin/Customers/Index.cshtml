@@ -1,11 +1,119 @@
 @page
 @model api.Pages.Admin.Customers.Index
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Customers Management";
+    ViewData["PageTitle"] = "Customers";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="space-y-6">
+    <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <form method="get" class="flex flex-wrap gap-2 w-full items-end">
+                <div class="relative">
+                    <input type="text" name="search" value="@Model.Search" placeholder="Search by name..."
+                        class="bg-gray-800 text-white px-4 py-2 rounded-lg pl-10 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#2196F3]">
+                    <i data-lucide="search"
+                        class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <input name="email" value="@Model.Email" placeholder="Email"
+                    class="bg-gray-800 text-white px-2 py-2 rounded-lg w-48" />
+                <input name="phone" value="@Model.Phone" placeholder="Phone"
+                    class="bg-gray-800 text-white px-2 py-2 rounded-lg w-36" />
+                <button type="submit"
+                    class="bg-[#2196F3] hover:bg-[#1E88E5] text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </button>
+            </form>
+            <div class="flex space-x-3">
+                <!-- Add create customer button if needed -->
+            </div>
+        </div>
+    </div>
 
-<div>
-    
+    <!-- Customers Table -->
+    <div class="bg-[#1E293B] rounded-xl shadow-md overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-700">
+            <h3 class="text-lg font-semibold text-white">Customers List</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">ID
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Name
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Phone
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Address</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Created At</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    @for (int i = 0; i < Model.Customers.Count; i++)
+                    {
+                        var customer = Model.Customers[i];
+                        <tr class="hover:bg-gray-800 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">@((Model.CurrentPage - 1) *
+                                                            Model.PageSize + i + 1)</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-white">@customer.name</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">@customer.email</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">@customer.phoneNumber</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            @{
+                                var addr = customer.address;
+                                string shortAddr = "N/A";
+                                if (addr != null)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(addr.street))
+                                        shortAddr = $"{addr.street}, {addr.city}, {addr.country}";
+                                    else if (!string.IsNullOrWhiteSpace(addr.city))
+                                        shortAddr = $"{addr.city}, {addr.country}";
+                                    else if (!string.IsNullOrWhiteSpace(addr.country))
+                                        shortAddr = addr.country;
+                                }
+                            }
+                            @shortAddr
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            @customer.createdAt.ToString("dd/MM/yyyy")</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <a href="/Admin/Customers/Details/@customer._id"
+                                    class="text-[#2196F3] hover:text-[#1E88E5]">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                                        }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="flex justify-center mt-6">
+            <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
+                <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-l-md @(Model.CurrentPage == 1 ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
+                    href="?search=@Model.Search&email=@Model.Email&phone=@Model.Phone&page=@(Model.CurrentPage - 1)&size=@Model.PageSize">Previous</a>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <a class="px-3 py-2 border-t border-b border-gray-700 bg-gray-800 text-gray-300 @(Model.CurrentPage == i ? "bg-[#2196F3] text-white" : "hover:bg-gray-700")"
+                        href="?search=@Model.Search&email=@Model.Email&phone=@Model.Phone&page=@i&size=@Model.PageSize">@i</a>
+                }
+                <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-r-md @(Model.CurrentPage == Model.TotalPages ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
+                    href="?search=@Model.Search&email=@Model.Email&phone=@Model.Phone&page=@(Model.CurrentPage + 1)&size=@Model.PageSize">Next</a>
+            </nav>
+        </div>
+    }
 </div>

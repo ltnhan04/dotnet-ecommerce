@@ -248,7 +248,7 @@ namespace api.Services.Admin
         {
             var allProducts = await _productRepo.GetProducts();
             if (!string.IsNullOrEmpty(categoryId))
-                allProducts = allProducts.Where(p => p.category.ToString() == categoryId).ToList();
+                allProducts = [.. allProducts.Where(p => p.category.ToString() == categoryId)];
             if (!string.IsNullOrEmpty(search))
                 allProducts = allProducts.Where(p => p.name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             var filteredProducts = new List<models.Product>();
