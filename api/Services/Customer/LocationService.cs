@@ -61,14 +61,14 @@ public async Task<List<DistrictDto>> GetDistrictsByProvinceCodeAsync(int code)
 }
 		
 
-public async Task<WardDto> GetWardsByDistrictCodeAsync(int code)
+public async Task<List<WardDto>> GetWardsByDistrictCodeAsync(int code)
 {
-	var client = _httpClientFactory.CreateClient();
-	var response = await client.GetAsync($"{_baseUrl}d/{code}?depth=2");
-	response.EnsureSuccessStatusCode();
-		
+    var client = _httpClientFactory.CreateClient();
+    var response = await client.GetAsync($"{_baseUrl}d/{code}?depth=2");
+    response.EnsureSuccessStatusCode();
 
-	var content = await response.Content.ReadAsStringAsync();
-	return JsonSerializer.Deserialize<WardDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+    var content = await response.Content.ReadAsStringAsync();
+    var district = JsonSerializer.Deserialize<DistrictDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    return district?.wards ?? new List<WardDto>();
 }
 }

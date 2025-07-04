@@ -5,5 +5,5 @@ public interface ILocationService
 {
 	Task<List<ProvinceDto>> GetProvincesAsync();
 	Task<List<DistrictDto>> GetDistrictsByProvinceCodeAsync(int code);
-	Task<WardDto> GetWardsByDistrictCodeAsync(int code);
+	Task<List<WardDto>> GetWardsByDistrictCodeAsync(int code);
 }
