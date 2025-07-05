@@ -40,9 +40,9 @@ public async Task<IActionResult> GetDistrictsByProvinceCode(int code)
 	public async Task<IActionResult> GetWardsByDistrictCode(int code)
 	{
 		var wards = await _locationService.GetWardsByDistrictCodeAsync(code);
-		if (wards == null)
+		if (wards == null || wards.Count == 0)
 		{
-		return NotFound();
+			return NotFound();
 		}
 		return Ok(wards);
 	}
