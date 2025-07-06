@@ -21,14 +21,65 @@ namespace api.Repositories.Admin
             _sendEmail = sendEmail;
             _pointService = pointService;
         }
-        public async Task<PaginateDto<AdminGetAllOrder>> GetAllOrder(int page = 1, int size = 10)
+        public async Task<PaginateDto<AdminGetAllOrder>> GetAllOrder(GetOrderQueryDto dto)
         {
-            var totalOrders = await _context.Orders.CountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalOrders / size);
-            var orders = await _context.Orders
+            var query = _context.Orders.AsQueryable();
+            query = !string.IsNullOrEmpty(dto.orderId)
+                ? query.Where(o => o._id == ObjectId.Parse(dto.orderId))
+                : query;
+
+            if (!string.IsNullOrEmpty(dto.customer))
+            {
+                var user = await _context.Users
+                    .Where(item => item.name.ToLower().Contains(dto.customer.ToLower()))
+                    .Select(item => item._id)
+                    .ToListAsync();
+                query = query.Where(item => user.Contains(item.user));
+            }
+
+            if (!string.IsNullOrEmpty(dto.email))
+            {
+                var user = await _context.Users
+                    .Where(item => item.email.ToLower().Contains(dto.email.ToLower()))
+                    .Select(item => item._id)
+                    .ToListAsync();
+                query = query.Where(item => user.Contains(item.user));
+            }
+
+            query = !string.IsNullOrEmpty(dto.status)
+                ? query.Where(o => o.status == dto.status)
+                : query;
+
+            query = dto.DateFrom is not null
+                ? query.Where(o => o.createdAt >= dto.DateFrom.Value)
+                : query;
+
+            query = dto.DateTo is not null
+                ? query.Where(o => o.createdAt <= dto.DateTo.Value)
+                : query;
+
+            query = (dto.paymentStatus?.ToLower() ?? "") switch
+            {
+                "paid" => query.Where(o =>
+                    o.stripeSessionId != null
+                    || o.isPaymentMomo == true
+                    || (o.paymentMethod.ToLower() == "cash on delivery" && o.status.ToLower() == "delivered")
+                ),
+
+                "unpaid" => query.Where(o =>
+                    (o.stripeSessionId == null)
+                    && (o.isPaymentMomo != true)
+                    && !(o.paymentMethod.ToLower() == "cash on delivery" && o.status.ToLower() == "delivered")
+                ),
+                _ => query
+            };
+
+            var totalOrders = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalOrders / dto.size);
+            var orders = await query
                 .OrderByDescending(order => order._id)
-                .Skip((page - 1) * size)
-                .Take(size)
+                .Skip((dto.page - 1) * dto.size)
+                .Take(dto.size)
                 .ToListAsync();
 
             var userId = orders.Select(item => item.user).Distinct().ToList();
@@ -72,20 +123,25 @@ namespace api.Repositories.Admin
                                 colorCode = variantMap.GetValueOrDefault(v.variant).color.colorCode ?? "null",
                                 colorName = variantMap.GetValueOrDefault(v.variant).color.colorName ?? "null"
                             },
+                            prices = variantMap.GetValueOrDefault(v.variant).price,
                             storage = variantMap.GetValueOrDefault(v.variant)?.storage ?? "0",
-                            images = variantMap.GetValueOrDefault(v.variant)?.images.FirstOrDefault()! ?? "null"
+                            images = variantMap.GetValueOrDefault(v.variant)?.images.FirstOrDefault()! ?? "null",
+                            quantity = v.quantity
                         };
                     }).ToList(),
                     totalAmount = order.totalAmount,
                     status = order.status,
                     paymentMethod = order.paymentMethod,
+                    createdAt = order.createdAt,
+                    stripeSessionId = order.stripeSessionId ?? "null",
+                    isPaymentMomo = order.isPaymentMomo ?? false
                 }).ToList();
 
             return new PaginateDto<AdminGetAllOrder>
             {
                 total = totalOrders,
                 page = totalPages,
-                currentPage = page,
+                currentPage = dto.page,
                 items = data
             };
         }
@@ -145,15 +201,15 @@ namespace api.Repositories.Admin
                 .FirstOrDefaultAsync();
 
             var currentStatus = order.status;
-            if (currentStatus == "delivered" || currentStatus == "cancelled")
+            if (currentStatus == "delivered" || currentStatus == "cancel")
             {
                 throw new AppException("Order cannot be updated from its current status", 400);
             }
 
             var validTransitions = new Dictionary<string, List<string>>
             {
-                ["pending"] = new List<string> { "processing", "cancelled" },
-                ["processing"] = new List<string> { "shipped", "cancelled" },
+                ["pending"] = new List<string> { "processing", "cancel" },
+                ["processing"] = new List<string> { "shipped", "cancel" },
                 ["shipped"] = new List<string> { "delivered" }
             };
             if (!validTransitions[currentStatus].Contains(dto.status))
@@ -178,7 +234,7 @@ namespace api.Repositories.Admin
                 }
             }
 
-            if (dto.status == "cancelled")
+            if (dto.status == "cancell")
             {
                 foreach (var item in order.variants)
                 {

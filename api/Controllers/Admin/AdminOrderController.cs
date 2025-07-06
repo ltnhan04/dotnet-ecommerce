@@ -23,11 +23,11 @@ namespace api.Controllers.Admin
         }
 
         [HttpGet]
-        public async Task GetAllOrder([FromQuery] int page, [FromQuery] int size)
+        public async Task GetAllOrder([FromQuery] GetOrderQueryDto dto)
         {
             try
             {
-                var data = await _orderService.HandleGetAllOrder(page, size);
+                var data = await _orderService.HandleGetAllOrder(dto);
                 await ResponseHandler.SendSuccess(Response, data, 200, "Get all orders successfully");
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace api.Controllers.Admin
             try
             {
                 var data = await _orderService.HandleUpdateOrderStatus(orderId, dto);
-                await ResponseHandler.SendSuccess(Response, data,  200, "Updated order status successfully");
+                await ResponseHandler.SendSuccess(Response, data, 200, "Updated order status successfully");
             }
             catch (Exception ex)
             {

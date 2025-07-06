@@ -18,9 +18,9 @@ namespace api.Services.Admin
             _orderRepository = orderRepository;
         }
 
-        public async Task<PaginateDto<AdminGetAllOrder>> HandleGetAllOrder(int page, int size)
+        public async Task<PaginateDto<AdminGetAllOrder>> HandleGetAllOrder(GetOrderQueryDto dto)
         {
-            return await _orderRepository.GetAllOrder(page, size);
+            return await _orderRepository.GetAllOrder(dto);
         }
 
         public async Task<AdminGetAllOrder> HandleGetOrderDetail(string orderId)
@@ -36,7 +36,7 @@ namespace api.Services.Admin
                 "processing",
                 "shipped",
                 "delivered",
-                "cancelled"
+                "cancel"
             };
             if (!validStatus.Contains(dto.status))
             {

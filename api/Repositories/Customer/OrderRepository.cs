@@ -113,7 +113,7 @@ namespace api.Repositories.Customer
             }
             if (order.status != OrderStatus.pending.ToString() && order.status != OrderStatus.processing.ToString())
             {
-                throw new AppException("Order cannot be canceled", 400);
+                throw new AppException("Order cannot be cancelled", 400);
             }
             foreach (var item in order.variants)
             {
