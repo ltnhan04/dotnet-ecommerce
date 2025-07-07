@@ -27,7 +27,6 @@ namespace api.models
         [BsonElement("slug"), MaxLength(255)]
         public required string slug { get; set; }
         [BsonElement("status")]
-
         public string status { get; set; } = "in_stock";
         [BsonElement("images")]
         public List<string> images { get; set; } = new();

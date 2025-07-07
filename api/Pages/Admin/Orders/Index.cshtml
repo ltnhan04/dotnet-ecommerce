@@ -2,32 +2,78 @@
 @model api.Pages.Admin.Orders.IndexModel
 @{
     ViewData["Title"] = "Orders Management";
-    ViewData["PageTitle"] = "Orders";
+    ViewData["PageTitle"] = "Orders Management";
 }
 
 <div class="space-y-6">
-    <div class="bg-[#1E293B] rounded-xl shadow-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-700">
-            <h3 class="text-lg font-semibold text-white">Orders List</h3>
-        </div>
+    <div class="bg-[#1E293B] rounded-[4px] shadow-md p-6">
+        <form method=" get" class="grid grid-cols-1 md:grid-cols-7 gap-4 items-end">
+            <div class="relative col-span-2">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input type="text" name="OrderId" value="@Model.OrderId" placeholder="Search"
+                    class="w-full pl-10 pr-3 py-2 rounded-[4px] border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            </div>
+            <select name="Status"
+                class="rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="" class="text-black">Status</option>
+                <option value="pending" class="text-black" @(Model.Status == "pending" ? "selected" : "")>Pending
+                </option>
+                <option value=" processing" class="text-black" @(Model.Status == "processing" ? "selected" : "")>
+                    Processing</option>
+                <option value="shipped" class="text-black" @(Model.Status == "shipped" ? "selected" : "")>Shipped
+                </option>
+                <option value="delivered" class="text-black" @(Model.Status == "delivered" ? "selected" : "")>Delivered
+                </option>
+                <option value="cancel" class="text-black" @(Model.Status == "cancel" ? "selected" : "")>Cancel</option>
+            </select>
+            <select name="PaymentStatus"
+                class="rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="" class="text-black">Payment Status</option>
+                <option value="paid" class="text-black" @(Model.PaymentStatus == "paid" ? "selected" : "")>Paid</option>
+                <option value="unpaid" class="text-black" @(Model.PaymentStatus == "unpaid" ? "selected" : "")>Unpaid
+                </option>
+            </select>
+            <input type="date" name="DateFrom" value="@Model.DateFrom"
+                class="rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            <input type="date" name="DateTo" value="@Model.DateTo"
+                class="rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            <div class="md:col-span-1 flex justify-end">
+                <a href="/Admin/Orders"
+                    class="px-4 py-2 bg-blue-600 font-medium text-white text-sm rounded-[4px] hover:bg-blue-700 transition h-[38px]">
+                    X
+                </a>
+            </div>
 
+        </form>
+    </div>
+    <div class="bg-[#1E293B] rounded-[4px] shadow-md p-6">
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-800">
+                <thead class="bg-gray-800 ">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">ID
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                            Order-Id</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                            User-Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
+                            #</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
+                            Order ID</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
+                            Date</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
+                            Customer</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
+                            Price</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
+                            Payment Status</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
+                            Items</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
                             Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                            Total-Amount</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                            Payment-Method</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left font-medium text-gray-300">
                             Actions</th>
                     </tr>
                 </thead>
@@ -37,18 +83,46 @@
                         var order = Model.Orders[i];
                         <tr class="hover:bg-gray-800 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">@((Model.CurrentPage - 1) *
-                                                            Model.Size + i + 1)</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div>
-                                <div class="text-sm font-medium text-white">@order._id</div>
-                            </div>
+                                                            Model.SizeOrder + i + 1)</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium  text-gray-300">
+                            @order._id
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium  text-gray-300">
+                            @order.createdAt
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium  text-gray-300">
                             @order.user.name
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium  text-gray-300">
+                            @($"{order.totalAmount:N0}đ")
+                        </td>
+                        <td>
                             @{
-                                var status = order.status?.ToLower();
+                                var paymentMethod = order.paymentMethod?.ToLower() ?? "";
+                                var status = order.status?.ToLower() ?? "";
+                                var stripeId = order.stripeSessionId?.ToLower() ?? "";
+
+                                bool isPaid =
+                                (paymentMethod == "momo" && order.isPaymentMomo == true) ||
+                                (paymentMethod == "stripe" && !string.IsNullOrEmpty(stripeId) && stripeId != "null") ||
+                                (paymentMethod == "cash on delivery" && status == "delivered");
+
+                                var paidText = isPaid ? "Paid" : "Unpaid";
+                                var paidBg = isPaid ? "text-[#3FA580] bg-[#E7FAF1]" : "text-[#614AAB] bg-[#F4EFFE]";
+                            }
+
+                            <span class="inline-block px-4 py-2 font-medium rounded-[4px] @paidBg">
+                                @paidText
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-block px-4 py-2 font-medium rounded-[4px] ">
+                                @order.variants!.Sum(item => item.quantity)
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium ">
+                            @{
                                 var statusClass = status == "pending" ? "border-[#FBBF24] text-[#FBBF24]"
                                 : status == "processing" ? "border-[#3B82F6] text-[#3B82F6]"
                                 : status == "shipped" ? "border-[#8B5CF6] text-[#8B5CF6]"
@@ -61,68 +135,44 @@
                                 : status == "delivered" ? "Delivered"
                                 : "Cancelled";
                             }
-                            <span class="px-3 py-1 text-xs font-medium rounded-full border @statusClass">
+                            <span class="px-4 py-2 font-medium rounded-[4px] border @statusClass">
                                 @statusText
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            @($"{order.totalAmount:N0}đ")
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @{
-                                var paymentMethod = order.paymentMethod.ToLower();
-                                var paymentClass = paymentMethod == "stripe" ? "bg-[#635BFF] text-white"
-                                : paymentMethod == "momo" ? "bg-[#D82D8B] text-white"
-                                : "bg-[#4CAF50] text-white";
-                                var paymentText = paymentMethod == "stripe" ? "Stripe"
-                                : paymentMethod == "momo" ? "Momo"
-                                : "Ship-cod";
-                            }
-                            <span class="px-4 py-2 text-xs font-medium rounded-full @paymentClass">
-                                @paymentText
-                            </span>
-                        </td>
-
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
                                 <a href="/Admin/Orders/Details/@order._id" class="text-[#1E88E5] hover:text-[#1E88E5]">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                 </a>
                                 <a href="/Admin/Orders/Update/@order._id"
-                                    class="text-[#fdcf00fd] hover:text-[#fdcf00fd]">
+                                    class="text-[hsla(110,44%,66%,1)] hover:text-[#fdcf00fd]">
                                     <i data-lucide="shield-check" class="w-4 h-4"></i>
                                 </a>
                             </div>
                         </td>
                     </tr>
-                   }
+                                        }
                 </tbody>
             </table>
+
         </div>
+
+        @if (Model.TotalPages > 1)
+        {   
+             var queryFilter = $"&OrderId={Model.OrderId}&Status={Model.Status}&PaymentStatus={Model.PaymentStatus}&DateFrom={Model.DateFrom}&DateTo={Model.DateTo}";
+
+            <div class="flex justify-center mt-6">
+                <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
+                    <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-l-md @(Model.CurrentPage == 1 ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
+                       href="?page=@(Model.CurrentPage - 1)&size=@Model.SizeOrder@queryFilter">Previous</a>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <a class="px-3 py-2 border-t border-b border-gray-700 bg-gray-800 text-gray-300 @(Model.CurrentPage == i ? "bg-[#2196F3] text-white" : "hover:bg-gray-700")"
+                            href="?page=@i&size=@Model.SizeOrder@queryFilter">@i</a>
+                    }
+                    <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-r-md @(Model.CurrentPage == Model.TotalPages ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
+                        href="?page=@(Model.CurrentPage + 1)&size=@Model.SizeOrder@queryFilter">Next</a>
+                </nav>
+            </div>
+        }
     </div>
-
-    @if (Model.TotalPages > 1)
-    {
-        var current = Model.CurrentPage;
-        var size = Model.Size;
-        var totalPages = Model.TotalPages;
-
-        <div class="flex justify-center items-center gap-4 mt-6">
-            <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-md @(current <= 1 ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
-                href="?page=@(current - 1)&size=@size">
-                Previous
-            </a>
-
-            <span class="text-sm text-gray-400">
-                Page <span class="font-semibold text-white">@current</span> of <span
-                    class="font-semibold text-white">@totalPages</span>
-            </span>
-
-            <a class="px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 rounded-md @(current >= totalPages ? "opacity-50 pointer-events-none" : "hover:bg-gray-700")"
-                href="?page=@(current + 1)&size=@size">
-                Next
-            </a>
-        </div>
-    }
-
-</div>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.models;
 using MongoDB.Bson;
+using Stripe;
 
 namespace api.Dtos
 {
@@ -11,10 +12,12 @@ namespace api.Dtos
     {
         public string _id { get; set; } = string.Empty;
         public List<OrderVariantDetail> variants { get; set; } = new();
+        public string user { get; set; } = string.Empty;
         public DateTime createdAt { get; set; }
         public int totalAmount { get; set; }
         public string shippingAddress { get; set; } = string.Empty;
         public string paymentMethod { get; set; } = "pending";
+        public string status { get; set; } = string.Empty;
 
     }
     public class OrderVariantDetail
@@ -121,6 +124,9 @@ namespace api.Dtos
         public decimal totalAmount { get; set; }
         public string status { get; set; } = string.Empty;
         public string paymentMethod { get; set; } = string.Empty;
+        public DateTime createdAt { get; set; }
+        public string stripeSessionId { get; set; } = string.Empty;
+        public bool isPaymentMomo { get; set; } = false;
     }
 
     public class AdminResponseUserDto
@@ -144,6 +150,7 @@ namespace api.Dtos
         public AdminResponseColorDto color { get; set; } = new();
         public string storage { get; set; } = string.Empty;
         public string images { get; set; } = string.Empty;
+        public int prices { get; set; }
         public int quantity { get; set; }
     }
 
@@ -174,5 +181,18 @@ namespace api.Dtos
     public class stateDto
     {
         public string status { get; set; } = string.Empty;
+    }
+
+    public class GetOrderQueryDto
+    {
+        public int page { get; set; } = 1;
+        public int size { get; set; } = 10;
+        public string? orderId { get; set; }
+        public string? customer { get; set; }
+        public string? email { get; set; }
+        public string? status { get; set; }
+        public string? paymentStatus { get; set; }
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace api.Interfaces.Services
 {
     public interface IAdminOrderService
     {
-        Task<PaginateDto<AdminGetAllOrder>> HandleGetAllOrder(int page, int size);
+        Task<PaginateDto<AdminGetAllOrder>> HandleGetAllOrder(GetOrderQueryDto dto);
         Task<AdminGetAllOrder> HandleGetOrderDetail(string orderId);
         Task<AdminResponseUpdateOrderStatus> HandleUpdateOrderStatus(string orderId, stateDto dto);
     }

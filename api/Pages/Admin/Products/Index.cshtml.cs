@@ -4,6 +4,7 @@ using api.Dtos;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace api.Pages.Admin.Products
 {
@@ -32,8 +33,8 @@ namespace api.Pages.Admin.Products
             _httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SERVER_URL")!);
         }
 
-        public async Task OnGetAsync(string? search, string? categoryId, int page = 1, int size = 10, int? minPrice = null, int? maxPrice = null, string? color = null, string? storage = null)
-        {
+        public async Task OnGetAsync(string? search, string? categoryId,[FromQuery] int page = 1,[FromQuery] int size = 10, int? minPrice = null, int? maxPrice = null, string? color = null, string? storage = null)
+        {   
             var token = Request.Cookies["accessToken"];
             if (!string.IsNullOrEmpty(token))
             {
