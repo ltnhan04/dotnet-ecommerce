@@ -29,9 +29,9 @@ namespace api.Controllers
         }
 
         [HttpGet("chart")]
-        public async Task<IActionResult> GetRevenueChart([FromQuery] string type, [FromQuery] DateTime from, [FromQuery] DateTime to)
+        public async Task<IActionResult> GetRevenueChart([FromQuery] string type)
         {
-            var data = await _revenueService.getRevenueChart(type, from, to);
+            var data = await _revenueService.getRevenueChart(type);
             return Ok(data);
         }
         [HttpGet("top10")]

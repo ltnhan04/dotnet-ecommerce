@@ -1,124 +1,339 @@
 @page
 @model api.Pages.Admin.Dashboard.IndexModel
+@using System.Globalization
+@using System.Text.Json
 @{
     ViewData["Title"] = "Dashboard";
     ViewData["PageTitle"] = "Dashboard";
     Layout = "_Layout";
 }
 
-<div class="space-y-6">
+<div class="space-y-6 max-w-full ">
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
-            <div class="flex items-center justify-between">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-400">Total Orders</p>
-                    <p class="text-2xl font-bold text-white">156</p>
+                    <p class="text-xl font-medium text-white">Total Revenue</p>
+                    <p class="text-xs text-gray-400">Last 30 days</p>
+                    <p class="text-2xl font-bold text-white mt-2">
+                        @Model.Summary.totalAmount.ToString("C0", CultureInfo.GetCultureInfo("vi-VN"))
+                    </p>
                 </div>
-                <div class="w-12 h-12 bg-[#4CAF50] bg-opacity-20 rounded-lg flex items-center justify-center">
-                    <i data-lucide="shopping-cart" class="w-6 h-6 text-[#4CAF50]"></i>
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-hand-coins-icon lucide-hand-coins text-[#4CAF50]">
+                        <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17" />
+                        <path
+                            d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9" />
+                        <path d="m2 16 6 6" />
+                        <circle cx="16" cy="9" r="2.9" />
+                        <circle cx="6" cy="5" r="3" />
+                    </svg>
                 </div>
-            </div>
-            <div class="mt-4 flex items-center text-sm">
-                <span class="text-[#4CAF50] flex items-center">
-                    <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
-                    +12.5%
-                </span>
-                <span class="text-gray-400 ml-2">from last month</span>
             </div>
         </div>
 
         <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
-            <div class="flex items-center justify-between">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-400">Total Revenue</p>
-                    <p class="text-2xl font-bold text-white">$24,563</p>
+                    <p class="text-xl font-medium text-white">Total Orders</p>
+                    <p class="text-xs text-gray-400">Last 30 days</p>
+                    <p class="text-2xl font-bold text-white mt-2">
+                        @Model.Summary.totalOrder
+                    </p>
                 </div>
-                <div class="w-12 h-12 bg-[#2196F3] bg-opacity-20 rounded-lg flex items-center justify-center">
-                    <i data-lucide="dollar-sign" class="w-6 h-6 text-[#2196F3]"></i>
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-package-icon lucide-package text-[#2196F3]">
+                        <path
+                            d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+                        <path d="M12 22V12" />
+                        <polyline points="3.29 7 12 12 20.71 7" />
+                        <path d="m7.5 4.27 9 5.15" />
+                    </svg>
                 </div>
-            </div>
-            <div class="mt-4 flex items-center text-sm">
-                <span class="text-[#4CAF50] flex items-center">
-                    <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
-                    +8.2%
-                </span>
-                <span class="text-gray-400 ml-2">from last month</span>
             </div>
         </div>
 
         <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
-            <div class="flex items-center justify-between">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-400">Total Customers</p>
-                    <p class="text-2xl font-bold text-white">2,845</p>
+                    <p class="text-xl font-medium text-white">Total Customer</p>
+                    <p class="text-xs text-gray-400">Last 30 days</p>
+                    <p class="text-2xl font-bold text-white mt-2">
+                        @Model.Summary.totalCustomer
+                    </p>
                 </div>
-                <div class="w-12 h-12 bg-[#9C27B0] bg-opacity-20 rounded-lg flex items-center justify-center">
-                    <i data-lucide="users" class="w-6 h-6 text-[#9C27B0]"></i>
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-user-round-icon lucide-user-round text-[#9C27B0]">
+                        <circle cx="12" cy="8" r="5" />
+                        <path d="M20 21a8 8 0 0 0-16 0" />
+                    </svg>
                 </div>
-            </div>
-            <div class="mt-4 flex items-center text-sm">
-                <span class="text-[#4CAF50] flex items-center">
-                    <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
-                    +5.1%
-                </span>
-                <span class="text-gray-400 ml-2">from last month</span>
             </div>
         </div>
 
         <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
-            <div class="flex items-center justify-between">
+            <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-400">Total Products</p>
-                    <p class="text-2xl font-bold text-white">1,234</p>
+                    <p class="text-xl font-medium text-white">Pending Order</p>
+                    <p class="text-xs text-gray-400">Last 30 days</p>
+                    <p class="text-2xl font-bold text-white mt-2">
+                        @Model.Summary.totalPendingOrder
+                    </p>
                 </div>
-                <div class="w-12 h-12 bg-[#FF9800] bg-opacity-20 rounded-lg flex items-center justify-center">
-                    <i data-lucide="package" class="w-6 h-6 text-[#FF9800]"></i>
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-package-check-icon lucide-package-check text-[#FF9800]">
+                        <path d="m16 16 2 2 4-4" />
+                        <path
+                            d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14" />
+                        <path d="m7.5 4.27 9 5.15" />
+                        <polyline points="3.29 7 12 12 20.71 7" />
+                        <line x1="12" x2="12" y1="22" y2="12" />
+                    </svg>
                 </div>
-            </div>
-            <div class="mt-4 flex items-center text-sm">
-                <span class="text-[#F44336] flex items-center">
-                    <i data-lucide="trending-down" class="w-4 h-4 mr-1"></i>
-                    -2.3%
-                </span>
-                <span class="text-gray-400 ml-2">from last month</span>
             </div>
         </div>
     </div>
 
-    <!-- Recent Orders -->
-    <div class="bg-[#1E293B] rounded-xl shadow-md overflow-hidden">
-        <div class="p-6 border-b border-gray-700">
-            <h3 class="text-lg font-semibold text-white">Recent Orders</h3>
+    <div class="flex w-full gap-4">
+        <div style="flex: 7" class="bg-[#1E293B] rounded-xl p-6 flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <span class="font-semibold text-gray-800 text-lg">Sales Analytic</span>
+                <div class="relative">
+                    <select id="chartType"
+                        class="appearance-none bg-[#1E293B] border text-center border-gray-300 text-white py-2 p-4 rounded-xl shadow transition text-sm font-medium">
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex-1 flex items-center">
+                <canvas id="revenueChart" height="200"></canvas>
+            </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-800">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Order ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Customer</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Products</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-700">
-                    <tr class="hover:bg-gray-800 transition-colors">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-white">#ORD-001</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">John Doe</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">iPhone 13 Pro</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">$999</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-[#4CAF50] text-white">
-                                Completed
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">2024-03-15</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
-            </table>
+        <div style="flex: 3" class="bg-[#1E293B] rounded-xl p-6">
+            <div>
+                <p class="text-xl text-center font-medium text-white">Top 5 tỉnh có đơn hàng nhiều nhất</p>
+            </div>
+            <div class="overflow-auto flex justify-start" id="vn-map-container">
+
+            </div>
+            <div class="mt-6">
+                <ul class="bg-[#1E293B] shadow rounded-lg divide-y divide-gray-200 max-w-sm">
+                    <li class="flex justify-between items-center px-4 py-2">
+                        <span>Hồ Chí Minh</span>
+                        <span class="font-semibold text-white">523 đơn</span>
+                    </li>
+                    <li class="flex justify-between items-center px-4 py-2">
+                        <span>Hà Nội</span>
+                        <span class="font-semibold text-white">478 đơn</span>
+                    </li>
+                    <li class="flex justify-between items-center px-4 py-2">
+                        <span>Đà Nẵng</span>
+                        <span class="font-semibold text-white">312 đơn</span>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
+
+    <div class="bg-[#1E293B] p-4 rounded shadow-md max-w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-white">Top Selling Products</h2>
+            <div class="flex gap-2">
+                <button id="scrollLeftBtn"
+                    class="p-2 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <button id="scrollRightBtn"
+                    class="p-2 rounded-full bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="productsScrollContainer" class="overflow-x-hidden scroll-smooth" style="width: 1024px;">
+            <div id="productsInnerContainer" class="flex gap-4">
+                @foreach (var product in Model.TopProducts)
+                {
+                    <div class="w-48 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden shadow">
+                        <img src="@product.image" alt="@product.productName" class="w-full h-48 object-cover">
+                        <div class="p-2">
+                            <p class="text-sm font-semibold text-black truncate">@product.productName</p>
+                            <p class="text-xs text-gray-500">Đã bán @product.totalSold cái</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let chart;
+
+
+        async function updateChart(type) {
+            const res = await fetch(`?handler=ChartData&type=${type}`);
+            const data = await res.json();
+
+            const labels = data.map(item => item.label);
+            const values = data.map(item => item.totalRevenue);
+
+            if (!chart) {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: values,
+                            borderColor: '#2196F3',
+                            backgroundColor: 'rgba(33,150,243,0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#2196F3',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        if (value >= 1_000_000_000) {
+                                            return +(value / 1_000_000_000).toFixed(1) + "B";
+                                        }
+                                        else if (value >= 1_000_000) {
+                                            return +(value / 1_000_000).toFixed(1) + "M";
+                                        } else {
+                                            return value.toLocaleString('vi-VN');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = values;
+                chart.update();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('chartType');
+            updateChart('day'); // mặc định lần đầu load
+
+            select.addEventListener('change', () => {
+                updateChart(select.value);
+            });
+        });
+    </script>
+
+    <script>
+        fetch('/svg/vn-map.svg')
+            .then(res => res.text())
+            .then(svg => {
+                document.getElementById('vn-map-container').innerHTML = svg;
+
+                const highlightedProvinces = ["VNHN", "VNSG", "VNDN"]; // Ví dụ Hà Nội và Sài Gòn
+
+                highlightedProvinces.forEach(id => {
+                    const path = document.getElementById(id);
+                    if (path) {
+                        path.style.fill = "orange"; // Màu nổi bật
+                        path.style.stroke = "#fff";
+                        path.style.strokeWidth = "2";
+                    }
+                });
+            });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const productsScrollContainer = document.getElementById('productsScrollContainer');
+            const productsInnerContainer = document.getElementById('productsInnerContainer');
+            const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+            const scrollRightBtn = document.getElementById('scrollRightBtn');
+
+            // --- Cấu hình cho việc cuộn ---
+            const productWidth = 192; // w-48 = 12rem = 192px (1rem = 16px)
+            const gapWidth = 16;     // gap-4 = 1rem = 16px
+            // Số lượng sản phẩm muốn cuộn mỗi lần (ví dụ: cuộn 4 sản phẩm một lúc)
+            const itemsToScroll = 4; // Bạn có thể thay đổi số này
+            const scrollAmount = (productWidth + gapWidth) * itemsToScroll;
+
+            // Hàm để kiểm tra trạng thái nút (enabled/disabled)
+            function updateScrollButtons() {
+                if (!productsScrollContainer || !scrollLeftBtn || !scrollRightBtn) return;
+
+                // Nút trái bị disable nếu đang ở vị trí đầu
+                scrollLeftBtn.disabled = productsScrollContainer.scrollLeft <= 0;
+                scrollLeftBtn.classList.toggle('opacity-50', productsScrollContainer.scrollLeft <= 0);
+
+                // Nút phải bị disable nếu đang ở vị trí cuối
+                const maxScrollLeft = productsScrollContainer.scrollWidth - productsScrollContainer.clientWidth;
+                // Sử dụng tolerance nhỏ để tránh lỗi làm tròn khi so sánh float
+                scrollRightBtn.disabled = productsScrollContainer.scrollLeft >= maxScrollLeft - 1;
+                scrollRightBtn.classList.toggle('opacity-50', productsScrollContainer.scrollLeft >= maxScrollLeft - 1);
+            }
+
+            // Lắng nghe sự kiện click cho nút phải
+            scrollRightBtn.addEventListener('click', () => {
+                if (productsScrollContainer) {
+                    productsScrollContainer.scrollBy({
+                        left: scrollAmount, // Cuộn một lượng cố định
+                        behavior: 'smooth'
+                    });
+                }
+            });
+
+            // Lắng nghe sự kiện click cho nút trái
+            scrollLeftBtn.addEventListener('click', () => {
+                if (productsScrollContainer) {
+                    productsScrollContainer.scrollBy({
+                        left: -scrollAmount, // Cuộn ngược một lượng cố định
+                        behavior: 'smooth'
+                    });
+                }
+            });
+
+            // Lắng nghe sự kiện cuộn của container để cập nhật trạng thái nút
+            productsScrollContainer.addEventListener('scroll', updateScrollButtons);
+
+            // Gọi lần đầu khi DOM được tải để thiết lập trạng thái nút ban đầu
+            updateScrollButtons();
+
+            // Cập nhật lại trạng thái nút khi cửa sổ thay đổi kích thước (để xử lý responsive)
+            window.addEventListener('resize', updateScrollButtons);
+        });
+    </script>
+}

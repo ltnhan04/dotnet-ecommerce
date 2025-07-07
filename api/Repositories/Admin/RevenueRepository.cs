@@ -41,62 +41,84 @@ namespace api.Repositories.Admin
             };
         }
 
-        public async Task<List<RevenueDto>> getRevenueChart(string type, DateTime from, DateTime to)
+        public async Task<List<RevenueDto>> getRevenueChart(string type)
         {
-            // Đảm bảo to luôn là cuối ngày
+            DateTime now = DateTime.Now;
+            DateTime from;
+            DateTime to = now;
+
+            // Xác định khoảng thời gian dựa vào type
+            switch (type)
+            {
+                case "day":
+                    from = now.Date; // Từ đầu ngày hôm nay
+                    break;
+
+                case "week":
+                    int daysSinceMonday = ((int)now.DayOfWeek + 6) % 7; // chuyển Sunday=0 thành Sunday=6
+                    from = now.Date.AddDays(-daysSinceMonday); // Từ thứ 2 đầu tuần
+                    break;
+
+                case "month":
+                    from = new DateTime(now.Year, 1, 1); // Từ đầu năm
+                    break;
+
+                default:
+                    throw new ArgumentException("Invalid type");
+            }
+
+            // Đảm bảo to là cuối ngày hiện tại
             to = to.Date.AddDays(1).AddTicks(-1);
+
             var orders = await _context.Orders
                 .Where(o => o.status == "delivered" && o.createdAt >= from && o.createdAt <= to)
                 .ToListAsync();
 
             List<RevenueDto> result;
 
-            if (from.Date == to.Date.Date)
+            switch (type)
             {
-                // Trường hợp thống kê trong 1 ngày → theo giờ
-                result = orders
-                    .GroupBy(o => o.createdAt.Hour)
-                    .Select(g => new RevenueDto
-                    {
-                        label = $"{g.Key:00}:00",
-                        totalRevenue = g.Sum(o => o.totalAmount)
-                    })
-                    .OrderBy(r => r.label)
-                    .ToList();
+                case "day":
+                    // Chia theo giờ
+                    result = Enumerable.Range(0, 24)
+                        .Select(hour => new RevenueDto
+                        {
+                            label = $"{hour}h",
+                            totalRevenue = orders
+                                .Where(o => o.createdAt.Hour == hour)
+                                .Sum(o => o.totalAmount)
+                        }).ToList();
+                    break;
 
-                return result;
+                case "week":
+                    string[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+                    result = Enumerable.Range(0, 7)
+                        .Select(i => new RevenueDto
+                        {
+                            label = days[i],
+                            totalRevenue = orders
+                                .Where(o => (int)o.createdAt.DayOfWeek == (i + 1) % 7)
+                                .Sum(o => o.totalAmount)
+                        }).ToList();
+                    break;
+
+                case "month":
+                    string[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+                    result = Enumerable.Range(1, 12)
+                        .Select(m => new RevenueDto
+                        {
+                            label = months[m - 1],
+                            totalRevenue = orders
+                                .Where(o => o.createdAt.Month == m)
+                                .Sum(o => o.totalAmount)
+                        }).ToList();
+                    break;
+
+                default:
+                    throw new ArgumentException("Invalid type");
             }
 
-            result = type switch
-            {
-                "day" => orders
-                    .GroupBy(o => o.createdAt.Date)
-                    .Select(g => new RevenueDto
-                    {
-                        label = g.Key.ToString("yyyy-MM-dd"),
-                        totalRevenue = g.Sum(o => o.totalAmount)
-                    }).ToList(),
-
-                "month" => orders
-                    .GroupBy(o => new { o.createdAt.Year, o.createdAt.Month })
-                    .Select(g => new RevenueDto
-                    {
-                        label = $"{g.Key.Year}-{g.Key.Month:D2}",
-                        totalRevenue = g.Sum(o => o.totalAmount)
-                    }).ToList(),
-
-                "year" => orders
-                    .GroupBy(o => o.createdAt.Year)
-                    .Select(g => new RevenueDto
-                    {
-                        label = g.Key.ToString(),
-                        totalRevenue = g.Sum(o => o.totalAmount)
-                    }).ToList(),
-
-                _ => throw new ArgumentException("Invalid type")
-            };
-
-            return result.OrderBy(r => r.label).ToList();
+            return result;
         }
 
         public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts()
@@ -126,7 +148,7 @@ namespace api.Repositories.Admin
                     totalSold = g.Sum(x => x.quantity),
                 })
                 .OrderByDescending(x => x.totalSold)
-                .Take(10)
+                .Take(7)
                 .ToList();
 
             // Chuyển đổi từ TopProductDto sang TopProductDtoRes
@@ -156,7 +178,7 @@ namespace api.Repositories.Admin
                 if (variant != null)
                 {
                     item.productId = variant.product.ToString();
-                    item.image = variant.images.FirstOrDefault() ?? string.Empty;
+                    item.image = variant.images.Count >= 4 ? variant.images[3] : variant.images.FirstOrDefault() ?? string.Empty;
                     item.price = variant.price;
 
                     var product = products.FirstOrDefault(p => p._id.ToString() == variant.product.ToString());
@@ -180,7 +202,7 @@ namespace api.Repositories.Admin
                 {
                     var addressParts = o.shippingAddress.Split(',');
                     string province = addressParts.Length >= 2
-                        ? addressParts[^2].Trim() 
+                        ? addressParts[^2].Trim()
                         : "Unknown";
 
                     return province;
