@@ -63,7 +63,19 @@ namespace api.Dtos
     {
         public string success { get; set; } = string.Empty;
         public string orderId { get; set; } = string.Empty;
-        public string? transId { get; set; } 
+        public string? transId { get; set; }
+        public string message { get; set; } = string.Empty;
+    }
+
+    public class StripeCallbackDto
+    {
+        public string orderId { get; set; } = string.Empty;
+        public string stripeSessionId { get; set; } = string.Empty;
+    }
+
+    public class ResponseStripeCallbackDto
+    {
+        public string orderId { get; set; } = string.Empty;
         public string message { get; set; } = string.Empty;
     }
 }

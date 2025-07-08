@@ -39,5 +39,10 @@ namespace api.Services.Customer
         {
             return await _paymentRepository.MomoCallback(dto);
         }
+
+        public async Task<ResponseStripeCallbackDto> HandleStripeCallback(StripeCallbackDto dto)
+        {
+            return await _paymentRepository.StripeCallback(dto);
+        }
     }
 }
