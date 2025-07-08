@@ -189,6 +189,8 @@ namespace api.Repositories.Admin
                     images = v.images.FirstOrDefault()! ?? "null",
                     quantity = v.stock_quantity
                 }).ToList(),
+                stripeSessionId = order.stripeSessionId ?? "null",
+                isPaymentMomo = order.isPaymentMomo ?? false,
                 totalAmount = order.totalAmount,
                 createdAt = order.createdAt,
                 status = order.status,
