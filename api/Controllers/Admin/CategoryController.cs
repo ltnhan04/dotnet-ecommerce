@@ -37,6 +37,20 @@ namespace api.Controllers.Admin
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
+        [HttpGet("sub/{categoryId}")]
+        public async Task GetSubCategories(string categoryId)
+        {
+            try
+            {
+                Console.WriteLine("CategoryId: " + categoryId);
+                var categories = await _categoryService.GetSubCategories(categoryId);
+                await ResponseHandler.SendSuccess(Response, categories, 200, "Get sub categories successfully!");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
         [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task CreateCategory([FromBody] Dtos.CreateCategoryDto categoryDto)
