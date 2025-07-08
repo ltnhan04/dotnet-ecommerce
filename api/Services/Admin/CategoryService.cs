@@ -29,6 +29,14 @@ namespace api.Services.Admin
                 parent_category = c.parent_category
             })];
         }
+        public async Task<List<CategoryDto>> GetSubCategories(string categoryId)
+        {
+            if (String.IsNullOrEmpty(categoryId))
+            {
+                throw new AppException("Category not found");
+            }
+            return await _categoryRepository.GetSubCategories(categoryId);
+        }
         public async Task<CreateCategoryDto> CreateCategory(CreateCategoryDto categoryDto)
         {
             var category = new models.Category
