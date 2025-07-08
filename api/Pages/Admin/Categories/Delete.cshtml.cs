@@ -33,6 +33,7 @@ namespace api.Pages.Admin.Categories
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
+            // Gọi endpoint lấy tất cả danh mục cha
             var response = await _httpClient.GetAsync("api/v1/admin/categories");
             if (response.IsSuccessStatusCode)
             {
@@ -44,6 +45,22 @@ namespace api.Pages.Admin.Categories
                 if (cat != null)
                 {
                     Name = cat.name;
+                    return;
+                }
+            }
+            // Nếu không tìm thấy ở danh mục cha, thử lấy theo parent (danh mục con)
+            // Giả sử Id là parentId, gọi endpoint sub/{parentId}
+            var subResponse = await _httpClient.GetAsync($"api/v1/admin/categories/sub/{Id}");
+            if (subResponse.IsSuccessStatusCode)
+            {
+                var json = await subResponse.Content.ReadAsStringAsync();
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+                var data = doc.RootElement.GetProperty("data");
+                var subList = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(data.GetRawText()) ?? new();
+                var subCat = subList.FirstOrDefault(c => c._id == Id);
+                if (subCat != null)
+                {
+                    Name = subCat.name;
                 }
             }
         }

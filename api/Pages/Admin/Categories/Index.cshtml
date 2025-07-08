@@ -1,12 +1,17 @@
 @page
 @model api.Pages.Admin.Categories.Index
 @{
-    ViewData["Title"] = "Quản lý danh mục";
+        ViewData["Title"] = "Quản lý danh mục";
     var search = Model.Request.Query["search"].ToString();
-    var filtered = string.IsNullOrWhiteSpace(search) ? Model.Categories : Model.Categories.Where(c => c.name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-    var parents = filtered.Where(c => string.IsNullOrEmpty(c.parent_category)).ToList();
-    var children = filtered.Where(c => !string.IsNullOrEmpty(c.parent_category)).ToList();
-    Func<string, List<api.Dtos.CategoryDto>> getChildren = (parentId) => children.Where(c => c.parent_category == parentId).ToList();
+    var parents = string.IsNullOrWhiteSpace(search)
+        ? Model.Parents
+        : Model.Parents.Where(c => c.name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+    var children = string.IsNullOrWhiteSpace(search)
+        ? Model.Children
+        : Model.Children.Where(c => c.name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    Func<string, List<api.Dtos.CategoryDto>> getChildren = (parentId) =>
+        children.Where(c => c.parent_category == parentId).ToList();
 }
 
 <div class="flex items-center justify-between mb-6">

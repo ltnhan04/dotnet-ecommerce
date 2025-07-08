@@ -11,12 +11,12 @@
             <label class="block font-semibold mb-1">Tên danh mục</label>
             <input asp-for="Category.name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" />
             <span asp-validation-for="Category.name" class="text-red-500 text-sm"></span>
-            <span class="text-xs text-gray-400 block mt-1">Tên cũ: <span class="font-mono">@Model.Category.name</span></span>
+            <span class="text-xs text-gray-400 block mt-1">Tên cũ: <span class="font-mono">@Model.OldName</span></span>
         </div>
         <div>
             <label class="block font-semibold mb-1">Danh mục cha (nếu có)</label>
             <input asp-for="Category.parent_category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="ID danh mục cha hoặc để trống" />
-            <span class="text-xs text-gray-400 block mt-1">Danh mục cha cũ: <span class="font-mono"> @(string.IsNullOrEmpty(Model.Category.parent_category) ? "None" : Model.Category.parent_category)</span></span>
+            <span class="text-xs text-gray-400 block mt-1">Danh mục cha cũ: <span class="font-mono">@(string.IsNullOrEmpty(Model.OldParentName) ? "None" : Model.OldParentName)</span></span>
         </div>
         <div class="flex gap-2 mt-6">
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">Lưu</button>
