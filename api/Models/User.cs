@@ -18,7 +18,7 @@ namespace api.models
         [MaxLength(100), BsonElement("email")]
         public string email { get; set; } = string.Empty;
         [MinLength(8), BsonElement("password")]
-        public string? password { get; set; } 
+        public string? password { get; set; }
         [BsonElement("phoneNumber")]
         public string? phoneNumber { get; set; }
         [BsonElement("address")]
@@ -33,7 +33,7 @@ namespace api.models
         [BsonElement("updatedAt")]
         public DateTime updatedAt { get; set; } = DateTime.UtcNow;
     }
-    
+
     public class Address
     {
         [MaxLength(50)]
@@ -50,7 +50,7 @@ namespace api.models
 
         [MaxLength(50)]
         [BsonElement("city")]
-        public string? city { get; set; } 
+        public string? city { get; set; }
 
         [MaxLength(30)]
         [BsonElement("country")]

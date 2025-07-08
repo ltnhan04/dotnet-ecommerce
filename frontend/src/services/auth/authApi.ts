@@ -4,8 +4,9 @@ import { axiosInstance } from "@/config/axiosInstance";
 import {
   SignUpType,
   LoginType,
-  ProfileType,
   VerifySignUpType,
+  IResponseProfileType,
+  ProfileType,
 } from "@/types/auth";
 
 export const login = async ({ email, password }: LoginType) => {
@@ -54,8 +55,10 @@ export const resentOTP = async (email: string) => {
 };
 
 export const getProfile = async (): Promise<ProfileType> => {
-  const response = await axiosInstance.get<ProfileType>("/api/v1/auth/profile");
-  return response.data;
+  const response = await axiosInstance.get<IResponseProfileType>(
+    "/api/v1/auth/profile"
+  );
+  return response.data.data;
 };
 
 export const updateProfile = async ({
