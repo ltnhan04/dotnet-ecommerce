@@ -185,10 +185,12 @@ namespace api.Repositories.Admin
                         colorName = v.color.colorName
                     },
                     storage = v.storage,
+                    prices = v.price,
                     images = v.images.FirstOrDefault()! ?? "null",
                     quantity = v.stock_quantity
                 }).ToList(),
                 totalAmount = order.totalAmount,
+                createdAt = order.createdAt,
                 status = order.status,
                 paymentMethod = order.paymentMethod
             };
