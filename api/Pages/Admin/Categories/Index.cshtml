@@ -1,11 +1,83 @@
 @page
 @model api.Pages.Admin.Categories.Index
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Quản lý danh mục";
+    var search = Model.Request.Query["search"].ToString();
+    var filtered = string.IsNullOrWhiteSpace(search) ? Model.Categories : Model.Categories.Where(c => c.name.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+    var parents = filtered.Where(c => string.IsNullOrEmpty(c.parent_category)).ToList();
+    var children = filtered.Where(c => !string.IsNullOrEmpty(c.parent_category)).ToList();
+    Func<string, List<api.Dtos.CategoryDto>> getChildren = (parentId) => children.Where(c => c.parent_category == parentId).ToList();
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<div>
-    
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-white">Quản lý danh mục</h1>
+    <a href="/Admin/Categories/Create" class="bg-[#2196F3] hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition">+ Thêm danh mục mới</a>
 </div>
+
+<form method="get" class="mb-4 flex gap-2">
+    <input type="text" name="search" value="@search" placeholder="Tìm kiếm tên danh mục..." class="px-3 py-2 border border-gray-600 bg-[#232b3b] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-64" />
+    <button type="submit" class="bg-[#2196F3] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">Tìm kiếm</button>
+</form>
+
+@if (parents.Count == 0)
+{
+    <div class="text-gray-400">Không có danh mục nào.</div>
+}
+else
+{
+    <div class="bg-[#1E293B] rounded-xl shadow p-6">
+    <ul class="space-y-3">
+        @foreach (var parent in parents)
+        {
+            var childrenList = getChildren(parent._id);
+            var hasChildren = childrenList.Count > 0;
+            var toggleId = $"toggle-{parent._id}";
+            <li class="group">
+                <div class="flex items-center gap-2 py-2 px-3 rounded-lg bg-[#23304a] hover:bg-blue-900 transition font-semibold text-lg text-blue-200 shadow-sm cursor-pointer"
+                     onclick="document.getElementById('@toggleId').classList.toggle('hidden')">
+                    <svg class="w-5 h-5 text-yellow-400 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h3.28a2 2 0 011.7.96l.94 1.57A2 2 0 0013.28 9H19a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                    </svg>
+                    <span>@parent.name</span>
+
+                    @if (hasChildren)
+                    {
+                        <svg class="ml-2 w-4 h-4 text-white opacity-60 group-hover:opacity-100 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    }
+
+                    <a href="/Admin/Categories/Update?id=@parent._id" class="ml-auto text-blue-400 hover:text-blue-200 text-sm px-2 py-1 rounded transition">
+                        <i data-lucide="edit" class="w-4 h-4"></i>
+                    </a>
+                    <a href="/Admin/Categories/Delete?id=@parent._id" class="text-red-400 hover:text-red-200 text-sm px-2 py-1 rounded transition">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                @if (hasChildren)
+                {
+                    <ul id="@toggleId" class="ml-8 mt-2 border-l-2 border-blue-700 pl-4 space-y-2 hidden">
+                        @foreach (var child in childrenList)
+                        {
+                            <li class="flex items-center gap-2 py-1 px-2 rounded-lg bg-[#232b3b] hover:bg-blue-800 transition text-gray-200">
+                                <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                </svg>
+                                <span>@child.name</span>
+                                <a href="/Admin/Categories/Update?id=@child._id" class="ml-auto text-blue-300 hover:text-blue-100 text-xs px-2 py-1 rounded transition">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                </a>
+                                <a href="/Admin/Categories/Delete?id=@child._id" class="text-red-300 hover:text-red-100 text-xs px-2 py-1 rounded transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+</div>
+
+}

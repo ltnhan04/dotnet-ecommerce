@@ -1,11 +1,18 @@
 @page
 @model api.Pages.Admin.Categories.Delete
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Xóa danh mục";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<div>
-
+<div class="max-w-lg mx-auto bg-[#1E293B] p-8 rounded-xl shadow">
+    <h1 class="text-xl font-bold mb-6 text-red-600">Xóa danh mục</h1>
+    <form method="post" class="space-y-4">
+        <div class="mb-4">
+            <p>Bạn có chắc chắn muốn xóa danh mục có tên: <span class="font-mono text-blue-700">@Model.Name</span>?</p>
+        </div>
+        <div class="flex gap-2 mt-6">
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold">Xác nhận xóa</button>
+            <a href="/Admin/Categories/Index" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-semibold">Quay lại</a>
+        </div>
+    </form>
 </div>
