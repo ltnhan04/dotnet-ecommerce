@@ -22,9 +22,9 @@ namespace api.Services.Admin
         {
             return await revenueRepository.getTotalRevenue();
         }
-        public async Task<List<RevenueDto>> getRevenueChart(string type, DateTime from, DateTime to)
+        public async Task<List<RevenueDto>> getRevenueChart(string type)
         {
-            return await revenueRepository.getRevenueChart(type, from, to);
+            return await revenueRepository.getRevenueChart(type);
         }
         public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts()
         {
