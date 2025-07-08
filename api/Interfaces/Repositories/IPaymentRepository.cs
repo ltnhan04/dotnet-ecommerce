@@ -10,9 +10,8 @@ namespace api.Interfaces.Repositories
     public interface IPaymentRepository
     {
         Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants);
-
         Task<UrlMomo> CreateMomoPayment(PaymentMomoDto dto);
-
         Task<ResponseMomoCallBackDto> MomoCallback(MomoCallbackDto dto);
+        Task<ResponseStripeCallbackDto> StripeCallback(StripeCallbackDto dto);
     }
 }

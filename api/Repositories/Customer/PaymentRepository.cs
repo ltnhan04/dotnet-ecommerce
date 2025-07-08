@@ -97,14 +97,14 @@ namespace api.Repositories.Customer
         }
 
         public async Task<UrlMomo> CreateMomoPayment(PaymentMomoDto dto)
-        {   
+        {
             Console.WriteLine("Callback Momo received");
             var accessKey = Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY");
             var secretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY");
             var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
             var redirectUrl = Environment.GetEnvironmentVariable("CLIENT_URL") + "/payment/success";
             var callbackUrl = Environment.GetEnvironmentVariable("SERVER_URL") + "/api/v1/payment/momo/callback";
-            
+
             var infoPayment = $"Thanh toán đơn hàng {dto.orderId}";
             var voucherCode = await _redisRepository.GetAsync($"voucher-{dto.orderId}");
             var rawSignature =
@@ -187,6 +187,21 @@ namespace api.Repositories.Customer
                 orderId = dto.orderId,
                 transId = dto.transId.ToString(),
                 message = dto.message
+            };
+        }
+
+        public async Task<ResponseStripeCallbackDto> StripeCallback(StripeCallbackDto dto)
+        {
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(item => item._id == ObjectId.Parse(dto.orderId)) ?? throw new AppException("OrderId not found", 404);
+
+            order.stripeSessionId = dto.stripeSessionId;
+            await _context.SaveChangesAsync();
+
+            return new ResponseStripeCallbackDto
+            {
+                orderId = order._id.ToString(),
+                message = "Updated stripe session id successfully"
             };
         }
     }
