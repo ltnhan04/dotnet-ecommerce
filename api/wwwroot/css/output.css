@@ -381,6 +381,9 @@
   .h-full {
     height: 100%;
   }
+  .h-min {
+    height: min-content;
+  }
   .min-h-full {
     min-height: 100%;
   }
@@ -465,9 +468,6 @@
   }
   .resize {
     resize: both;
-  }
-  .list-inside {
-    list-style-position: inside;
   }
   .list-disc {
     list-style-type: disc;
@@ -703,17 +703,14 @@
   .border-gray-300 {
     border-color: var(--color-gray-300);
   }
+  .border-gray-400 {
+    border-color: var(--color-gray-400);
+  }
   .border-gray-600 {
     border-color: var(--color-gray-600);
   }
   .border-gray-700 {
     border-color: var(--color-gray-700);
-  }
-  .border-green-400 {
-    border-color: var(--color-green-400);
-  }
-  .border-red-400 {
-    border-color: var(--color-red-400);
   }
   .border-transparent {
     border-color: transparent;
@@ -775,14 +772,8 @@
   .bg-gray-800 {
     background-color: var(--color-gray-800);
   }
-  .bg-green-100 {
-    background-color: var(--color-green-100);
-  }
   .bg-green-500 {
     background-color: var(--color-green-500);
-  }
-  .bg-red-100 {
-    background-color: var(--color-red-100);
   }
   .bg-red-500 {
     background-color: var(--color-red-500);
@@ -1011,9 +1002,6 @@
   .text-green-400 {
     color: var(--color-green-400);
   }
-  .text-green-700 {
-    color: var(--color-green-700);
-  }
   .text-red-300 {
     color: var(--color-red-300);
   }
@@ -1025,9 +1013,6 @@
   }
   .text-red-600 {
     color: var(--color-red-600);
-  }
-  .text-red-700 {
-    color: var(--color-red-700);
   }
   .text-white {
     color: var(--color-white);
@@ -1096,6 +1081,11 @@
       @media (hover: hover) {
         opacity: 100%;
       }
+    }
+  }
+  .peer-checked\:underline {
+    &:is(:where(.peer):checked ~ *) {
+      text-decoration-line: underline;
     }
   }
   .hover\:bg-\[\#0F172A\] {
@@ -1292,11 +1282,6 @@
   .focus\:ring-blue-500 {
     &:focus {
       --tw-ring-color: var(--color-blue-500);
-    }
-  }
-  .focus\:ring-gray-500 {
-    &:focus {
-      --tw-ring-color: var(--color-gray-500);
     }
   }
   .focus\:ring-offset-2 {

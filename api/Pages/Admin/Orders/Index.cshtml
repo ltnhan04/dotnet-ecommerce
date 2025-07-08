@@ -139,14 +139,10 @@
                                 @statusText
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                             <div class="flex space-x-2">
                                 <a href="/Admin/Orders/Details/@order._id" class="text-[#1E88E5] hover:text-[#1E88E5]">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
-                                </a>
-                                <a href="/Admin/Orders/Update/@order._id"
-                                    class="text-[hsla(110,44%,66%,1)] hover:text-[#fdcf00fd]">
-                                    <i data-lucide="shield-check" class="w-4 h-4"></i>
                                 </a>
                             </div>
                         </td>
@@ -154,7 +150,6 @@
                 }
                 </tbody>
             </table>
-
         </div>
 
         @if (Model.TotalPages > 1)
