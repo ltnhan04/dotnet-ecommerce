@@ -429,6 +429,9 @@
   .max-w-6xl {
     max-width: var(--container-6xl);
   }
+  .max-w-7xl {
+    max-width: var(--container-7xl);
+  }
   .max-w-full {
     max-width: 100%;
   }
@@ -724,6 +727,9 @@
   .bg-\[\#4CAF50\] {
     background-color: #4CAF50;
   }
+  .bg-\[\#0057FF\] {
+    background-color: #0057FF;
+  }
   .bg-\[\#232b3b\] {
     background-color: #232b3b;
   }
@@ -732,6 +738,9 @@
   }
   .bg-\[\#23304a\] {
     background-color: #23304a;
+  }
+  .bg-\[\#D83F87\] {
+    background-color: #D83F87;
   }
   .bg-\[\#E7FAF1\] {
     background-color: #E7FAF1;
@@ -750,6 +759,9 @@
   }
   .bg-gray-300 {
     background-color: var(--color-gray-300);
+  }
+  .bg-gray-400 {
+    background-color: var(--color-gray-400);
   }
   .bg-gray-600 {
     background-color: var(--color-gray-600);
@@ -856,6 +868,9 @@
   .text-left {
     text-align: left;
   }
+  .text-right {
+    text-align: right;
+  }
   .font-mono {
     font-family: var(--font-mono);
   }
@@ -960,8 +975,14 @@
   .text-blue-400 {
     color: var(--color-blue-400);
   }
+  .text-blue-500 {
+    color: var(--color-blue-500);
+  }
   .text-blue-700 {
     color: var(--color-blue-700);
+  }
+  .text-gray-100 {
+    color: var(--color-gray-100);
   }
   .text-gray-200 {
     color: var(--color-gray-200);
@@ -978,8 +999,14 @@
   .text-gray-600 {
     color: var(--color-gray-600);
   }
+  .text-gray-700 {
+    color: var(--color-gray-700);
+  }
   .text-gray-800 {
     color: var(--color-gray-800);
+  }
+  .text-green-400 {
+    color: var(--color-green-400);
   }
   .text-green-700 {
     color: var(--color-green-700);
