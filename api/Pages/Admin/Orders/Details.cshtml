@@ -1,11 +1,147 @@
-@page
-@model api.Pages.Admin.Orders.Details
+@page "{id}"
+@model api.Pages.Admin.Orders.DetailModel
+
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Order Detail";
+    ViewData["PageTitle"] = "Order Detail";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="max-w-7xl p-6 bg-[#1E293B] rounded-[4px] shadow-md space-y-6">
+    <div>
+        <h2 class="text-xl font-semibold text-blue-500">#@Model.DetailOrder._id</h2>
+    </div>
 
-<div>
-    
+    <div class="py-4 space-y-4 border-y-2 border-gray-700">
+        <p class="text-gray-500">Items</p>
+        @if (Model.DetailOrder.variants != null && Model.DetailOrder.variants.Any())
+        {
+            @foreach (var item in Model.DetailOrder.variants)
+            {
+                <div class="flex items-center space-x-4 space-y-4">
+                    <img src="@item.images" alt="Product" class="w-16 h-16 object-cover rounded-md">
+                    <div class="flex-1 space-y-1">
+                        <p class="font-medium text-gray-100">@item.color.colorName - @item.storage</p>
+                        <p class="text-sm text-gray-500">Color: @item.color.colorCode</p>
+                    </div>
+                    <div class="text-right space-y-1">
+                        <p class="text-sm text-gray-500">@item.quantity quantity</p>
+                        <p class="text-lg font-semibold text-green-400">@($"{item.prices:N0}đ")</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-gray-500">No items found</p>
+        }
+    </div>
+
+    <div>
+        @{
+            var status = Model.DetailOrder.status?.ToLower() ?? "";
+            var paymentMethod = Model.DetailOrder.paymentMethod?.ToLower() ?? "";
+            var stripeId = Model.DetailOrder.stripeSessionId?.ToLower() ?? "";
+
+            bool isPaid =
+            (paymentMethod == "momo" && stripeId != null && stripeId != "null") ||
+            (paymentMethod == "stripe" && !string.IsNullOrEmpty(stripeId) && stripeId != "null") ||
+            (paymentMethod == "cash on delivery" && status == "delivered");
+
+            var paidText = isPaid ? "Paid" : "Unpaid";
+            var paidBg = isPaid ? "text-[#3FA580] bg-[#E7FAF1]" : "text-[#614AAB] bg-[#F4EFFE]";
+
+            var statusClass = status == "pending" ? "border-[#FBBF24] text-[#FBBF24]"
+            : status == "processing" ? "border-[#3B82F6] text-[#3B82F6]"
+            : status == "shipped" ? "border-[#8B5CF6] text-[#8B5CF6]"
+            : status == "delivered" ? "border-[#22C55E] text-[#22C55E]"
+            : "border-[#EF4444] text-[#EF4444]";
+
+            var statusText = status switch
+            {
+                "pending" => "Pending",
+                "processing" => "Processing",
+                "shipped" => "Shipped",
+                "delivered" => "Delivered",
+                _ => "Cancel"
+            };
+        }
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 text-gray-700 space-y-2">
+        <div>
+            <p class="text-gray-500">Order Date</p>
+            <p class="font-medium text-gray-100">@Model.DetailOrder.createdAt</p>
+        </div>
+        <div class="space-y-2">
+            <p class="text-gray-500">Payment Status</p>
+            <span class="inline-block px-4 py-2 font-medium rounded-[4px] @paidBg">
+                @paidText
+            </span>
+        </div>
+        <div class="space-y-2">
+            <p class="text-gray-500">Payment Method</p>
+            @{
+                var paymentDisplay = "";
+                var paymentBg = "";
+
+                switch (paymentMethod)
+                {
+                    case "stripe":
+                        paymentDisplay = "Stripe";
+                        paymentBg = "bg-[#0057FF]";
+                        break;
+                    case "momo":
+                        paymentDisplay = "Momo";
+                        paymentBg = "bg-[#D83F87]";
+                        break;
+                    case "cash on delivery":
+                        paymentDisplay = "Cash on Delivery";
+                        paymentBg = "bg-[#3FA580]";
+                        break;
+                    default:
+                        paymentDisplay = "Unknown";
+                        paymentBg = "bg-gray-400";
+                        break;
+                }
+            }
+            <span class="inline-flex items-center space-x-2 px-4 py-2 rounded-[4px] text-white font-medium @paymentBg">
+                <span>@paymentDisplay</span>
+            </span>
+        </div>
+        <div class="space-y-2">
+            <p class="text-gray-500">Status</p>
+            <span class="inline-block px-4 py-2 font-medium rounded-[4px] border @statusClass">
+                @statusText
+            </span>
+        </div>
+        
+    </div>
+
+    <div class="border-t pt-4 text-gray-700 space-y-4">
+        <div>
+            <p class="text-gray-500">Customer name</p>
+            <p class="font-medium text-gray-100">@Model.DetailOrder.user.name</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Email</p>
+            <p class="text-blue-500">@Model.DetailOrder.user.email</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Phone</p>
+            <p class="font-medium text-gray-100">@Model.DetailOrder.user.phoneNumber</p>
+        </div>
+        <div>
+            <p class="text-gray-500">Address</p>
+            <p class="font-medium text-gray-100">
+                @Model.DetailOrder.user.address.street,
+                @Model.DetailOrder.user.address.ward,
+                @Model.DetailOrder.user.address.district,
+                @Model.DetailOrder.user.address.city
+            </p>
+        </div>
+        <div>
+            <p class="text-gray-500">Total Amount</p>
+            <p class="font-medium text-green-400 text-lg">@($"{Model.DetailOrder.totalAmount:N0}đ")</p>
+        </div>
+    </div>
 </div>

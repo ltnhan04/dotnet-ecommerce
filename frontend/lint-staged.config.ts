@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+s* eslint-disable @typescript-eslint/no-explicit-any */
 module.exports = {
   // this will check Typescript files
   "**/*.(ts|tsx)": () => "yarn tsc --noEmit",

@@ -10,6 +10,7 @@ namespace api.Interfaces.Services
     public interface ICategoryService
     {
         Task<List<CategoryDto>> GetAllCategories();
+        Task<List<CategoryDto>> GetSubCategories(string categoryId);
         Task<CreateCategoryDto> CreateCategory(CreateCategoryDto categoryDto);
         Task<CategoryDto> UpdateCategory(string categoryId, CreateCategoryDto categoryDto);
         Task<bool> DeleteCategory(string categoryId);

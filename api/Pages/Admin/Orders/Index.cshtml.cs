@@ -31,16 +31,16 @@ namespace api.Pages.Admin.Orders
         public int TotalPages { get; set; } = 1;
 
         [BindProperty(SupportsGet = true)]
-        public string OrderId { get; set; }
+        public string OrderId { get; set; } = string.Empty;
         [BindProperty(SupportsGet = true)]
-        public string Customer { get; set; }
+        public string Customer { get; set; } = string.Empty;
         [BindProperty(SupportsGet = true)]
-        public string Email { get; set; }
-        public string Payment { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Payment { get; set; } = string.Empty;
         [BindProperty(SupportsGet = true)]
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         [BindProperty(SupportsGet = true)]
-        public string PaymentStatus { get; set; }
+        public string PaymentStatus { get; set; } = string.Empty;
         [BindProperty(SupportsGet = true)]
         public DateTime? DateFrom { get; set; }
         [BindProperty(SupportsGet = true)]
@@ -76,15 +76,5 @@ namespace api.Pages.Admin.Orders
                 TotalPages = (int)Math.Ceiling((double)TotalCount / SizeOrder);
             }
         }
-        public int GetCountForStatus(string? status)
-        {
-            if (string.IsNullOrEmpty(status))
-            {
-                return Orders.Count; 
-            }
-
-            return Orders.Count(o => o.status?.ToLower() == status.ToLower());
-        }
-
     }
 }

@@ -46,6 +46,7 @@
     --container-2xl: 42rem;
     --container-4xl: 56rem;
     --container-6xl: 72rem;
+    --container-7xl: 80rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
@@ -474,6 +475,9 @@
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .flex-col {
     flex-direction: column;
   }
@@ -649,6 +653,10 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
+  .border-y-2 {
+    border-block-style: var(--tw-border-style);
+    border-block-width: 2px;
+  }
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
@@ -709,6 +717,9 @@
   }
   .bg-\[\#1E293B\] {
     background-color: #1E293B;
+  }
+  .bg-\[\#3FA580\] {
+    background-color: #3FA580;
   }
   .bg-\[\#4CAF50\] {
     background-color: #4CAF50;

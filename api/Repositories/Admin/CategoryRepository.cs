@@ -27,13 +27,23 @@ namespace api.Repositories.Admin
 
         public async Task<List<CategoryDto>> GetAllCategories()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _context.Categories.Where(c => c.parent_category == null).ToListAsync();
             return categories.Select(c => new CategoryDto
             {
                 _id = c._id.ToString(),
                 name = c.name,
                 parent_category = c.parent_category?.ToString()
             }).ToList();
+        }
+        public async Task<List<CategoryDto>> GetSubCategories(string categoryId)
+        {
+            var subCategories = await _context.Categories.Where(c => c.parent_category == ObjectId.Parse(categoryId)).ToListAsync();
+            return [.. subCategories.Select(c => new CategoryDto
+            {
+                _id = c._id.ToString(),
+                name = c.name,
+                parent_category = c.parent_category?.ToString()
+            })];
         }
         public async Task<Category> Create(Category dto)
         {
