@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using api.Dtos;
@@ -14,7 +13,9 @@ namespace api.Pages.Admin.Categories
     {
         private readonly ILogger<Index> _logger;
         private readonly HttpClient _httpClient;
-        public List<CategoryDto> Categories { get; set; } = new();
+
+        public List<CategoryDto> Parents { get; set; } = new();
+        public List<CategoryDto> Children { get; set; } = new();
 
         public Index(ILogger<Index> logger, IHttpClientFactory clientFactory)
         {
@@ -30,13 +31,28 @@ namespace api.Pages.Admin.Categories
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.GetAsync("api/v1/admin/categories");
-            if (response.IsSuccessStatusCode)
+            // Lấy danh mục cha
+            var parentResponse = await _httpClient.GetAsync("api/v1/admin/categories");
+            if (parentResponse.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadAsStringAsync();
+                var json = await parentResponse.Content.ReadAsStringAsync();
                 var doc = System.Text.Json.JsonDocument.Parse(json);
                 var data = doc.RootElement.GetProperty("data");
-                Categories = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(data.GetRawText()) ?? new();
+                Parents = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(data.GetRawText()) ?? new();
+                Children = new List<CategoryDto>();
+                // Lấy children cho từng parent
+                foreach (var parent in Parents)
+                {
+                    var subResponse = await _httpClient.GetAsync($"api/v1/admin/categories/sub/{parent._id}");
+                    if (subResponse.IsSuccessStatusCode)
+                    {
+                        var subJson = await subResponse.Content.ReadAsStringAsync();
+                        var subDoc = System.Text.Json.JsonDocument.Parse(subJson);
+                        var subData = subDoc.RootElement.GetProperty("data");
+                        var children = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(subData.GetRawText()) ?? new();
+                        Children.AddRange(children);
+                    }
+                }
             }
         }
     }

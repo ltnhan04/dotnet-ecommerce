@@ -8,7 +8,8 @@ export interface SubCategory {
 }
 
 export interface IResponseCategory {
-  categories: Category[];
+  message: "string";
+  data: Category[];
 }
 
 export interface Category {
