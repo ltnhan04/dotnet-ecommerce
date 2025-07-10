@@ -36,7 +36,7 @@ namespace api.Pages.Admin.Categories
                 var json = await response.Content.ReadAsStringAsync();
                 var result = System.Text.Json.JsonDocument.Parse(json);
                 var categoryId = result.RootElement.GetProperty("data").GetProperty("_id").GetString();
-                return RedirectToPage("./Details", new { id = categoryId });
+                return RedirectToPage("./Index", new { id = categoryId });
             }
             ModelState.AddModelError(string.Empty, "Create failed.");
             return Page();
