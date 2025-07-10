@@ -12,12 +12,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CartType } from "@/types/cart";
 import { WishlistType } from "@/types/wishlist";
+import { ProductVariant } from "@/types/product";
 
 interface ProductActionsProps {
-  variant: ProductResponse;
+  variant: ProductVariant,
+  product: ProductResponse;
 }
 
-export default function ProductActions({ variant }: ProductActionsProps) {
+export default function ProductActions({ variant, product }: ProductActionsProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
@@ -44,13 +46,13 @@ export default function ProductActions({ variant }: ProductActionsProps) {
     } else {
       const cartItem = {
         id: variant._id,
-        name: `${variant.name} - ${variant.color.colorName} - ${variant.storage}`,
+        name: `${product.name} - ${variant.color.colorName} - ${variant.storage}`,
         image: variant.images[0],
         price: variant.price,
         quantity: 1,
         storage: variant.storage,
         color: variant.color.colorName,
-        status: variant.stock > 0 ? "in stock" : "out of stock",
+        status: variant.stock_quantity > 0 ? "in stock" : "out of stock",
       };
       dispatch(addToCart(cartItem));
       toast({
@@ -72,7 +74,7 @@ export default function ProductActions({ variant }: ProductActionsProps) {
     } else {
       const wishlistItem = {
         id: variant._id,
-        name: `${variant.name} - ${variant.color.colorName} - ${variant.storage}`,
+        name: `${product.name} - ${variant.color.colorName} - ${variant.storage}`,
         image: variant.images[0],
         price: variant.price,
         quantity: 1,
@@ -93,13 +95,13 @@ export default function ProductActions({ variant }: ProductActionsProps) {
     }
     const cartItem = {
       id: variant._id,
-      name: `${variant.name} - ${variant.color.colorName} - ${variant.storage}`,
+      name: `${product.name} - ${variant.color.colorName} - ${variant.storage}`,
       image: variant.images[0],
       price: variant.price,
       quantity: 1,
       storage: variant.storage,
       color: variant.color.colorName,
-      status: variant.stock > 0 ? "in stock" : "out of stock",
+      status: variant.stock_quantity > 0 ? "in stock" : "out of stock",
     };
     dispatch(addToCart(cartItem));
     router.push("/cart/checkout");
@@ -114,7 +116,7 @@ export default function ProductActions({ variant }: ProductActionsProps) {
     <div className="flex flex-col gap-3">
       <Button
         onClick={handleBuyNow}
-        disabled={variant.stock === 0}
+        disabled={variant.stock_quantity === 0}
         className="w-full bg-black hover:bg-gray-900 text-white rounded-lg py-3 text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         Mua ngay
@@ -123,7 +125,7 @@ export default function ProductActions({ variant }: ProductActionsProps) {
       <div className="flex gap-3">
         <Button
           onClick={handleAddOrRemoveFromCart}
-          disabled={variant.stock === 0}
+          disabled={variant.stock_quantity === 0}
           variant="outline"
           className={`flex-1 border transition ${
             isProductInCart

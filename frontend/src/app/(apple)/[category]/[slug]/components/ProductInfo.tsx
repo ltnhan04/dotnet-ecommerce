@@ -1,21 +1,23 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
-import { ProductResponse } from "@/types/slug";
 import { StarIcon } from "lucide-react";
 import DOMPurify from "dompurify";
+import { ProductVariant } from "@/types/product";
+import { ProductResponse } from "@/types/slug";
 
 interface ProductInfoProps {
-  variant: ProductResponse;
+  variant: ProductVariant;
+  product: ProductResponse;
 }
 
-const ProductInfo: React.FC<ProductInfoProps> = ({ variant }) => {
-  const sanitizedDescription = DOMPurify.sanitize(variant.description || "");
+const ProductInfo: React.FC<ProductInfoProps> = ({ variant, product }) => {
+  const sanitizedDescription = DOMPurify.sanitize(product.description || "");
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {variant.name} {variant.storage}
+          {product.name} {variant.storage}
         </h1>
         <div className="flex items-center gap-2">
           <div className="flex items-center">
@@ -44,9 +46,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ variant }) => {
             {formatPrice(variant.price)}
           </span>
         </div>
-        {variant.stock > 0 ? (
+        {variant.stock_quantity > 0 ? (
           <Badge variant="secondary" className="bg-green-100 text-green-800">
-            Còn hàng ({variant.stock})
+            Còn hàng ({variant.stock_quantity})
           </Badge>
         ) : (
           <Badge variant="destructive">Hết hàng</Badge>

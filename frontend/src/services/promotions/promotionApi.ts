@@ -21,7 +21,7 @@ export const exchangeVoucher = async (
 
 export const getVouchers = async (): Promise<IResponseVoucherList> => {
   const res = await axiosInstance.get("/api/v1/points/vouchers");
-  return res.data;
+  return res.data.vouchers;
 };
 
 export const applyVoucher = async (voucherCode: string, orderTotal: number) => {
