@@ -63,4 +63,16 @@ namespace api.Dtos
         public DateTime validFrom { get; set; }
         public DateTime validTo { get; set; }
     }
+    public class VoucherFreeShipDto
+    {
+        public string _id { get; set; } = string.Empty;
+        public string code { get; set; } = string.Empty;
+        public string customer { get; set; } = string.Empty;
+        public int discountAmount { get; set; }
+        public int pointsUsed { get; set; }
+        public string status { get; set; } = string.Empty;
+        public string? usedOrder { get; set; }
+        public DateTime validFrom { get; set; }
+        public DateTime validTo { get; set; }
+    }
 }

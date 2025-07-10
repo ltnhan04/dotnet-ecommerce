@@ -15,5 +15,6 @@ namespace api.Interfaces.Services
         Task<Point> HandleAddPointForOrder(Order order);
         Task<ApplyVoucherResponseDto> HandleApplyVoucher(ApplyVoucherDto dto, string userId);
         Task<PointVoucherDto> HandleUpdateStatusVoucher(UpdateStatusVoucherDto dto);
+        Task<VoucherFreeShipDto> CreateFirstOrderFreeShipPromotion(string customerId);
     }
 }

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using api.Dtos;
 using api.Interfaces;
+using api.Interfaces.Services;
 using api.models;
 using api.Repositories;
 using api.Repositories.Customer;
@@ -20,13 +21,15 @@ namespace api.Services
         private readonly ITokenService _tokenService;
         private readonly IRedisRepository _redisRepository;
         private readonly IOtpService _otpService;
+        private readonly IPointService _pointService;
 
-        public AuthService(ICustomerRepository customerRepository, ITokenService tokenService, IRedisRepository redisRepository, IOtpService otpService)
+        public AuthService(ICustomerRepository customerRepository, ITokenService tokenService, IRedisRepository redisRepository, IOtpService otpService, IPointService pointService)
         {
             _customerRepository = customerRepository;
             _tokenService = tokenService;
             _redisRepository = redisRepository;
             _otpService = otpService;
+            _pointService = pointService;
         }
 
         public async Task<OtpResponseDto> SignUp(RegisterDto dto)
@@ -54,7 +57,6 @@ namespace api.Services
                 throw new AppException("Invalid Google data");
 
             var user = await _customerRepository.FindByEmail(email);
-            Console.WriteLine("User: " + user);
             user ??= await _customerRepository.CreateUser(new User
             {
                 name = name,
@@ -79,6 +81,7 @@ namespace api.Services
                 password = hashedPassword,
             });
             //create first promotion 
+            await _pointService.CreateFirstOrderFreeShipPromotion(customer._id.ToString());
             var token = _tokenService.GenerateToken(customer._id.ToString(), customer.role);
             CookieUtil.SetCookie(res, "refreshToken", token.refreshToken);
             await _tokenService.StoreRefreshToken(customer._id.ToString(), token.refreshToken);
