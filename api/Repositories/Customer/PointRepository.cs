@@ -82,7 +82,7 @@ namespace api.Repositories.Customer
         {
             var voucher = await _context.PointVouchers
                 .Where(item => item.code == dto.voucherCode &&
-                        item.customer == ObjectId.Parse(userId) && 
+                        item.customer == ObjectId.Parse(userId) &&
                             item.status == "unused" &&
                                 item.validTo >= DateTime.Now)
                 .FirstOrDefaultAsync();
@@ -102,6 +102,12 @@ namespace api.Repositories.Customer
             await _context.SaveChangesAsync();
 
             return pointVoucher;
+        }
+        public async Task<Order?> CheckFirstOrderOfCustomer(string customerId)
+        {
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault((o) => o.user == ObjectId.Parse(customerId));
+            return order;
         }
     }
 }

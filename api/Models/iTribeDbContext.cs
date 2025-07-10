@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Models;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.EntityFrameworkCore.Extensions;
 
@@ -20,6 +21,7 @@ namespace api.models
         public DbSet<Review> Reviews { get; set; }
         public DbSet<ShippingMethod> ShippingMethods { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         public iTribeDbContext(DbContextOptions<iTribeDbContext> dbContextOptions) : base(dbContextOptions)
         {
 
@@ -38,6 +40,7 @@ namespace api.models
             modelBuilder.Entity<FAQ>().ToCollection("fags");
             modelBuilder.Entity<Chatbot>().ToCollection("chatbots");
             modelBuilder.Entity<Category>().ToCollection("categories");
+            modelBuilder.Entity<Notification>().ToCollection("notifications");
         }
 
     }
