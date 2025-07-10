@@ -1,8 +1,8 @@
-import { ProductResponse } from "@/types/slug";
+import { ProductVariant } from "@/types/product";
 
 interface ProductVariantsProps {
-  variants: ProductResponse[];
-  selectedVariant: ProductResponse;
+  variants: ProductVariant[];
+  selectedVariant: ProductVariant;
   onVariantSelect: (colorName: string, storage: string) => void;
 }
 

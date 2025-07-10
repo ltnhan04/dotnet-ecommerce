@@ -12,6 +12,7 @@ interface VoucherListProps {
 
 export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
   const getVoucherStatus = (status: string) => {
+    console.log(status);
     switch (status.toLowerCase()) {
       case "active":
         return {

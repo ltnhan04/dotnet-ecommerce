@@ -57,11 +57,12 @@ namespace api.Repositories.Customer
                     slug = variant.slug,
                     images = variant.images,
                     reviews = [.. reviews.Select(r => new ReviewDto
-            {
-                variant = r.variant.ToString(),
-                rating = r.rating,
-                comment = r.comment ?? ""
-            })]
+                    {
+                        _id = r._id.ToString(),
+                        variant = r.variant.ToString(),
+                        rating = r.rating,
+                        comment = r.comment ?? ""
+                    })]
                 });
             }
 

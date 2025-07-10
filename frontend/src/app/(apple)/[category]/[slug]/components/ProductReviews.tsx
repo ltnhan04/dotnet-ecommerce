@@ -95,12 +95,8 @@ const ProductReviews = ({ reviews, currentUser }: ProductReviewsProps) => {
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-medium">{review.user.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(review.createdAt).toLocaleDateString("vi-VN")}
-                  </p>
                 </div>
-                {currentUser && currentUser._id === review.user._id && (
+                {currentUser && (
                   <div className="flex space-x-2">
                     <Button
                       variant="ghost"

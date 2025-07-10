@@ -10,7 +10,7 @@ import ProductVariants from "./components/ProductVariants";
 import ProductActions from "./components/ProductActions";
 import ProductReviews from "./components/ProductReviews";
 import ProductNotFound from "@/components/common/product-not-found";
-import { ProductResponse } from "@/types/slug";
+import { ProductVariant } from "@/types/product";
 
 export default function ProductDetail({
   params,
@@ -18,13 +18,18 @@ export default function ProductDetail({
   params: { slug: string };
 }) {
   const { data: productData, isLoading } = useGetProductBySlug(params.slug);
-  const [selectedVariant, setSelectedVariant] =
-    useState<ProductResponse | null>(null);
+  console.log("Product data:", productData);
+
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    null
+  );
+  console.log("Selected variant:", selectedVariant);
+
   const { user } = useAuth();
 
   useEffect(() => {
-    if (productData?.data?.length > 0) {
-      setSelectedVariant(productData.data[0]);
+    if (productData?.data?.variants?.length > 0) {
+      setSelectedVariant(productData.data.variants[0]);
     }
   }, [productData]);
 
@@ -36,11 +41,12 @@ export default function ProductDetail({
     return <ProductNotFound />;
   }
 
-  const variants = productData.data as ProductResponse[];
+  const variants: ProductVariant[] = productData.data.variants;
 
   const handleVariantSelect = (colorName: string, storage: string) => {
     const variant = variants.find(
-      (v) => v.color.colorName === colorName && v.storage === storage
+      (v: ProductVariant) =>
+        v.color.colorName === colorName && v.storage === storage
     );
     if (variant) {
       setSelectedVariant(variant);
@@ -54,17 +60,17 @@ export default function ProductDetail({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ProductImages
             images={selectedVariant.images}
-            name={selectedVariant.name}
+            name={productData.data.name}
           />
 
           <div className="space-y-6">
-            <ProductInfo variant={selectedVariant} />
+            <ProductInfo product={productData.data!} variant={selectedVariant} />
             <ProductVariants
               variants={variants}
               selectedVariant={selectedVariant}
               onVariantSelect={handleVariantSelect}
             />
-            <ProductActions variant={selectedVariant} />
+            <ProductActions product={productData?.data} variant={selectedVariant} />
           </div>
         </div>
 

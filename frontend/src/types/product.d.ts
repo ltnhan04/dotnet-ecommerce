@@ -18,16 +18,24 @@ export interface Color {
 export type ProductStatus = "out of stock" | "in stock";
 
 export interface ProductVariant {
-  _id: string;
-  product: string;
+   _id: string;
+  color: {
+    colorName: string;
+    colorCode: string;
+  };
   storage: string;
   price: number;
+  status: string;
   stock_quantity: number;
   slug: string;
   rating: number;
-  color: Color;
-  status: ProductStatus;
   images: string[];
+  reviews: {
+    _id: string;
+    variant: string,
+    rating: number;
+    comment: string;
+  }[];
 }
 
 export interface CartItem extends ProductVariant {
