@@ -177,5 +177,39 @@ namespace api.Services.Customer
                 validTo = data.validTo
             };
         }
+
+        public async Task<VoucherFreeShipDto> CreateFirstOrderFreeShipPromotion(string customerId)
+        {
+            var existingOrders = await _pointRepository.CheckFirstOrderOfCustomer(customerId);
+            var code = "FREESHIP" + "-" + ObjectId.GenerateNewId(16);
+            var voucher = new models.PointVoucher
+            {
+                _id = ObjectId.GenerateNewId(),
+                customer = ObjectId.Parse(customerId),
+                code = code,
+                usedOrder = null,
+                discountAmount = 30000,
+                validFrom = DateTime.UtcNow,
+                validTo = DateTime.UtcNow.AddDays(30),
+                pointsUsed = 0,
+                status = "unused",
+                createdAt = DateTime.UtcNow,
+                updatedAt = DateTime.UtcNow
+            };
+            await _pointRepository.ExchangePointForVoucher(voucher);
+            Console.WriteLine("VOUCHER: " + voucher);
+            return new VoucherFreeShipDto
+            {
+                _id = voucher._id.ToString(),
+                customer = voucher.customer.ToString(),
+                code = voucher.code,
+                discountAmount = (int)voucher.discountAmount,
+                pointsUsed = voucher.pointsUsed,
+                status = voucher.status,
+                usedOrder = voucher.usedOrder.ToString(),
+                validFrom = voucher.validFrom,
+                validTo = voucher.validTo
+            };
+        }
     }
 }

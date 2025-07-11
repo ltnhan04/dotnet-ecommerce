@@ -45,7 +45,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
-// builder.Services.AddScoped<IShippingService, ShippingService>();
+builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPointService, PointService>();
 builder.Services.AddScoped<RevenueService>();
@@ -70,6 +70,7 @@ builder.Services.AddScoped<IAdminReviewService, AdminReviewService>();
 // builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPointRepository, PointRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -92,7 +93,8 @@ builder.Services.AddAuthentication(options =>
     };
     options.Events = new JwtBearerEvents
     {
-        OnMessageReceived = context => {
+        OnMessageReceived = context =>
+        {
             context.Token = context.Request.Cookies["accessToken"];
             return Task.CompletedTask;
         },

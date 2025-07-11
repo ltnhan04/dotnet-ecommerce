@@ -18,5 +18,7 @@ namespace api.Interfaces.Repositories
         Task DeletePoint(List<Point> point);
         Task<PointVoucher> GetValidVoucher(ApplyVoucherDto dto, string userId);
         Task<PointVoucher> UpdateStatusVoucher(UpdateStatusVoucherDto dto);
+        Task<Order?> CheckFirstOrderOfCustomer(string customerId);
+
     }
 }
