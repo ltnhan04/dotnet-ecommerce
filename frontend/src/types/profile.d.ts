@@ -64,11 +64,7 @@ export interface EditedProfile {
 export interface ProvinceType {
   name: string;
   code: number;
-  division_type: string;
-  codename: string;
-  phone_code: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  districts: DistrictType[];
+  districts: string[];
 }
 
 export interface DistrictType {
