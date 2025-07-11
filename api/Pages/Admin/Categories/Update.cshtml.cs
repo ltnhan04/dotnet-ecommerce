@@ -1,141 +1,129 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using api.Dtos;
-using System.Net.Http.Json;
+using api.Dtos; // Đảm bảo namespace này chứa CategoryDto và CreateCategoryDto
+using System.Collections.Generic;
 
 namespace api.Pages.Admin.Categories
 {
+    [Authorize(Roles = "admin")]
     public class Update : PageModel
     {
         private readonly ILogger<Update> _logger;
         private readonly HttpClient _httpClient;
+
+        [BindProperty(SupportsGet = true)]
+        public string Id { get; set; } = string.Empty;
+
+        [BindProperty(SupportsGet = true)]
+        public string Name { get; set; } = string.Empty;
+
+        [BindProperty(SupportsGet = true)]
+        public string? ParentCategoryId { get; set; }
+
         [BindProperty]
         public CreateCategoryDto Category { get; set; } = new();
-        [BindProperty(SupportsGet = true)]
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string OldName { get; set; }
-        public string OldParentName { get; set; }
-        public Update(ILogger<Update> logger, IHttpClientFactory clientFactory)
+
+        // Đảm bảo đây là List<CategoryDto> để khớp với API Product Edit Model
+        public List<CategoryDto> Categories { get; set; } = new();
+
+        public Update(IHttpClientFactory clientFactory, ILogger<Update> logger)
         {
-            _logger = logger;
             _httpClient = clientFactory.CreateClient();
             _httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SERVER_URL")!);
+            _logger = logger;
         }
-        public async Task OnGetAsync()
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (string.IsNullOrEmpty(Id)) return;
             var token = Request.Cookies["accessToken"];
             if (!string.IsNullOrEmpty(token))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            // Gọi endpoint lấy tất cả danh mục cha
-            var response = await _httpClient.GetAsync("api/v1/admin/categories");
-            if (response.IsSuccessStatusCode)
+            else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var doc = System.Text.Json.JsonDocument.Parse(json);
-                var data = doc.RootElement.GetProperty("data");
-                var list = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(data.GetRawText()) ?? new();
-                var cat = list.FirstOrDefault(c => c._id == Id);
-                if (cat != null)
-                {
-                    Category = new CreateCategoryDto { _id = cat._id, name = cat.name, parent_category = cat.parent_category };
-                    Name = cat.name;
-                    OldName = cat.name;
-                    if (!string.IsNullOrEmpty(cat.parent_category))
-                    {
-                        // Lấy tên danh mục cha
-                        var parentCat = list.FirstOrDefault(c => c._id == cat.parent_category);
-                        if (parentCat != null)
-                        {
-                            OldParentName = parentCat.name;
-                        }
-                        else
-                        {
-                            // Nếu không tìm thấy trong list cha, thử lấy qua API sub
-                            var subResponse = await _httpClient.GetAsync($"api/v1/admin/categories/sub/{cat.parent_category}");
-                            if (subResponse.IsSuccessStatusCode)
-                            {
-                                var subJson = await subResponse.Content.ReadAsStringAsync();
-                                var subDoc = System.Text.Json.JsonDocument.Parse(subJson);
-                                var subData = subDoc.RootElement.GetProperty("data");
-                                var subList = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(subData.GetRawText()) ?? new();
-                                var subCat = subList.FirstOrDefault(c => c._id == cat.parent_category);
-                                if (subCat != null)
-                                {
-                                    OldParentName = subCat.name;
-                                }
-                            }
-                        }
-                    }
-                    return;
-                }
+                ModelState.AddModelError(string.Empty, "Authentication token not found. Please log in again.");
+                return RedirectToPage("/Account/Login");
             }
-            // Nếu không tìm thấy ở danh mục cha, thử lấy theo parent (danh mục con)
-            var subResponse2 = await _httpClient.GetAsync($"api/v1/admin/categories/sub/{Id}");
-            if (subResponse2.IsSuccessStatusCode)
+
+            // Populate the 'Category' DTO directly from the URL parameters
+            Category = new CreateCategoryDto
             {
-                var json = await subResponse2.Content.ReadAsStringAsync();
-                var doc = System.Text.Json.JsonDocument.Parse(json);
-                var data = doc.RootElement.GetProperty("data");
-                var subList = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(data.GetRawText()) ?? new();
-                var subCat = subList.FirstOrDefault(c => c._id == Id);
-                if (subCat != null)
-                {
-                    Category = new CreateCategoryDto { _id = subCat._id, name = subCat.name, parent_category = subCat.parent_category };
-                    Name = subCat.name;
-                    OldName = subCat.name;
-                    if (!string.IsNullOrEmpty(subCat.parent_category))
-                    {
-                        // Lấy tên danh mục cha
-                        var parentCat = subList.FirstOrDefault(c => c._id == subCat.parent_category);
-                        if (parentCat != null)
-                        {
-                            OldParentName = parentCat.name;
-                        }
-                        else
-                        {
-                            var parentResponse = await _httpClient.GetAsync($"api/v1/admin/categories/{subCat.parent_category}");
-                            if (parentResponse.IsSuccessStatusCode)
-                            {
-                                var parentJson = await parentResponse.Content.ReadAsStringAsync();
-                                var parentDoc = System.Text.Json.JsonDocument.Parse(parentJson);
-                                var parentData = parentDoc.RootElement.GetProperty("data");
-                                var parentList = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(parentData.GetRawText()) ?? new();
-                                var parent = parentList.FirstOrDefault(c => c._id == subCat.parent_category);
-                                if (parent != null)
-                                {
-                                    OldParentName = parent.name;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                _id = Id,
+                name = Name,
+                parent_category = ParentCategoryId
+            };
+
+            // Gọi hàm helper để lấy danh sách danh mục, giống như cách trong EditModel
+            await LoadCategoriesForDropdown();
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid)
+            {
+                await LoadCategoriesForDropdown();
+                return Page();
+            }
+
             var token = Request.Cookies["accessToken"];
             if (!string.IsNullOrEmpty(token))
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Authentication token not found. Please log in again.");
+                return RedirectToPage("/Account/Login");
+            }
+
+            if (string.IsNullOrWhiteSpace(Category.parent_category))
+            {
+                Category.parent_category = null;
+            }
+
             var response = await _httpClient.PutAsJsonAsync($"api/v1/admin/categories/{Id}", Category);
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("/Admin/Categories/Index");
             }
-            ModelState.AddModelError(string.Empty, "Update failed.");
+
+            var error = await response.Content.ReadAsStringAsync();
+            _logger.LogError("Failed to update category: {Error}", error);
+
+            ModelState.AddModelError(string.Empty, "Cập nhật thất bại. Vui lòng kiểm tra lại thông tin.");
+            await LoadCategoriesForDropdown();
             return Page();
+        }
+
+        private async Task LoadCategoriesForDropdown()
+        {
+            var token = Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(token)) return;
+
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var catRes = await _httpClient.GetAsync("api/v1/admin/categories");
+            if (catRes.IsSuccessStatusCode)
+            {
+                var catJson = await catRes.Content.ReadAsStringAsync();
+                // Dòng này được sửa để khớp với EditModel.cshtml.cs
+                // Nó giả định API trả về JSON có cấu trúc {"data": [...]}
+                Categories = JsonSerializer.Deserialize<List<CategoryDto>>(JsonDocument.Parse(catJson).RootElement.GetProperty("data").ToString()) ?? new();
+            }
+            else
+            {
+                _logger.LogError("Failed to reload categories for dropdown: {StatusCode} {Error}", catRes.StatusCode, await catRes.Content.ReadAsStringAsync());
+                ModelState.AddModelError(string.Empty, "Không thể tải danh sách danh mục cha.");
+            }
         }
     }
 }
