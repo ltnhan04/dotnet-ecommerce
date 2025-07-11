@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using api.Dtos;
 using api.Interfaces.Services;
 using api.Services.Admin;
+using api.Utils;
 
 namespace api.Controllers
 {
@@ -29,14 +30,8 @@ namespace api.Controllers
         {
             try
             {
-                var result = await _shippingService.CalculateShippingFeeAsync(request);
-                if (result == null)
-                {
-                    await ResponseHandler.SendError(Response, "Can not calculate fee with GHN.", 400);
-                    return;
-                }
-
-                await ResponseHandler.SendSuccess(Response, new { methods = result }, 200, "Calculate Fee Successful!");
+                var result = await _shippingService.CalculateShippingFeeAsync(request) ?? throw new AppException("Can not calculate fee with GHN.", 400);
+                await ResponseHandler.SendSuccess(Response, result, 200, "Calculate Fee Successful!");
             }
             catch (Exception ex)
             {
