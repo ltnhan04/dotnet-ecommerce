@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,15 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin } from "lucide-react";
 import { useProvinces, useDistricts, useWards } from "@/hooks/useLocation";
 
 import { EditedProfile, ProfileType } from "@/types/profile";
 
 interface AddressProps {
   setEditedProfile: React.Dispatch<React.SetStateAction<EditedProfile>>;
-  editedProfile: EditedProfile;
-  userData: ProfileType | null;
+  editedProfile: EditedProfile,
+  userData: ProfileType | null
 }
 
 const AddressSection: React.FC<AddressProps> = ({
@@ -89,11 +87,7 @@ const AddressSection: React.FC<AddressProps> = ({
 
   return (
     <div className="flex items-start space-x-4">
-      <MapPin className="w-6 h-6 text-gray-500 mt-1" />
-      <div className="flex-grow">
-        <Label htmlFor="address" className="text-sm font-medium text-gray-500">
-          Địa chỉ
-        </Label>
+      
         {editedProfile.isEdited ? (
           <>
             <Select
@@ -178,6 +172,7 @@ const AddressSection: React.FC<AddressProps> = ({
               placeholder="Số nhà, Đường"
               value={editedProfile.editedAddress.street}
               onChange={(e) => updateAddress("street", e.target.value)}
+              className="w-full"
             />
           </>
         ) : (
@@ -194,7 +189,6 @@ const AddressSection: React.FC<AddressProps> = ({
           </div>
         )}
       </div>
-    </div>
   );
 };
 
