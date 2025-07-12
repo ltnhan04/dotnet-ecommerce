@@ -9,9 +9,12 @@ namespace api.Interfaces.Repositories
 {
     public interface IRevenueRepository
     {
-        Task<TotalDto> getTotalRevenue();
-        Task<List<RevenueDto>> getRevenueChart(string type);
-        Task<List<TopProductDtoRes>> GetTop10BestSellingProducts();
-        Task<List<TopSalesByLocationDto>> GetTopSalesByLocation();
+        Task<TotalDto> GetTotalDashboardData(DateTime? fromDate = null, DateTime? toDate = null);
+
+        Task<List<RevenueDto>> GetRevenueChartData(DateTime fromDate, DateTime toDate, string granularity);
+
+        Task<List<TopProductDtoRes>> GetTop10BestSellingProducts(DateTime? fromDate = null, DateTime? toDate = null);
+
+        Task<List<TopSalesByLocationDto>> GetTopSalesByLocation(DateTime? fromDate = null, DateTime? toDate = null);
     }
 }
