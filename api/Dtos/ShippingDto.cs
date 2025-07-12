@@ -7,7 +7,7 @@ namespace api.Dtos
 {
     public class ShippingDto
     {
-        public string ShippingAddress { get; set; }
+        public string ShippingAddress { get; set; } = string.Empty;
         public int Height { get; set; }
         public int Length { get; set; }
         public int Width { get; set; }
@@ -18,7 +18,7 @@ namespace api.Dtos
 
     public class GHNFeeResponse
     {
-        public GHNFeeData Data { get; set; }
+        public GHNFeeData Data { get; set; } = new();
     }
 
     public class GHNFeeData
@@ -28,18 +28,18 @@ namespace api.Dtos
 
     public class ShippingMethod
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
         public int Fee { get; set; }
     }
     public class ShippingMethodResponseDto
     {
-        public List<ShippingMethod> Methods { get; set; }
+        public List<ShippingMethod> Methods { get; set; } = new();
     }
     public class GHNProvinceResponse
     {
         public int Code { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public List<Province> Data { get; set; }
 
     }
@@ -47,33 +47,33 @@ namespace api.Dtos
     public class Province
     {
         public int ProvinceID { get; set; }
-        public string ProvinceName { get; set; }
+        public string ProvinceName { get; set; } = string.Empty;
     }
     public class GHNDistrictResponse
     {
         public int Code { get; set; }
-        public string Message { get; set; }
-        public List<District> Data { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public List<District> Data { get; set; } = new();
     }
 
     public class District
     {
         public int DistrictID { get; set; }
-        public string DistrictName { get; set; }
+        public string DistrictName { get; set; } = string.Empty;
         public int ProvinceID { get; set; }
     }
 
     public class GHNWardResponse
     {
         public int Code { get; set; }
-        public string Message { get; set; }
-        public List<Ward> Data { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public List<Ward> Data { get; set; } = new();
     }
 
     public class Ward
     {
-        public string WardCode { get; set; }
-        public string WardName { get; set; }
+        public string WardCode { get; set; } = string.Empty;
+        public string WardName { get; set; } = string.Empty;
         public int DistrictID { get; set; }
     }
 

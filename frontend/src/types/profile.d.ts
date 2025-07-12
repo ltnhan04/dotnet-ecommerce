@@ -4,28 +4,11 @@ export interface ProfileType {
   email: string;
   phoneNumber?: string;
   address?: UserAddress;
-  password: string;
+  password?: string;
   role: string;
-  active: boolean;
-  orderHistory: OrderHistory[];
   createdAt: string;
   updatedAt: string;
   __v: number;
-}
-
-export interface OrderHistory {
-  _id: string;
-  user: string;
-  productVariants: ProductVariant[];
-  totalAmount: number;
-  status: string;
-  shippingAddress: string;
-  paymentMethod: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  products?: any[];
 }
 
 export interface ProductVariant {
@@ -61,25 +44,19 @@ export interface EditedProfile {
   editedPhoneNumber: string;
 }
 
-export interface ProvinceType {
+export interface IProvinceType {
   name: string;
   code: number;
   districts: string[];
 }
 
-export interface DistrictType {
-  name: string;
+export interface IDistrictType {
   code: number;
-  division_type: string;
-  codename: string;
-  province_code: number;
-  wards: WardType[];
+  name: string;
+  wards: string[];
 }
 
-export interface WardType {
-  name: string;
+export interface IWardType {
   code: number;
-  division_type: string;
-  codename: string;
-  district_code: number;
+  name: string;
 }
