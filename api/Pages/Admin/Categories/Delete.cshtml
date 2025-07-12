@@ -4,14 +4,35 @@
     ViewData["Title"] = "Xóa danh mục";
 }
 
-<div class="max-w-lg mx-auto bg-[#1E293B] p-8 rounded-xl shadow">
-    <h1 class="text-xl font-bold mb-6 text-red-600">Xóa danh mục</h1>
-    <form method="post" class="space-y-4">
-        <div class="mb-4">
-            <p>Bạn có chắc chắn muốn xóa danh mục có tên: <span class="font-mono text-blue-700">@Model.Name</span>?</p>
+<div class="max-w-lg mx-auto bg-[#1E293B] p-8 rounded-xl shadow text-white">
+    <h1 class="text-xl font-bold mb-6 text-red-500">Xóa danh mục</h1> @* Đổi màu đỏ đậm hơn cho tiêu đề *@
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="mb-4 p-3 bg-red-800 text-red-100 rounded"> @* Đổi màu nền lỗi để dễ nhìn trên nền tối *@
+            <ul class="list-disc pl-5">
+                @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@modelError.ErrorMessage</li>
+                }
+            </ul>
         </div>
+    }
+
+    <form method="post" class="space-y-4">
+        @Html.AntiForgeryToken()
+
+        @* THÊM: Truyền Id và Name qua hidden input để Model Binding nhận được trong OnPostAsync *@
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Name" /> @* Tùy chọn: Truyền Name để có thể dùng lại trong logs/lỗi OnPostAsync *@
+
+        <div class="mb-4">
+            <p class="text-lg">Bạn có chắc chắn muốn xóa danh mục <span class="font-bold text-yellow-300">@Model.Name</span> không?</p> @* Đổi màu chữ cho tên danh mục *@
+            <p class="text-sm text-gray-400 mt-2">Hành động này không thể hoàn tác và có thể ảnh hưởng đến các danh mục con hoặc sản phẩm liên quan.</p>
+        </div>
+
         <div class="flex gap-2 mt-6">
-            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold">Xác nhận xóa</button>
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition">Xác nhận xóa</button>
             <a href="/Admin/Categories/Index" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-semibold">Quay lại</a>
         </div>
     </form>

@@ -1,7 +1,7 @@
 @page
 @model api.Pages.Admin.Categories.Index
 @{
-        ViewData["Title"] = "Quản lý danh mục";
+    ViewData["Title"] = "Quản lý danh mục";
     var search = Model.Request.Query["search"].ToString();
     var parents = string.IsNullOrWhiteSpace(search)
         ? Model.Parents
@@ -51,11 +51,15 @@ else
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     }
-
-                    <a href="/Admin/Categories/Update?id=@parent._id" class="ml-auto text-blue-400 hover:text-blue-200 text-sm px-2 py-1 rounded transition">
+                    
+                    @* UPDATED: Pass category 'name' and 'parent_category' (empty for root parents) *@
+                    <a href="/Admin/Categories/Update?id=@parent._id&name=@Uri.EscapeDataString(parent.name)&parentCategoryId=" 
+                       class="ml-auto text-blue-400 hover:text-blue-200 text-sm px-2 py-1 rounded transition"
+                       onclick="event.stopPropagation()">
                         <i data-lucide="edit" class="w-4 h-4"></i>
                     </a>
-                    <a href="/Admin/Categories/Delete?id=@parent._id" class="text-red-400 hover:text-red-200 text-sm px-2 py-1 rounded transition">
+                    <a href="/Admin/Categories/Delete?id=@parent._id&name=@Uri.EscapeDataString(parent.name)" class="text-red-400 hover:text-red-200 text-sm px-2 py-1 rounded transition"
+                        onclick="event.stopPropagation()">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </a>
                 </div>
@@ -70,10 +74,15 @@ else
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                                 </svg>
                                 <span>@child.name</span>
-                                <a href="/Admin/Categories/Update?id=@child._id" class="ml-auto text-blue-300 hover:text-blue-100 text-xs px-2 py-1 rounded transition">
+                                
+                                @* UPDATED: Pass category 'name' and its 'parent_category' ID *@
+                                <a href="/Admin/Categories/Update?id=@child._id&name=@Uri.EscapeDataString(child.name)&parentCategoryId=@child.parent_category" 
+                                   class="ml-auto text-blue-300 hover:text-blue-100 text-xs px-2 py-1 rounded transition"
+                                   onclick="event.stopPropagation()">
                                     <i data-lucide="edit" class="w-4 h-4"></i>
                                 </a>
-                                <a href="/Admin/Categories/Delete?id=@child._id" class="text-red-300 hover:text-red-100 text-xs px-2 py-1 rounded transition">
+                                <a href="/Admin/Categories/Delete?id=@child._id&name=@Uri.EscapeDataString(child.name)" class="text-red-300 hover:text-red-100 text-xs px-2 py-1 rounded transition"
+                                    onclick="event.stopPropagation()">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </a>
                             </li>
@@ -84,5 +93,4 @@ else
         }
     </ul>
 </div>
-
 }

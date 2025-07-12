@@ -6,9 +6,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using api.Dtos;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace api.Pages.Admin.Categories
 {
+    [Authorize(Roles = "admin")]
+
     public class Index : PageModel
     {
         private readonly ILogger<Index> _logger;
