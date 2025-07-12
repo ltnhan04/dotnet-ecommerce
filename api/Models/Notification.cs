@@ -31,7 +31,7 @@ namespace api.Models
         public bool isRead { get; set; } = false;
 
         [BsonElement("redirectUrl")]
-        public string? redirectUrl { get; set; }
+        public string? redirectUrl { get; set; } = string.Empty;
 
         [BsonElement("createdAt")]
         public DateTime createdAt { get; set; } = DateTime.UtcNow;

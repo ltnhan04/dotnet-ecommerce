@@ -16,10 +16,12 @@ namespace api.Repositories.Customer
     public class OrderRepository : IOrderRepository
     {
         private readonly iTribeDbContext _context;
+        private readonly IProductVariantRepository _productVariantRepository;
 
-        public OrderRepository(iTribeDbContext context)
+        public OrderRepository(iTribeDbContext context, IProductVariantRepository productVariantRepository)
         {
             _context = context;
+            _productVariantRepository = productVariantRepository;
         }
         public async Task<Order> CreateOrder(Order order)
         {
@@ -120,6 +122,7 @@ namespace api.Repositories.Customer
 
                 match.stock_quantity += quantity;
                 _context.ProductVariants.Update(match);
+                await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
 
                 order.status = "cancel";
                 await _context.SaveChangesAsync();
@@ -135,7 +138,7 @@ namespace api.Repositories.Customer
                 .ToListAsync();
 
             var variantDict = variants.ToDictionary(item => item._id, item => item);
-            var productDict = products.ToDictionary(item => item._id, item => item); 
+            var productDict = products.ToDictionary(item => item._id, item => item);
 
             return new CancelOrderDto
             {
@@ -161,7 +164,9 @@ namespace api.Repositories.Customer
                 status = order.status,
                 shippingAddress = order.shippingAddress,
                 isPaymentMomo = order.isPaymentMomo,
-                stripeSessionId = order.stripeSessionId ?? "null"
+                stripeSessionId = order.stripeSessionId ?? "null",
+                createdAt = order.createdAt,
+                updatedAt = order.updatedAt
             };
         }
 
@@ -179,6 +184,7 @@ namespace api.Repositories.Customer
                 var match = variantList.FirstOrDefault(item => item._id.ToString() == variantId.ToString());
                 match.stock_quantity -= quantity;
                 _context.ProductVariants.Update(match);
+                await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
             }
 
             order.status = "processing";
@@ -198,7 +204,7 @@ namespace api.Repositories.Customer
             var variantDict = variants.ToDictionary(item => item._id, item => item);
             var productDict = products.ToDictionary(item => item._id, item => item);
             return new UpdateOrderPaymentResponseDto
-            {   
+            {
                 _id = order._id.ToString(),
                 user = order.user.ToString(),
                 variants = order.variants.Select(v => new OrderVariantDetail
@@ -221,6 +227,8 @@ namespace api.Repositories.Customer
                 stripeSessionId = order.stripeSessionId,
                 status = order.status,
                 shippingAddress = order.shippingAddress,
+                createdAt = order.createdAt,
+                updatedAt = order.updatedAt
             };
         }
     }

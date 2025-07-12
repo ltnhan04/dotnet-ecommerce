@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using api.Services;
 using api.Interfaces.Services;
+using api.Interfaces;
 
 namespace api.Repositories.Admin
 {
@@ -14,12 +15,14 @@ namespace api.Repositories.Admin
         private readonly iTribeDbContext _context;
         private readonly EmailService _sendEmail;
         private readonly IPointService _pointService;
+        private readonly IProductVariantRepository _productVariantRepository;
 
-        public AdminOrderRepository(iTribeDbContext context, EmailService sendEmail, IPointService pointService)
+        public AdminOrderRepository(iTribeDbContext context, EmailService sendEmail, IPointService pointService, IProductVariantRepository productVariantRepository)
         {
             _context = context;
             _sendEmail = sendEmail;
             _pointService = pointService;
+            _productVariantRepository = productVariantRepository;
         }
         public async Task<PaginateDto<AdminGetAllOrder>> GetAllOrder(GetOrderQueryDto dto)
         {
@@ -237,10 +240,11 @@ namespace api.Repositories.Admin
                         throw new AppException($"Insufficient stock for product");
                     }
                     await _context.SaveChangesAsync();
+                    await _productVariantRepository.CheckVariantLowStock(item.variant.ToString());
                 }
             }
 
-            if (dto.status == "cancell")
+            if (dto.status == "cancel")
             {
                 foreach (var item in order.variants)
                 {
@@ -250,6 +254,7 @@ namespace api.Repositories.Admin
 
                     variant.stock_quantity += item.quantity;
                     await _context.SaveChangesAsync();
+                    await _productVariantRepository.CheckVariantLowStock(item.variant.ToString());
                 }
             }
 

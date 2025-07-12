@@ -85,7 +85,7 @@ namespace api.Controllers
             {
                 var userId = User.FindFirst("userId")?.Value;
                 var data = await _orderService.HandleCancelOrder(orderId);
-                if (data != null)
+                if (data.status == "cancel")
                 {
                     await _notificationRepository.Create(new Notification
                     {

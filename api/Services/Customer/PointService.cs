@@ -17,9 +17,11 @@ namespace api.Services.Customer
     public class PointService : IPointService
     {
         private readonly IPointRepository _pointRepository;
-        public PointService(IPointRepository pointRepository)
+        private readonly INotificationService _notificationService;
+        public PointService(IPointRepository pointRepository, INotificationService notificationService)
         {
             _pointRepository = pointRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<GetCustomerPointDto> HandleGetCustomerPoint(string userId)
@@ -146,6 +148,7 @@ namespace api.Services.Customer
             };
 
             await _pointRepository.AddPointForOrder(point);
+            await _notificationService.NotifyNearMilestone(order.user.ToString());
             return point;
         }
 
@@ -180,7 +183,7 @@ namespace api.Services.Customer
 
         public async Task<VoucherFreeShipDto> CreateFirstOrderFreeShipPromotion(string customerId)
         {
-            var existingOrders = await _pointRepository.CheckFirstOrderOfCustomer(customerId);
+            await _pointRepository.CheckFirstOrderOfCustomer(customerId);
             var code = "FREESHIP" + "-" + ObjectId.GenerateNewId(16);
             var voucher = new models.PointVoucher
             {

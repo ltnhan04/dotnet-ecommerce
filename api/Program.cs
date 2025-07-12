@@ -53,6 +53,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductVariantService, ProductVariantService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICProductService, CProductService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddScoped<IRedisRepository, RedisRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
