@@ -103,7 +103,6 @@ namespace api.Repositories.Customer
 
         public async Task<CancelOrderDto> CancelOrder(string orderId)
         {
-
             var order = await _context.Orders
                 .Where(item => item._id == ObjectId.Parse(orderId))
                 .FirstOrDefaultAsync() ?? throw new AppException("Order not found", 404);
@@ -125,9 +124,44 @@ namespace api.Repositories.Customer
                 order.status = "cancel";
                 await _context.SaveChangesAsync();
             }
+            var variantIds = order.variants.Select(item => item.variant).ToList();
+            var variants = await _context.ProductVariants
+                .Where(item => variantIds.Contains(item._id))
+                .ToListAsync();
+
+            var productIds = variants.Select(item => item.product).ToList();
+            var products = await _context.Products
+                .Where(item => productIds.Contains(item._id))
+                .ToListAsync();
+
+            var variantDict = variants.ToDictionary(item => item._id, item => item);
+            var productDict = products.ToDictionary(item => item._id, item => item); 
+
             return new CancelOrderDto
             {
-                message = "Order cancelled successfully"
+                _id = order._id.ToString(),
+                user = order.user.ToString(),
+                variants = order.variants.Select(v => new OrderVariantDetail
+                {
+                    quantity = v.quantity,
+                    variant = new VariantOrderDto
+                    {
+                        _id = v.variant.ToString(),
+                        product = variantDict[v.variant].product.ToString(),
+                        productName = productDict[variantDict[v.variant].product].name,
+                        colorName = variantDict[v.variant].color.colorName,
+                        colorCode = variantDict[v.variant].color.colorCode,
+                        storage = variantDict[v.variant].storage,
+                        price = variantDict[v.variant].price,
+                        images = variantDict[v.variant].images ?? new List<string>()
+                    }
+                }).ToList(),
+                totalAmount = order.totalAmount,
+                paymentMethod = order.paymentMethod,
+                status = order.status,
+                shippingAddress = order.shippingAddress,
+                isPaymentMomo = order.isPaymentMomo,
+                stripeSessionId = order.stripeSessionId ?? "null"
             };
         }
 
@@ -152,13 +186,19 @@ namespace api.Repositories.Customer
             await _context.SaveChangesAsync();
 
             var variantIds = order.variants.Select(item => item.variant).ToList();
-            var variant = await _context.ProductVariants
-                .FirstOrDefaultAsync(item => variantIds.Contains(item._id));
-            var product = await _context.Products
-                .FirstOrDefaultAsync(item => item._id == variant.product);
+            var variants = await _context.ProductVariants
+                .Where(item => variantIds.Contains(item._id))
+                .ToListAsync();
 
+            var productIds = variants.Select(item => item.product).Distinct().ToList();
+            var products = await _context.Products
+                .Where(item => productIds.Contains(item._id))
+                .ToListAsync();
+
+            var variantDict = variants.ToDictionary(item => item._id, item => item);
+            var productDict = products.ToDictionary(item => item._id, item => item);
             return new UpdateOrderPaymentResponseDto
-            {
+            {   
                 _id = order._id.ToString(),
                 user = order.user.ToString(),
                 variants = order.variants.Select(v => new OrderVariantDetail
@@ -166,14 +206,14 @@ namespace api.Repositories.Customer
                     quantity = v.quantity,
                     variant = new VariantOrderDto
                     {
-                        _id = order._id.ToString(),
-                        product = variant.product.ToString(),
-                        productName = product.name,
-                        colorName = variant.color.colorName,
-                        colorCode = variant.color.colorCode,
-                        storage = variant.storage,
-                        price = variant.price,
-                        images = variant.images ?? new List<string>(),
+                        _id = v.variant.ToString(),
+                        product = variantDict[v.variant].product.ToString(),
+                        productName = productDict[variantDict[v.variant].product].name,
+                        colorName = variantDict[v.variant].color.colorName,
+                        colorCode = variantDict[v.variant].color.colorCode,
+                        storage = variantDict[v.variant].storage,
+                        price = variantDict[v.variant].price,
+                        images = variantDict[v.variant].images ?? new List<string>(),
                     }
                 }).ToList(),
                 totalAmount = order.totalAmount,
