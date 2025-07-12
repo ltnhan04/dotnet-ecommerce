@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using api.Dtos;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace api.Pages.Admin.Categories
 {
+    [Authorize(Roles = "admin")]
     public class Delete : PageModel
     {
         private readonly ILogger<Delete> _logger;
         private readonly HttpClient _httpClient;
         [BindProperty(SupportsGet = true)]
         public string Id { get; set; }
-        public string Name { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string Name { get; set; } = string.Empty;
 
         public Delete(ILogger<Delete> logger, IHttpClientFactory clientFactory)
         {
@@ -25,44 +29,23 @@ namespace api.Pages.Admin.Categories
             _httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("SERVER_URL")!);
         }
 
-        public async Task OnGetAsync()
+        public Task OnGetAsync() // Thay đổi sang Task vì không còn gọi API ở đây nữa
         {
-            if (string.IsNullOrEmpty(Id)) return;
-            var token = Request.Cookies["accessToken"];
-            if (!string.IsNullOrEmpty(token))
+            // Không cần gọi API để lấy tên danh mục nữa
+            // Name đã được tự động bind từ query string nhờ [BindProperty(SupportsGet = true)]
+
+            if (string.IsNullOrEmpty(Id))
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                // Có thể thêm log hoặc xử lý lỗi nếu Id không có
+                _logger.LogWarning("Delete page accessed without an Id.");
             }
-            // Gọi endpoint lấy tất cả danh mục cha
-            var response = await _httpClient.GetAsync("api/v1/admin/categories");
-            if (response.IsSuccessStatusCode)
+            if (string.IsNullOrEmpty(Name))
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var doc = System.Text.Json.JsonDocument.Parse(json);
-                var data = doc.RootElement.GetProperty("data");
-                var list = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(data.GetRawText()) ?? new();
-                var cat = list.FirstOrDefault(c => c._id == Id);
-                if (cat != null)
-                {
-                    Name = cat.name;
-                    return;
-                }
+                // Có thể log hoặc hiển thị thông báo nếu tên không được truyền
+                _logger.LogWarning("Delete page accessed without a Name for Id: {Id}.", Id);
             }
-            // Nếu không tìm thấy ở danh mục cha, thử lấy theo parent (danh mục con)
-            // Giả sử Id là parentId, gọi endpoint sub/{parentId}
-            var subResponse = await _httpClient.GetAsync($"api/v1/admin/categories/sub/{Id}");
-            if (subResponse.IsSuccessStatusCode)
-            {
-                var json = await subResponse.Content.ReadAsStringAsync();
-                var doc = System.Text.Json.JsonDocument.Parse(json);
-                var data = doc.RootElement.GetProperty("data");
-                var subList = System.Text.Json.JsonSerializer.Deserialize<List<CategoryDto>>(data.GetRawText()) ?? new();
-                var subCat = subList.FirstOrDefault(c => c._id == Id);
-                if (subCat != null)
-                {
-                    Name = subCat.name;
-                }
-            }
+
+            return Task.CompletedTask; // Trả về Task hoàn thành vì không có thao tác async
         }
 
         public async Task<IActionResult> OnPostAsync()

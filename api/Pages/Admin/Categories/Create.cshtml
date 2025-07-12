@@ -7,18 +7,29 @@
 <div class="max-w-lg mx-auto bg-[#1E293B] p-8 rounded-xl shadow">
     <h1 class="text-xl font-bold mb-6">Thêm danh mục mới</h1>
     <form method="post" class="space-y-4">
+        @Html.AntiForgeryToken()
         <div>
             <label class="block font-semibold mb-1">Tên danh mục</label>
-            <input asp-for="Category.name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            <input name="Category.name"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" />
             <span asp-validation-for="Category.name" class="text-red-500 text-sm"></span>
         </div>
         <div>
             <label class="block font-semibold mb-1">Danh mục cha (nếu có)</label>
-            <input asp-for="Category.parent_category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="ID danh mục cha hoặc để trống" />
+            <select id="category" name="Category.parent_category"
+                class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#2196F3] focus:border-transparent">
+                <option value="">-- Chọn danh mục cha hoặc để trống --</option>
+                @foreach (var cat in Model.Categories)
+                {
+                    <option value="@cat._id">@cat.name</option>
+                }
+            </select>
         </div>
         <div class="flex gap-2 mt-6">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">Lưu</button>
-            <a href="/Admin/Categories/Index" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-semibold">Quay lại</a>
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">Lưu</button>
+            <a href="/Admin/Categories/Index"
+                class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-semibold">Quay lại</a>
         </div>
     </form>
 </div>

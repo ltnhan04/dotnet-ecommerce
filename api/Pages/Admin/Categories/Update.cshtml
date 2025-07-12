@@ -4,23 +4,55 @@
     ViewData["Title"] = "Cập nhật danh mục";
 }
 
-<div class="max-w-lg mx-auto bg-[#1E293B] p-8 rounded-xl shadow">
+<div class="max-w-lg mx-auto bg-[#1E293B] p-8 rounded-xl shadow text-white">
     <h1 class="text-xl font-bold mb-6">Cập nhật danh mục</h1>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="mb-4 p-3 bg-red-100 text-red-800 rounded">
+            <ul class="list-disc pl-5">
+                @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@modelError.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
     <form method="post" class="space-y-4">
+        @Html.AntiForgeryToken()
+
         <div>
-            <label class="block font-semibold mb-1">Tên danh mục</label>
-            <input asp-for="Category.name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" />
-            <span asp-validation-for="Category.name" class="text-red-500 text-sm"></span>
-            <span class="text-xs text-gray-400 block mt-1">Tên cũ: <span class="font-mono">@Model.OldName</span></span>
+            <label name="Category.name" class="block font-semibold mb-1">Tên danh mục</label>
+            <input name="Category.name" value="@Model.Category.name" 
+                   class="w-full px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-[#232b3b] text-white" />
+            <span asp-validation-for="Category.name" class="text-red-400 text-sm"></span>
         </div>
+
         <div>
-            <label class="block font-semibold mb-1">Danh mục cha (nếu có)</label>
-            <input asp-for="Category.parent_category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="ID danh mục cha hoặc để trống" />
-            <span class="text-xs text-gray-400 block mt-1">Danh mục cha cũ: <span class="font-mono">@(string.IsNullOrEmpty(Model.OldParentName) ? "None" : Model.OldParentName)</span></span>
+            <label name="Category.parent_category" class="block font-semibold mb-1">Danh mục cha (nếu có)</label>
+            <select name="Category.parent_category" 
+                    class="w-full px-3 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-[#232b3b] text-white appearance-none">
+                <option value="" class="bg-[#232b3b] text-white">-- Chọn danh mục cha hoặc để trống --</option>
+                @foreach (var cat in Model.Categories)
+                {
+                    if (cat._id != Model.Id)
+                    {
+                        <option value="@cat._id" selected="@(Model.Category.parent_category == cat._id)" class="bg-[#232b3b] text-white">@cat.name</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="Category.parent_category" class="text-red-400 text-sm"></span>
         </div>
+
         <div class="flex gap-2 mt-6">
+            <input type="hidden" name="Id" value="@Model.Id" />
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">Lưu</button>
             <a href="/Admin/Categories/Index" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-semibold">Quay lại</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
