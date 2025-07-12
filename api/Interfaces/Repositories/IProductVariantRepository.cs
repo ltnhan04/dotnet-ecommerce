@@ -14,5 +14,6 @@ namespace api.Interfaces
         Task<ProductVariant> CreateVariant(ProductVariant dto);
         Task<ProductVariant?> UpdateVariant(string id, ProductVariant dto);
         Task<bool> Delete(string id);
+        Task CheckVariantLowStock(string variantId);
     }
 }

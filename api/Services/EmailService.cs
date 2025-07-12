@@ -45,5 +45,18 @@ namespace api.Services
 
             await _emailSender.SendEmailAsync(email, "Order Confirmation", htmlBody);
         }
+        public async Task SendMilestoneReminderEmail(string email, string name, int currentPoints, int milestone)
+        {
+            string subject = $"🎯 Gần đủ điểm nhận voucher mốc {milestone}!";
+            string htmlBody = $@"
+        <p>Xin chào {name},</p>
+        <p>Bạn hiện có <strong>{currentPoints}</strong> điểm tích lũy.</p>
+        <p>Chỉ còn <strong>{milestone - currentPoints}</strong> điểm nữa là bạn có thể đổi voucher mốc {milestone} điểm rồi đấy 🎁</p>
+        <p>Hãy tiếp tục mua sắm để nhận ưu đãi nhé!</p>
+        <p><i>iTribe Shop</i></p>";
+
+            await _emailSender.SendEmailAsync(email, subject, htmlBody);
+        }
+
     }
 }

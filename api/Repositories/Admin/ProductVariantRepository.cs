@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Interfaces;
+using api.Interfaces.Repositories;
 using api.models;
+using api.Models;
 using api.Utils;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
-using ZstdSharp;
 
 namespace api.Repositories.Admin
 {
     public class ProductVariantRepository : IProductVariantRepository
     {
         private readonly iTribeDbContext _context;
-        public ProductVariantRepository(iTribeDbContext context)
+        private readonly INotificationRepository _notificationRepository;
+
+        public ProductVariantRepository(iTribeDbContext context, INotificationRepository notificationRepository)
         {
             _context = context;
+            _notificationRepository = notificationRepository;
         }
         public async Task<List<ProductVariant>> GetByProductId(ObjectId productId)
         {
@@ -48,6 +52,25 @@ namespace api.Repositories.Admin
             _context.ProductVariants.Remove(variant);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task CheckVariantLowStock(string variantId)
+        {
+            var variant = await _context.ProductVariants
+        .FirstOrDefaultAsync(v => v._id == ObjectId.Parse(variantId));
+
+            if (variant != null && variant.stock_quantity < 10)
+            {
+                await _notificationRepository.Create(new Notification
+                {
+                    title = "⚠️ Sản phẩm sắp hết hàng",
+                    message = $"Variant {variant.storage} - {variant.color.colorName} chỉ còn {variant.stock_quantity} sản phẩm.",
+                    targetRole = "admin",
+                    type = "inventory",
+                    isRead = false,
+                    redirectUrl = "/admin/products",
+                    createdAt = DateTime.UtcNow
+                });
+            }
         }
     }
 }
