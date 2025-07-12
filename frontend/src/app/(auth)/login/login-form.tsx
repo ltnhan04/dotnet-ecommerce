@@ -84,7 +84,7 @@ export default function LoginForm() {
           variant: "destructive",
         });
       } finally {
-        window.history.replaceState({}, "", "/");
+        window.history.replaceState({}, "", "/iphone");
       }
     }
   }, [dispatch, searchParams, toast]);
