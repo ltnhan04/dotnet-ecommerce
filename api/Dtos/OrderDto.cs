@@ -111,9 +111,9 @@ namespace api.Dtos
         public string orderId { get; set; } = string.Empty;
     }
 
-    public class UpdateOrderPaymentResponseDto
+    public class UpdateOrderPaymentResponseDto : OrderDtoResponse
     {
-        public string message { get; set; } = string.Empty;
+
     }
 
     public class AdminGetAllOrder

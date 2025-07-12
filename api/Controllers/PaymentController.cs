@@ -63,20 +63,5 @@ namespace api.Controllers
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
-
-        [AllowAnonymous]
-        [HttpPost("callback")]
-        public async Task StripeCallback([FromBody] StripeCallbackDto dto)
-        {
-            try
-            {
-                var data = await _paymentService.HandleStripeCallback(dto);
-                await ResponseHandler.SendSuccess(Response, data, 200, "Callback stripe payment successfully");
-            }
-            catch (Exception ex)
-            {
-                await ResponseHandler.SendError(Response, ex.Message, 500);
-            }
-        }
     }
 }
