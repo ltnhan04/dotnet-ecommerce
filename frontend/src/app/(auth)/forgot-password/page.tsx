@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <Card className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+        <Card className="w-full max-w-md bg-white p-8 rounded-2xl shadow-[#e6e6e6]">
           <CardHeader className="text-center">
             <Image
               src="/assets/images/i-Tribe-logo.png"

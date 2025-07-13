@@ -20,7 +20,7 @@ import {
   clearMessage,
   clearError,
 } from "@/lib/features/authentication/authSlice";
-import { ReloadIcon, EyeOpenIcon, EyeNoneIcon } from "@radix-ui/react-icons";
+import { Eye, EyeOff, RotateCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { FcGoogle } from "react-icons/fc";
@@ -69,7 +69,7 @@ export default function RegisterForm() {
         className: `bg-[#0D99FF] text-white border border-[#0B85DC] rounded-lg shadow-lg p-4 flex items-center transition-all duration-300 ease-in-out`,
         description: (
           <span className="flex items-center gap-2">
-            <ReloadIcon className="w-4 h-4 text-white" />
+            <RotateCw className="w-4 h-4 text-white" />
             {message}
           </span>
         ),
@@ -89,14 +89,14 @@ export default function RegisterForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-500">Name</FormLabel>
+              <FormLabel className="text-gray-500 font-sans">Name</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Your Name"
                   type="text"
                   {...field}
                   disabled={isLoading}
-                  className={`text-gray-600 transition duration-200 ease-in-out ${
+                  className={`text-gray-600 transition font-sans duration-200 ease-in-out ${
                     isLoading ? "cursor-not-allowed opacity-50" : "opacity-100"
                   }`}
                 />
@@ -111,14 +111,14 @@ export default function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-500">Email</FormLabel>
+              <FormLabel className="text-gray-500 font-sans">Email</FormLabel>
               <FormControl>
                 <Input
                   placeholder="example@gmail.com"
                   type="email"
                   {...field}
                   disabled={isLoading}
-                  className={`text-gray-600 transition duration-200 ease-in-out ${
+                  className={`text-gray-600 font-sans transition duration-200 ease-in-out ${
                     isLoading ? "cursor-not-allowed opacity-50" : "opacity-100"
                   }`}
                 />
@@ -133,7 +133,9 @@ export default function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-500">Mật khẩu</FormLabel>
+              <FormLabel className="text-gray-500 font-sans">
+                Mật khẩu
+              </FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
@@ -141,7 +143,7 @@ export default function RegisterForm() {
                     type={showPassword ? "text" : "password"}
                     {...field}
                     disabled={isLoading}
-                    className={`text-gray-600 transition duration-200 ease-in-out ${
+                    className={`text-gray-600 transition font-sans duration-200 ease-in-out ${
                       isLoading
                         ? "cursor-not-allowed opacity-50"
                         : "opacity-100"
@@ -149,13 +151,13 @@ export default function RegisterForm() {
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 transition duration-200 ease-in-out hover:scale-110"
+                    className="font-sans absolute inset-y-0 right-0 flex items-center pr-3 transition duration-200 ease-in-out hover:scale-110"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeNoneIcon className="w-5 h-5 text-primary" />
+                      <EyeOff className="w-5 h-5 text-gray-500" />
                     ) : (
-                      <EyeOpenIcon className="w-5 h-5 text-primary" />
+                      <Eye className="w-5 h-5 text-gray-500" />
                     )}
                   </button>
                 </div>
@@ -170,7 +172,9 @@ export default function RegisterForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-500">Nhập lại mật khẩu</FormLabel>
+              <FormLabel className="text-gray-500 font-sans">
+                Nhập lại mật khẩu
+              </FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
@@ -178,7 +182,7 @@ export default function RegisterForm() {
                     type={showConfirmPassword ? "text" : "password"}
                     {...field}
                     disabled={isLoading}
-                    className={`text-gray-600 transition duration-200 ease-in-out ${
+                    className={`text-gray-600 font-sans transition duration-200 ease-in-out ${
                       isLoading
                         ? "cursor-not-allowed opacity-50"
                         : "opacity-100"
@@ -186,13 +190,13 @@ export default function RegisterForm() {
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 transition duration-200 ease-in-out hover:scale-110"
+                    className="absolute font-sans inset-y-0 right-0 flex items-center pr-3 transition duration-200 ease-in-out hover:scale-110"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <EyeNoneIcon className="w-5 h-5 text-primary" />
+                      <EyeOff className="w-5 h-5 text-gray-500" />
                     ) : (
-                      <EyeOpenIcon className="w-5 h-5 text-primary" />
+                      <Eye className="w-5 h-5 text-gray-500" />
                     )}
                   </button>
                 </div>
@@ -205,13 +209,13 @@ export default function RegisterForm() {
         <Button
           disabled={isLoading}
           type="submit"
-          className="!mt-8 w-full transition-colors duration-300 ease-in-out hover:bg-[#333]"
+          className="!mt-8 w-full font-sans transition-colors duration-300 ease-in-out hover:bg-[#333]"
         >
           {!isLoading ? (
             "Đăng ký"
           ) : (
             <>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              <RotateCw className="mr-2 h-4 w-4 font-sans animate-spin" />
               Please wait...
             </>
           )}
@@ -234,7 +238,7 @@ export default function RegisterForm() {
           onClick={() =>
             (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/login-google?returnUrl=${process.env.NEXT_PUBLIC_CLIENT_ENDPOINT}`)
           }
-          className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-900 border-gray-300"
+          className="w-full font-sans text-gray-500"
         >
           <FcGoogle className="w-5 h-5" />
           Đăng ký với Google

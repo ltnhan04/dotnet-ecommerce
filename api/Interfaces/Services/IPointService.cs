@@ -10,7 +10,7 @@ namespace api.Interfaces.Services
     public interface IPointService
     {
         Task<GetCustomerPointDto> HandleGetCustomerPoint(string userId);
-        Task<List<GetCustomerVoucherDto>> HandleGetCustomerVoucher(string userId);
+        Task<List<VoucherDto>> HandleGetCustomerVoucher(string userId);
         Task<VoucherDto> HandleExchangePointForVoucher(ExchangePointForVoucherDto dto, string userId);
         Task<Point> HandleAddPointForOrder(Order order);
         Task<ApplyVoucherResponseDto> HandleApplyVoucher(ApplyVoucherDto dto, string userId);

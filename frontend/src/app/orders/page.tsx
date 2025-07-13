@@ -55,7 +55,7 @@ const OrderTracker = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-red-600">Đã xảy ra lỗi khi tải đơn hàng</p>
@@ -67,7 +67,7 @@ const OrderTracker = () => {
 
   if (orders.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <div className="w-[300px] h-[300px] relative">

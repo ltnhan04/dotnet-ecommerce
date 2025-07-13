@@ -10,18 +10,18 @@ const Breadcrumb: React.FC = (): React.ReactElement => {
   const breadcrumbItems = [
     {
       label: (
-        <div className="flex items-center text-gray-500 hover:text-gray-700 font-semibold text-sm">
-          <Home className="w-4 h-4 mr-1" color="black" />
-          Trang chủ
+        <div className="flex items-center text-gray-600 hover:text-blue duration-500 ease-out font-semibold text-sm">
+          <Home className="w-5 h-5" />
         </div>
       ),
       href: "/",
     },
     ...paths.map((segment, index) => {
       const href = "/" + paths.slice(0, index + 1).join("/");
-      const label = segment.split("-").map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(" ");
+      const label = segment
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
 
       return {
         label,
@@ -38,16 +38,16 @@ const Breadcrumb: React.FC = (): React.ReactElement => {
         return (
           <React.Fragment key={item.href}>
             {index > 0 && (
-              <ChevronRight className="w-4 h-4 mx-2 text-gray-800 flex-shrink-0 font-semibold" />
+              <ChevronRight className="w-3 h-3 mx-2 text-gray-600 flex-shrink-0 font-semibold" />
             )}
             {isLast ? (
-              <span className="text-gray-900 font-medium truncate text-sm">
+              <span className="text-gray-800 font-semibold text-sm uppercase hover:text-blue duration-500 ease-out cursor-pointer">
                 {item.label}
               </span>
             ) : (
               <Link
                 href={item.href}
-                className="text-gray-500 hover:text-gray-700 transition-colors truncate font-semibold text-sm"
+                className="text-gray-800 font-semibold text-sm uppercase hover:text-blue duration-500 ease-out cursor-pointer"
               >
                 {item.label}
               </Link>

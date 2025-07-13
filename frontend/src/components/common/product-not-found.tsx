@@ -8,7 +8,7 @@ function ProductOutOfStock() {
         <div className="relative w-64 h-64 mx-auto mb-6">
           <Image
             alt="Điện thoại đã tạm hết hàng"
-            src="/assets/images/product-not-found.png"
+            src="/assets/images/out_of_stock.png"
             fill
             sizes="256px"
             className="object-contain"
@@ -17,7 +17,7 @@ function ProductOutOfStock() {
         </div>
 
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Điện thoại này đã tạm hết hàng 😢
+          Điện thoại này đã tạm hết hàng
         </h1>
         <p className="text-gray-500">
           Bạn vui lòng quay lại sau hoặc tham khảo sản phẩm khác nhé! 🙏

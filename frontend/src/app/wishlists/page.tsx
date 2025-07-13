@@ -18,11 +18,11 @@ import {
 
 import { Trash2, ShoppingCart, LoaderCircle } from "lucide-react";
 
-import BreadCrumb from "@/app/wishlists/components/bread-crumb";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { removeFromWishlist } from "@/lib/features/wishlists/wistlistSlice";
 import { addToCart } from "@/lib/features/cart/cartSlice";
 import { WishlistType } from "@/types/wishlist";
+import Breadcrumb from "@/components/common/breadcrumb";
 const wishlistImage = "/assets/images/wishlist.png";
 
 export default function WishlistPage() {
@@ -57,8 +57,8 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="container mx-auto min-h-[100vh]">
-      <BreadCrumb />
+    <div className="container mx-auto">
+      <Breadcrumb />
       {wishlistItems.length === 0 ? (
         <div className="flex flex-col items-center py-12">
           <div className=" w-[200px] h-[200px] md:w-[350px] md:h-[350px] relative">

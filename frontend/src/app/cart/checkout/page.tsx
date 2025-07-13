@@ -17,7 +17,7 @@ import PaymentMethodSection from "@/app/cart/components/payment-method";
 import { useProfile } from "@/hooks/useProfile";
 import OrderSummary from "./components/OrderSummary";
 import ShippingMethodSection from "./components/ShippingMethodSection";
-import BreadCrumb from "./components/bread-crumb";
+import Breadcrumb from "@/components/common/breadcrumb";
 import { IShippingMethod } from "@/types/checkout";
 
 const CheckoutPage = () => {
@@ -49,7 +49,8 @@ const CheckoutPage = () => {
   const { createOrder, isLoading: isCreatingOrder } = useOrders();
   const { profile } = useProfile();
   const address = `${profile?.address?.street}, ${profile?.address?.ward}, ${profile?.address?.district}, ${profile?.address?.city}`;
-  const { data: shippingFee, isLoading: isLoadingShippingFee } = useShippingFee(address);
+  const { data: shippingFee, isLoading: isLoadingShippingFee } =
+    useShippingFee(address);
   const handleShippingMethodChange = (value: string) => {
     setSelectedShippingMethod(value);
     setCheckoutData((prev) => ({
@@ -59,14 +60,14 @@ const CheckoutPage = () => {
     }));
   };
   useEffect(() => {
-  if (profile?.address) {
-    const fullAddress = `${profile.address.street}, ${profile.address.ward}, ${profile.address.district}, ${profile.address.city}`;
-    setCheckoutData((prev) => ({
-      ...prev,
-      shippingAddress: fullAddress,
-    }));
-  }
-}, [profile]);
+    if (profile?.address) {
+      const fullAddress = `${profile.address.street}, ${profile.address.ward}, ${profile.address.district}, ${profile.address.city}`;
+      setCheckoutData((prev) => ({
+        ...prev,
+        shippingAddress: fullAddress,
+      }));
+    }
+  }, [profile]);
 
   const handleConfirmOrder = async () => {
     setLoadingState((prev) => ({ ...prev, ["confirm"]: "isConfirming" }));
@@ -101,21 +102,20 @@ const CheckoutPage = () => {
         ...checkoutData,
         totalAmount: discountedTotal !== null ? discountedTotal : total,
       });
-      console.log(response)
+      console.log(response);
       if (response.status === 201) {
         const { variants } = checkoutData;
-        console.log(checkoutData)
+        console.log(checkoutData);
         const orderId = response.data.data._id;
-        console.log(orderId)
+        console.log(orderId);
         if (checkoutData.paymentMethod === "stripe") {
           const checkoutSession = await createCheckoutSession({
             variants,
             orderId,
           });
-          console.log(checkoutSession)
+          console.log(checkoutSession);
           if (checkoutSession.status === 201) {
             window.location.href = checkoutSession.data.data.url;
-            
           }
         } else if (checkoutData.paymentMethod === "momo") {
           const momoResponse = await createMomoPayment({
@@ -149,13 +149,16 @@ const CheckoutPage = () => {
     }
   };
 
-  const selectedShippingMethodDetail:IShippingMethod = shippingFee?.data?.methods?.find((item: IShippingMethod) => item.name == selectedShippingMethod);
+  const selectedShippingMethodDetail: IShippingMethod =
+    shippingFee?.data?.methods?.find(
+      (item: IShippingMethod) => item.name == selectedShippingMethod
+    );
   const shippingCost = selectedShippingMethodDetail?.fee || 0;
   const finalTotal =
     (discountedTotal !== null ? discountedTotal : total) + shippingCost;
   return (
     <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-      <BreadCrumb />
+      <Breadcrumb />
       <h1 className="text-3xl md:text-4xl font-semibold mb-8 text-center">
         Thanh Toán
       </h1>

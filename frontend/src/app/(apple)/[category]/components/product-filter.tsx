@@ -80,14 +80,18 @@ export function ProductFilters({
           variant="ghost"
           size="sm"
           onClick={resetFilters}
-          className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+          className="text-gray-500 hover:text-gray-700"
         >
           Đặt lại
         </Button>
       </div>
 
-      <Accordion type="multiple" defaultValue={["colors", "storage", "price"]} className="space-y-4">
-        <AccordionItem value="colors" className="border-b border-gray-200">
+      <Accordion
+        type="multiple"
+        defaultValue={["colors", "storage", "price"]}
+        className="space-y-4"
+      >
+        <AccordionItem value="colors" className="border-b border-[#e6e6e6]">
           <AccordionTrigger className="text-gray-700 hover:text-gray-900 hover:no-underline">
             Màu sắc
           </AccordionTrigger>
@@ -115,7 +119,7 @@ export function ProductFilters({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="storage" className="border-b border-gray-200">
+        <AccordionItem value="storage" className="border-b border-[#e6e6e6]">
           <AccordionTrigger className="text-gray-700 hover:text-gray-900 hover:no-underline">
             Dung lượng
           </AccordionTrigger>
@@ -143,7 +147,7 @@ export function ProductFilters({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="price" className="border-b border-gray-200">
+        <AccordionItem value="price" className="border-b border-[#e6e6e6]">
           <AccordionTrigger className="text-gray-700 hover:text-gray-900 hover:no-underline">
             Khoảng giá
           </AccordionTrigger>
@@ -159,18 +163,15 @@ export function ProductFilters({
                 className="py-4"
               />
               <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>{selectedPriceRange[0].toLocaleString('vi-VN')}đ</span>
-                <span>{selectedPriceRange[1].toLocaleString('vi-VN')}đ</span>
+                <span>{selectedPriceRange[0].toLocaleString("vi-VN")}đ</span>
+                <span>{selectedPriceRange[1].toLocaleString("vi-VN")}đ</span>
               </div>
             </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      <Button
-        className="w-full text-white"
-        onClick={applyFilters}
-      >
+      <Button className="w-full text-white" onClick={applyFilters}>
         Áp dụng bộ lọc
       </Button>
     </div>

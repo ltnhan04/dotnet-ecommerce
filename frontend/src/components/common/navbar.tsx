@@ -23,24 +23,23 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useCategory } from "@/hooks/useCategories";
-import { User, ShoppingCart, Heart, UserCheck, Search } from "lucide-react";
+import { User, ShoppingCart, Heart, UserCheck, Bell } from "lucide-react";
 
 import { useAccessTokenExpired } from "@/utils/expired-token";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { APPLE_CATEGORIES } from "@/constants/categories";
-
 import { logout } from "@/services/auth/authApi";
 import { clearAccessToken } from "@/lib/features/authentication/authSlice";
-
 import { ErrorType } from "@/types/common";
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const { data: categories } = useCategory();
-  const { toast } = useToast();
-  const isTokenExpired = useAccessTokenExpired();
   const dispatch = useAppDispatch();
   const pathname = usePathname();
+  const isTokenExpired = useAccessTokenExpired();
+  const { data: categories } = useCategory();
+  const { toast } = useToast();
+
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const currentCategory = pathname.split("/")[2];
 
   const cart = useAppSelector((state) => state.cart.cart);
@@ -85,7 +84,7 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
                 </div>
               </Link>
 
-              <div className="flex flex-1 justify-center gap-6 ml-28">
+              <div className="flex flex-1 justify-center gap-6 ml-28 font-sans">
                 {categories &&
                   categories.map((category) => {
                     const appleCategory = APPLE_CATEGORIES.find(
@@ -109,9 +108,6 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
                   })}
               </div>
               <div className="flex items-center w-fit gap-2 sm:gap-4 text-white relative">
-                <span>
-                  <Search className="w-5 h-5 sm:h-6 sm:w-6" />
-                </span>
                 <Link href={"/cart"} className="relative">
                   <ShoppingCart className="w-5 h-5 sm:h-6 sm:w-6" />
                   {cartItemCount > 0 && (
@@ -129,6 +125,9 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
                     </span>
                   )}
                 </Link>
+                <span>
+                  <Bell className="w-5 h-5 sm:h-6 sm:w-6" />
+                </span>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger>
@@ -144,12 +143,12 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
                       {isTokenExpired ? (
                         <>
                           <Link href={"/login"}>
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer font-sans">
                               Đăng nhập
                             </DropdownMenuItem>
                           </Link>
                           <Link href={"/register"}>
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer font-sans">
                               Đăng ký
                             </DropdownMenuItem>
                           </Link>
@@ -157,22 +156,22 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
                       ) : (
                         <>
                           <Link href={"/profile"}>
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer font-sans">
                               Tài khoản
                             </DropdownMenuItem>
                           </Link>
                           <Link href={"/orders"}>
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer font-sans">
                               Đơn hàng
                             </DropdownMenuItem>
                           </Link>
                           <Link href={"/exchange-voucher"}>
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer font-sans">
                               Điểm tích lũy
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem
-                            className="cursor-pointer"
+                            className="cursor-pointer font-sans"
                             onClick={() => setShowLogoutDialog(true)}
                           >
                             Đăng xuất
@@ -189,7 +188,7 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
       </div>
 
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="font-sans">
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận đăng xuất</AlertDialogTitle>
             <AlertDialogDescription>

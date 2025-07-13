@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Breadcrumb from "../components/breadcrumb";
+import Breadcrumb from "../../../../components/common/breadcrumb";
 import { useGetProductBySlug } from "@/hooks/useProducts";
 import Loading from "@/app/loading";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,13 +18,9 @@ export default function ProductDetail({
   params: { slug: string };
 }) {
   const { data: productData, isLoading } = useGetProductBySlug(params.slug);
-  console.log("Product data:", productData);
-
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     null
   );
-  console.log("Selected variant:", selectedVariant);
-
   const { user } = useAuth();
 
   useEffect(() => {
@@ -64,13 +60,19 @@ export default function ProductDetail({
           />
 
           <div className="space-y-6">
-            <ProductInfo product={productData.data!} variant={selectedVariant} />
+            <ProductInfo
+              product={productData.data!}
+              variant={selectedVariant}
+            />
             <ProductVariants
               variants={variants}
               selectedVariant={selectedVariant}
               onVariantSelect={handleVariantSelect}
             />
-            <ProductActions product={productData?.data} variant={selectedVariant} />
+            <ProductActions
+              product={productData?.data}
+              variant={selectedVariant}
+            />
           </div>
         </div>
 

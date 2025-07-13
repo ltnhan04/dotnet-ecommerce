@@ -35,7 +35,7 @@ namespace api.Services.Customer
             };
         }
 
-        public async Task<List<GetCustomerVoucherDto>> HandleGetCustomerVoucher(string userId)
+        public async Task<List<VoucherDto>> HandleGetCustomerVoucher(string userId)
         {
             var data = await _pointRepository.GetCustomerVoucher(userId);
             var vouchers = data.Select(item => new VoucherDto
@@ -49,13 +49,7 @@ namespace api.Services.Customer
                 validTo = item.validTo
             }).ToList();
 
-            return new List<GetCustomerVoucherDto>
-            {
-                new GetCustomerVoucherDto
-                {
-                    vouchers = vouchers
-                }
-            };
+            return vouchers;
         }
 
         public async Task<VoucherDto> HandleExchangePointForVoucher(ExchangePointForVoucherDto dto, string userId)

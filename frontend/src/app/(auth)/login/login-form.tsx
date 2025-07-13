@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ReloadIcon, EyeOpenIcon, EyeNoneIcon } from "@radix-ui/react-icons";
+import { Eye, EyeOff, RotateCw } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -35,9 +35,7 @@ export default function LoginForm() {
     (state) => state.auth.login
   );
   const { message } = loginState;
-
   const [showPassword, setShowPassword] = useState(false);
-
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -55,7 +53,7 @@ export default function LoginForm() {
         className: `bg-[#0D99FF] text-white border border-[#0B85DC] rounded-lg shadow-lg p-4 flex items-center transition-all duration-300 ease-in-out`,
         description: (
           <span className="flex items-center gap-2">
-            <ReloadIcon className="w-4 h-4 text-white" />
+            <RotateCw className="w-4 h-4 text-white" />
             {message}
           </span>
         ),
@@ -110,7 +108,7 @@ export default function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-500">Email</FormLabel>
+                <FormLabel className="text-gray-500 font-sans">Email</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="example@gmail.com"
@@ -118,7 +116,7 @@ export default function LoginForm() {
                     {...field}
                     {...form.register("email")}
                     disabled={isLoading}
-                    className={`text-gray-600 transition duration-200 ease-in-out ${
+                    className={`text-gray-600 font-sans transition duration-200 ease-in-out ${
                       isLoading
                         ? "cursor-not-allowed opacity-50"
                         : "opacity-100"
@@ -135,7 +133,9 @@ export default function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-500">Mật khẩu</FormLabel>
+                <FormLabel className="text-gray-500 font-sans">
+                  Mật khẩu
+                </FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -144,7 +144,7 @@ export default function LoginForm() {
                       {...field}
                       {...form.register("password")}
                       disabled={isLoading}
-                      className={`text-gray-600 transition duration-200 ease-in-out ${
+                      className={`text-gray-600 font-sans transition duration-200 ease-in-out ${
                         isLoading
                           ? "cursor-not-allowed opacity-50"
                           : "opacity-100"
@@ -156,9 +156,9 @@ export default function LoginForm() {
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeNoneIcon className="w-5 h-5 text-primary" />
+                        <EyeOff className="w-5 h-5 text-gray-500" />
                       ) : (
-                        <EyeOpenIcon className="w-5 h-5 text-primary" />
+                        <Eye className="w-5 h-5 text-gray-500" />
                       )}
                     </button>
                   </div>
@@ -167,19 +167,19 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
-          <div className="text-sm text-right py-2 text-primary hover:underline transition-colors duration-300 ease-in-out font-normal">
+          <div className="text-sm font-sans text-right py-2 text-primary hover:underline transition-colors duration-300 ease-in-out font-normal">
             <Link href={"/forgot-password"}>Quên mật khẩu?</Link>
           </div>
           <Button
             disabled={isLoading}
             type="submit"
-            className="!mt-3 w-full transition-colors duration-300 ease-in-out hover:bg-[#333]"
+            className="!mt-3 w-full font-sans transition-colors duration-300 ease-in-out hover:bg-[#333]"
           >
             {!isLoading ? (
               "Đăng nhập"
             ) : (
               <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                <RotateCw className="mr-2 font-sans h-4 w-4 animate-spin" />
                 Please wait...
               </>
             )}
@@ -204,7 +204,7 @@ export default function LoginForm() {
         onClick={() =>
           (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/login-google`)
         }
-        className="w-full"
+        className="w-full font-sans text-gray-500"
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path

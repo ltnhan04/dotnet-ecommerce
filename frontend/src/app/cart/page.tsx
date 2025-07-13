@@ -4,7 +4,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -18,12 +17,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { LoaderCircle, Minus, Plus, Trash2 } from "lucide-react";
-
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { updateCart } from "@/lib/features/cart/cartSlice";
 import { CartType } from "@/types/cart";
-import BreadCrumb from "@/app/cart/components/bread-crumb";
-const emptyCart = "/assets/images/empt-cart.jpg";
+import BreadCrumb from "@/components/common/breadcrumb";
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
@@ -49,7 +46,7 @@ export default function CartPage() {
       const updatedCart = cartArray.filter((item: CartType) => item.id !== id);
       dispatch(updateCart(updatedCart));
       setIsDeleting(false);
-    }, 2000);
+    }, 200);
   };
 
   const calculateTotal = () => {
@@ -66,7 +63,7 @@ export default function CartPage() {
     setTimeout(() => {
       router.push("/cart/checkout");
       setIsUpdating(false);
-    }, 1000);
+    }, 2000);
   };
 
   return (
@@ -76,7 +73,7 @@ export default function CartPage() {
         <div className="flex flex-col items-center">
           <div className=" w-[200px] h-[200px] md:w-[350px] md:h-[350px] relative">
             <Image
-              src={emptyCart}
+              src={"/assets/images/empt-cart.jpg"}
               alt="empty cart"
               fill={true}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
