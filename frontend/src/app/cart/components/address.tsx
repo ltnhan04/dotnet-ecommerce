@@ -29,9 +29,9 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
 
   useEffect(() => {
     if (profile?.address) {
-      const { street, ward, city, country } = profile.address;
-      if (street && ward && city) {
-        const address = `${street}, ${ward}, ${city}, ${country}`;
+      const { street, ward, city, district, country } = profile.address;
+      if (street && ward && district && city ) {
+        const address = `${street}, ${ward}, ${district}, ${city}, ${country}`;
         setCheckoutData((prev) => ({
           ...prev,
           shippingAddress: address,
@@ -78,7 +78,7 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
             : error
             ? "Không thể tải địa chỉ."
             : profile?.address
-            ? `${profile.address.street}, ${profile.address.ward}, ${profile.address.city}, ${profile.address.country}`
+            ? `${profile.address.street}, ${profile.address.ward}, ${profile.address.district}, ${profile.address.city}`
             : "Vui lòng thêm địa chỉ của bạn!"}
         </p>
       </CardContent>

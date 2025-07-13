@@ -1,19 +1,11 @@
+import { shippingFee } from "@/services/shipping-method/shippingApi";
 import { useQuery } from "@tanstack/react-query";
-import {
-  shippingFree,
-  methodShipping,
-} from "@/services/shipping-method/shippingApi";
-export const useShippingMethods = (province: string) => {
+
+
+export const useShippingFee = (shippingAddress: string) => {
   return useQuery({
-    queryKey: ["shipping-methods", province],
-    queryFn: () => methodShipping(province),
-    enabled: !!province,
-  });
-};
-export const useShippingFee = (methodId: string, province: string) => {
-  return useQuery({
-    queryKey: ["shipping-fee", methodId, province],
-    queryFn: () => shippingFree(methodId, province),
-    enabled: !!methodId && !!province,
+    queryKey: ["shipping-fee", shippingAddress],
+    queryFn: () => shippingFee(shippingAddress, 1, 0, 0, 0),
+    enabled: !!shippingAddress
   });
 };

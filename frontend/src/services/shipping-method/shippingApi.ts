@@ -1,14 +1,12 @@
 import { axiosInstance } from "@/config/axiosInstance";
-export const methodShipping = async (province: string) => {
-  const res = await axiosInstance.get(
-    `/api/v1/shipping/methods?province=${province}`
-  );
-  return res.data;
-};
-export const shippingFree = async (methodId: string, province: string) => {
-  const res = await axiosInstance.post(`/api/v1/shipping/calculate-fee`, {
-    methodId,
-    province,
+
+export const shippingFee = async (shippingAddress: string, weight: number, height: number, length: number, width: number) => {
+  const res = await axiosInstance.post(`/api/v1/shipping-methods/calculate-fee`, {
+    shippingAddress,
+    weight,
+    height,
+    length,
+    width
   });
   return res.data;
 };
