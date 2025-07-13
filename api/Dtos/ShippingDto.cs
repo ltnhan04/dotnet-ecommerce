@@ -1,17 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace api.Dtos
 {
     public class ShippingDto
-    {
+    {   
+        [JsonPropertyName("shippingAddress")]
         public string ShippingAddress { get; set; } = string.Empty;
+        [JsonPropertyName("height")]
         public int Height { get; set; }
+        [JsonPropertyName("length")]
         public int Length { get; set; }
+        [JsonPropertyName("width")]
         public int Width { get; set; }
+        [JsonPropertyName("weight")]
         public int Weight { get; set; }
+        [JsonPropertyName("insuranceValue")]
         public int InsuranceValue { get; set; }
 
     }

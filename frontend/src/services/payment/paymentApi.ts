@@ -26,7 +26,7 @@ export const updateOrderPayment = async ({
 
 export const createMomoPayment = async (data: {
   orderId: string;
-  amount: string;
+  amount: number;
   orderInfo: string;
 }) => {
   const response = await axiosInstance.post(

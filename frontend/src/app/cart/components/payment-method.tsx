@@ -2,7 +2,10 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Wallet } from "lucide-react";
+import Image from "next/image";
+import { HandCoins } from "lucide-react";
+const momo = '/assets/images/momo.png';
+const stripe = '/assets/images/stripe.png';
 
 interface CheckoutData {
   variants: { variant: string; quantity: number }[];
@@ -20,9 +23,9 @@ const PaymentMethodSection: React.FC<PaymentMethodProps> = ({
   setCheckoutData,
 }) => {
   const paymentMethods = [
-    { id: "momo", label: "Momo", icon: Wallet },
-    { id: "stripe", label: "Stripe", icon: CreditCard },
-    { id: "ship-cod", label: "Ship Cod", icon: Wallet },
+    { id: "momo", label: "Momo", icon: momo },
+    { id: "stripe", label: "Stripe", icon: stripe },
+    { id: "cash on delivery", label: "Cash On Delivery", icon: HandCoins },
   ];
   return (
     <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-md">
@@ -56,7 +59,13 @@ const PaymentMethodSection: React.FC<PaymentMethodProps> = ({
                 htmlFor={method.id}
                 className="flex items-center space-x-3 md:space-x-4 p-3 md:p-4 border rounded-xl cursor-pointer transition-all duration-300 ease-in-out bg-gray-50 hover:bg-primary/10 hover:border-primary peer-checked:border-primary peer-checked:bg-primary/10 peer-focus:ring-2 peer-focus:ring-primary peer-focus:ring-offset-2 text-base font-medium text-gray-700"
               >
-                <method.icon className="h-5 w-5 md:h-6 md:w-6 text-blue-500" />
+                {typeof method.icon === "string" ? (
+                  <div className="w-6 h-6 rounded-full overflow-hidden">
+                    <Image src={method.icon} alt="image" width={24} height={24} />
+                  </div>
+                ) : (
+                  <method.icon size={24} />
+                )}
                 <span className="text-sm md:text-base font-medium text-gray-700">
                   {method.label}
                 </span>

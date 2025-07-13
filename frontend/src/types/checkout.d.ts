@@ -16,22 +16,19 @@ export interface UserAddress {
   city?: string;
   country: string;
 }
-export interface ShippingMethod {
-  _id: string;
-  name: string;
-  basePrice: number;
-  isActive: boolean;
-  finalPrice: number;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
+export interface IShippingMethod {
+  name: string,
+  type: string, 
+  fee: number
 }
 
 export interface ShippingMethodSectionProps {
   isLoadingMethods: boolean;
   shippingMethods:
     | {
-        data: ShippingMethod[];
+        data: {
+          methods: ShippingMethod[];
+        }
       }
     | undefined;
   selectedShippingMethod: string;

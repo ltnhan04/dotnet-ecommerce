@@ -115,7 +115,5 @@ namespace api.Services.Admin
 
             return new ShippingMethodResponseDto { Methods = methods };
         }
-
-
     }
 }

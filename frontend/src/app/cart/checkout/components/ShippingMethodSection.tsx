@@ -31,18 +31,17 @@ const ShippingMethodSection = ({
             onValueChange={handleShippingMethodChange}
             className="space-y-4"
           >
-            {shippingMethods?.data?.map((method: ShippingMethod) => (
+            {shippingMethods?.data.methods?.map((method: ShippingMethod, index: number) => (
               <div
-                key={method._id}
+                key={index}
                 className={`flex items-center space-x-4 p-4 rounded-xl border transition-colors cursor-pointer bg-gray-50 hover:bg-primary/10 hover:border-primary ${
                   selectedShippingMethod === method._id
                     ? "border-primary ring-2 ring-primary/30"
                     : "border-gray-200"
                 }`}
               >
-                <RadioGroupItem value={method._id} id={method._id} />
+                <RadioGroupItem value={method.name} />
                 <Label
-                  htmlFor={method._id}
                   className="flex flex-1 justify-between items-center cursor-pointer text-base font-medium text-gray-700"
                 >
                   <span>{method.name}</span>

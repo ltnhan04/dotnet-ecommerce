@@ -10,7 +10,7 @@ import {
   createCheckoutSession,
   createMomoPayment,
 } from "@/services/payment/paymentApi";
-import { useShippingFee, useShippingMethods } from "@/hooks/useShippingMethod";
+import { useShippingFee } from "@/hooks/useShippingMethod";
 import PromotionSection from "@/app/cart/components/promotion";
 import AddressSection from "@/app/cart/components/address";
 import PaymentMethodSection from "@/app/cart/components/payment-method";
@@ -18,7 +18,7 @@ import { useProfile } from "@/hooks/useProfile";
 import OrderSummary from "./components/OrderSummary";
 import ShippingMethodSection from "./components/ShippingMethodSection";
 import BreadCrumb from "./components/bread-crumb";
-import { ShippingMethod } from "@/types/checkout";
+import { IShippingMethod } from "@/types/checkout";
 
 const CheckoutPage = () => {
   const { total, cart } = useAppSelector((state) => state.cart);
@@ -45,52 +45,11 @@ const CheckoutPage = () => {
     paymentMethod: "",
   });
 
-  useEffect(() => {
-    if (discountedTotal !== null) {
-      setCheckoutData((prev) => ({
-        ...prev,
-        totalAmount: discountedTotal,
-      }));
-      setDiscountAmount(total - discountedTotal);
-    } else {
-      setCheckoutData((prev) => ({
-        ...prev,
-        totalAmount: total,
-      }));
-      setDiscountAmount(null);
-    }
-  }, [discountedTotal, total]);
-
   const { toast } = useToast();
   const { createOrder, isLoading: isCreatingOrder } = useOrders();
   const { profile } = useProfile();
-  const city = profile?.address?.city?.replace("Thành phố", "").trim();
-  const { data: shippingMethods, isLoading: isLoadingMethods } =
-    useShippingMethods(city as string);
-  const { data: shippingFee } = useShippingFee(
-    selectedShippingMethod,
-    city as string
-  );
-  useEffect(() => {
-    if (
-      shippingMethods?.data &&
-      shippingMethods.data.length > 0 &&
-      !selectedShippingMethod
-    ) {
-      const fastMethod = shippingMethods.data.find(
-        (method: ShippingMethod) => method.name === "Nhanh"
-      );
-      if (fastMethod) {
-        setSelectedShippingMethod(fastMethod._id);
-        setCheckoutData((prev) => ({
-          ...prev,
-          shippingMethod: fastMethod._id,
-          totalAmount: total,
-        }));
-      }
-    }
-  }, [shippingMethods, selectedShippingMethod, total]);
-
+  const address = `${profile?.address?.street}, ${profile?.address?.ward}, ${profile?.address?.district}, ${profile?.address?.city}`;
+  const { data: shippingFee, isLoading: isLoadingShippingFee } = useShippingFee(address);
   const handleShippingMethodChange = (value: string) => {
     setSelectedShippingMethod(value);
     setCheckoutData((prev) => ({
@@ -99,61 +58,76 @@ const CheckoutPage = () => {
       totalAmount: total,
     }));
   };
+  useEffect(() => {
+  if (profile?.address) {
+    const fullAddress = `${profile.address.street}, ${profile.address.ward}, ${profile.address.district}, ${profile.address.city}`;
+    setCheckoutData((prev) => ({
+      ...prev,
+      shippingAddress: fullAddress,
+    }));
+  }
+}, [profile]);
 
   const handleConfirmOrder = async () => {
     setLoadingState((prev) => ({ ...prev, ["confirm"]: "isConfirming" }));
 
     try {
       if (!checkoutData.shippingAddress) {
-        return toast({
+        toast({
           title: "Cần thêm địa chỉ giao hàng!",
           description: "Vui lòng cập nhật địa chỉ giao hàng để tiếp tục.",
           variant: "destructive",
         });
+        return;
       }
       if (!checkoutData.paymentMethod) {
-        return toast({
+        toast({
           title: "Cần chọn phương thức thanh toán!",
           description: "Vui lòng chọn một phương thức thanh toán để hoàn tất.",
           variant: "destructive",
         });
+        return;
       }
       if (!checkoutData.shippingMethod) {
-        return toast({
+        toast({
           title: "Cần chọn phương thức vận chuyển!",
           description: "Vui lòng chọn một phương thức vận chuyển để tiếp tục.",
           variant: "destructive",
         });
+        return;
       }
 
       const response = await createOrder({
         ...checkoutData,
         totalAmount: discountedTotal !== null ? discountedTotal : total,
       });
+      console.log(response)
       if (response.status === 201) {
         const { variants } = checkoutData;
-        const orderId = response.data.order._id;
-
+        console.log(checkoutData)
+        const orderId = response.data.data._id;
+        console.log(orderId)
         if (checkoutData.paymentMethod === "stripe") {
           const checkoutSession = await createCheckoutSession({
             variants,
             orderId,
           });
-
-          if (checkoutSession.status === 200) {
-            window.location.href = checkoutSession.data.url;
+          console.log(checkoutSession)
+          if (checkoutSession.status === 201) {
+            window.location.href = checkoutSession.data.data.url;
+            
           }
         } else if (checkoutData.paymentMethod === "momo") {
           const momoResponse = await createMomoPayment({
             orderId,
-            amount: finalTotal.toString(),
+            amount: finalTotal,
             orderInfo: "Thanh toán đơn hàng iTribe",
           });
 
           if (momoResponse.status === 200) {
             window.location.href = momoResponse.data.url.url;
           }
-        } else if (checkoutData.paymentMethod === "ship-cod") {
+        } else if (checkoutData.paymentMethod === "cash on delivery") {
           window.location.href = `/checkout/success?orderId=${orderId}`;
         }
 
@@ -175,14 +149,10 @@ const CheckoutPage = () => {
     }
   };
 
-  const selectedMethod = shippingMethods?.data?.find(
-    (method: ShippingMethod) => method._id === selectedShippingMethod
-  );
-
-  const shippingCost = shippingFee?.data?.fee || 0;
+  const selectedShippingMethodDetail:IShippingMethod = shippingFee?.data?.methods?.find((item: IShippingMethod) => item.name == selectedShippingMethod);
+  const shippingCost = selectedShippingMethodDetail?.fee || 0;
   const finalTotal =
     (discountedTotal !== null ? discountedTotal : total) + shippingCost;
-
   return (
     <div className="container mx-auto px-4 md:px-6 max-w-7xl">
       <BreadCrumb />
@@ -195,8 +165,8 @@ const CheckoutPage = () => {
           <AddressSection setCheckoutData={setCheckoutData} />
 
           <ShippingMethodSection
-            isLoadingMethods={isLoadingMethods}
-            shippingMethods={shippingMethods}
+            isLoadingMethods={isLoadingShippingFee}
+            shippingMethods={shippingFee}
             selectedShippingMethod={selectedShippingMethod}
             handleShippingMethodChange={handleShippingMethodChange}
           />
@@ -214,12 +184,11 @@ const CheckoutPage = () => {
             setDiscountedTotal={setDiscountedTotal}
           />
         </div>
-
         <div className="md:col-span-5 space-y-8">
           <OrderSummary
             cart={cart}
             checkoutData={checkoutData}
-            selectedMethod={selectedMethod}
+            selectedMethod={selectedShippingMethodDetail}
             shippingCost={shippingCost}
             finalTotal={finalTotal}
             isCreatingOrder={isCreatingOrder}

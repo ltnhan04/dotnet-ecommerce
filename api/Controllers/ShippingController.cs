@@ -31,6 +31,7 @@ namespace api.Controllers
             try
             {
                 var result = await _shippingService.CalculateShippingFeeAsync(request) ?? throw new AppException("Can not calculate fee with GHN.", 400);
+                _logger.LogError("Can not analyst address: " + request.ShippingAddress);
                 await ResponseHandler.SendSuccess(Response, result, 200, "Calculate Fee Successful!");
             }
             catch (Exception ex)
