@@ -22,20 +22,16 @@ namespace api.Repositories.Admin
             _logger = logger;
         }
 
-        // --- Cập nhật phương thức lấy tổng quan (TotalDto) để hỗ trợ From-To ---
         public async Task<TotalDto> GetTotalDashboardData(DateTime? fromDate = null, DateTime? toDate = null)
         {
-            // Lọc các đơn hàng đã được giao trong khoảng thời gian đã chọn (nếu có)
             var query = _context.Orders.AsQueryable();
 
             if (fromDate.HasValue)
             {
-                // Đảm bảo từ đầu ngày
                 query = query.Where(o => o.createdAt >= fromDate.Value.Date);
             }
             if (toDate.HasValue)
             {
-                // Đảm bảo đến cuối ngày (23:59:59.999)
                 query = query.Where(o => o.createdAt <= toDate.Value.Date.AddDays(1).AddTicks(-1));
             }
 
@@ -47,8 +43,6 @@ namespace api.Repositories.Admin
                 .Sum(o => o.totalAmount);
             var totalPendingOrder = orders.Count(o => o.status == "pending");
 
-            // totalCustomer thường không liên quan đến khoảng thời gian, nhưng nếu bạn muốn lọc user mới tạo trong khoảng đó, bạn cần thêm logic vào đây.
-            // Hiện tại giữ nguyên là tổng số user role "user"
             var totalCustomer = await _context.Users.CountAsync(u => u.role == "user");
 
             return new TotalDto
@@ -60,15 +54,11 @@ namespace api.Repositories.Admin
             };
         }
 
-        // --- Cập nhật phương thức lấy dữ liệu biểu đồ doanh thu ---
-        // Bây giờ sẽ nhận fromDate, toDate và một string 'granularity' (hourly, daily, weekly, monthly, yearly)
         public async Task<List<RevenueDto>> GetRevenueChartData(DateTime fromDate, DateTime toDate, string granularity)
         {
-            // Đảm bảo fromDate là đầu ngày và toDate là cuối ngày cho việc lọc ban đầu
             fromDate = fromDate.Date;
             toDate = toDate.Date.AddDays(1).AddTicks(-1);
 
-            // Lấy tất cả các đơn hàng đã được giao trong khoảng thời gian đã chọn
             var orders = await _context.Orders
                 .Where(o => o.status == "delivered" && o.createdAt >= fromDate && o.createdAt <= toDate)
                 .ToListAsync();
@@ -78,7 +68,6 @@ namespace api.Repositories.Admin
             switch (granularity.ToLower())
             {
                 case "hourly":
-                    // Từ fromDate đến toDate, tính theo giờ
                     for (DateTime date = fromDate.Date; date <= toDate.Date; date = date.AddDays(1))
                     {
                         for (int hour = 0; hour < 24; hour++)
@@ -92,7 +81,7 @@ namespace api.Repositories.Admin
 
                             result.Add(new RevenueDto
                             {
-                                label = currentPointTime.ToString("HH:mm"), // Ví dụ: "09:00"
+                                label = currentPointTime.ToString("HH:mm"), 
                                 totalRevenue = totalRevenue
                             });
                         }
@@ -100,7 +89,6 @@ namespace api.Repositories.Admin
                     break;
 
                 case "daily":
-                    // Từ fromDate đến toDate, tính theo ngày
                     for (DateTime date = fromDate.Date; date <= toDate.Date; date = date.AddDays(1))
                     {
                         var nextDay = date.AddDays(1);
@@ -110,15 +98,13 @@ namespace api.Repositories.Admin
 
                         result.Add(new RevenueDto
                         {
-                            label = date.ToString("dd/MM"), // Ví dụ: "01/07"
+                            label = date.ToString("dd/MM"),
                             totalRevenue = totalRevenue
                         });
                     }
                     break;
 
                 case "weekly":
-                    // Tìm ngày đầu tiên của tuần đầu tiên trong fromDate
-                    // Giả sử tuần bắt đầu từ Thứ Hai (Monday)
                     DayOfWeek firstDayOfWeek = DayOfWeek.Monday;
                     DateTime currentWeekStart = fromDate.Date;
                     while (currentWeekStart.DayOfWeek != firstDayOfWeek)
@@ -135,7 +121,7 @@ namespace api.Repositories.Admin
 
                         result.Add(new RevenueDto
                         {
-                            label = $"{currentWeekStart:dd/MM} - {nextWeekStart.AddDays(-1):dd/MM}", // Ví dụ: "01/07 - 07/07"
+                            label = $"{currentWeekStart:dd/MM} - {nextWeekStart.AddDays(-1):dd/MM}",
                             totalRevenue = totalRevenue
                         });
                         currentWeekStart = nextWeekStart;
@@ -143,7 +129,6 @@ namespace api.Repositories.Admin
                     break;
 
                 case "monthly":
-                    // Từ tháng của fromDate đến tháng của toDate, tính theo tháng
                     DateTime currentMonth = new DateTime(fromDate.Year, fromDate.Month, 1);
                     DateTime endMonth = new DateTime(toDate.Year, toDate.Month, 1);
 
@@ -156,7 +141,7 @@ namespace api.Repositories.Admin
 
                         result.Add(new RevenueDto
                         {
-                            label = currentMonth.ToString("MM/yyyy"), // Ví dụ: "07/2025"
+                            label = currentMonth.ToString("MM/yyyy"),
                             totalRevenue = totalRevenue
                         });
                         currentMonth = nextMonth;
@@ -164,7 +149,6 @@ namespace api.Repositories.Admin
                     break;
 
                 case "yearly":
-                    // Từ năm của fromDate đến năm của toDate, tính theo năm
                     int currentYear = fromDate.Year;
                     int endYear = toDate.Year;
 
@@ -178,7 +162,7 @@ namespace api.Repositories.Admin
 
                         result.Add(new RevenueDto
                         {
-                            label = year.ToString(), // Ví dụ: "2025"
+                            label = year.ToString(), 
                             totalRevenue = totalRevenue
                         });
                     }
@@ -192,7 +176,6 @@ namespace api.Repositories.Admin
             return result;
         }
 
-        // --- Cập nhật phương thức GetTop10BestSellingProducts để hỗ trợ From-To ---
         public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts(DateTime? fromDate = null, DateTime? toDate = null)
         {
             var query = _context.Orders.AsQueryable();
@@ -257,7 +240,6 @@ namespace api.Repositories.Admin
                 if (variant != null)
                 {
                     item.productId = variant.product.ToString();
-                    // Đảm bảo images có đủ phần tử trước khi truy cập index 3
                     item.image = variant.images.Count >= 4 ? variant.images[3] : variant.images.FirstOrDefault() ?? string.Empty;
                     item.price = variant.price;
 
@@ -269,7 +251,6 @@ namespace api.Repositories.Admin
             return listVariants;
         }
 
-        // --- Cập nhật phương thức GetTopSalesByLocation để hỗ trợ From-To ---
         public async Task<List<TopSalesByLocationDto>> GetTopSalesByLocation(DateTime? fromDate = null, DateTime? toDate = null)
         {
             var query = _context.Orders.AsQueryable();
@@ -294,9 +275,8 @@ namespace api.Repositories.Admin
                 .Select(o =>
                 {
                     var addressParts = o.shippingAddress.Split(',');
-                    // Lấy phần tử thứ hai từ cuối (thường là tỉnh/thành phố)
                     string province = addressParts.Length >= 2
-                        ? addressParts[^2].Trim() // ^2 là index từ cuối lên, -2
+                        ? addressParts[^2].Trim() 
                         : "Unknown";
 
                     return province;
@@ -305,7 +285,7 @@ namespace api.Repositories.Admin
                 .Select(g => new TopSalesByLocationDto
                 {
                     city = g.Key,
-                    totalSold = g.Count() // Đây đang đếm số đơn hàng, không phải số lượng sản phẩm bán ra
+                    totalSold = g.Count() 
                 })
                 .OrderByDescending(x => x.totalSold)
                 .Take(5)

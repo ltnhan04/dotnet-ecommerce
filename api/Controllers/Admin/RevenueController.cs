@@ -7,8 +7,8 @@ using api.Interfaces.Services;
 using api.Services.Admin;
 using api.Dtos;
 using Microsoft.AspNetCore.Authorization;
-using api.Enums; // Thêm namespace cho Granularity enum
-using api.Common; // Thêm namespace cho GranularityHelper
+using api.Enums;
+using api.Common;
 
 namespace api.Controllers
 {
@@ -17,8 +17,8 @@ namespace api.Controllers
     [Authorize(Roles = "admin")]
     public class RevenueController : ControllerBase
     {
-        private readonly IRevenueService _revenueService; // Sử dụng interface
-        private readonly IGranularityHelper _granularityHelper; // Thêm helper
+        private readonly IRevenueService _revenueService; 
+        private readonly IGranularityHelper _granularityHelper;
 
         public RevenueController(IRevenueService revenueService, IGranularityHelper granularityHelper)
         {
@@ -26,7 +26,6 @@ namespace api.Controllers
             _granularityHelper = granularityHelper;
         }
 
-        // Cập nhật endpoint để nhận fromDate và toDate
         [HttpGet("total")]
         public async Task<IActionResult> GetTotal(
             [FromQuery] DateTime? fromDate,
@@ -36,13 +35,12 @@ namespace api.Controllers
             return Ok(result);
         }
 
-        // Cập nhật endpoint để nhận fromDate, toDate và trả về cả granularity gợi ý
         [HttpGet("chart")]
         public async Task<IActionResult> GetRevenueChart(
             [FromQuery] DateTime fromDate,
             [FromQuery] DateTime toDate)
         {
-            // THÊM: Logic mặc định cho fromDate và toDate nếu không được cung cấp (tháng hiện tại)
+            // Add: Logic default cho fromDate và toDate(now)
             if (fromDate == default) // Default value for DateTime if not provided
             {
                 fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
@@ -51,25 +49,24 @@ namespace api.Controllers
             {
                 toDate = DateTime.Today;
             }
-            // Đảm bảo fromDate là đầu ngày và toDate là cuối ngày
+            // Đảm bảo fromDate là start day and end day
             fromDate = fromDate.Date;
             toDate = toDate.Date.AddDays(1).AddTicks(-1);
 
-            // Xác định granularity được khuyến nghị
+            // Granularity
             var recommendedGranularity = _granularityHelper.GetRecommendedGranularity(fromDate, toDate);
 
-            // Lấy dữ liệu biểu đồ với granularity đã xác định
+            // Take data with granularity
             var data = await _revenueService.GetRevenueChartData(fromDate, toDate, recommendedGranularity);
 
-            // Trả về cả dữ liệu và loại granularity đã dùng để frontend có thể biết cách hiển thị label
+            // Return data and type of granularity used to frontend display suitable label
             return Ok(new
             {
                 data = data,
-                granularity = recommendedGranularity.ToString().ToLower() // Gửi lại dạng string
+                granularity = recommendedGranularity.ToString().ToLower() // Type string
             });
         }
 
-        // Cập nhật endpoint để nhận fromDate và toDate
         [HttpGet("top10")]
         public async Task<IActionResult> GetTop10BestSellingProducts(
             [FromQuery] DateTime? fromDate,
@@ -79,7 +76,6 @@ namespace api.Controllers
             return Ok(result);
         }
 
-        // Cập nhật endpoint để nhận fromDate và toDate
         [HttpGet("top-sales-by-location")]
         public async Task<IActionResult> GetTopSalesByLocation(
             [FromQuery] DateTime? fromDate,

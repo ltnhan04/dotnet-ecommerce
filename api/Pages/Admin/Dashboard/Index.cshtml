@@ -29,7 +29,6 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xl font-medium text-white">Total Revenue</p>
-                    @* <p class="text-xs text-gray-400">Last 30 days</p> // Cái này giờ sẽ phụ thuộc vào from-to *@
                     <p class="text-2xl font-bold text-white mt-2">
                         @if (Model.Summary != null)
                         {
@@ -56,7 +55,6 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xl font-medium text-white">Total Orders</p>
-                    @* <p class="text-xs text-gray-400">Last 30 days</p> *@
                     <p class="text-2xl font-bold text-white mt-2">
                         @if (Model.Summary != null)
                         {
@@ -82,7 +80,6 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xl font-medium text-white">Total Customer</p>
-                    @* <p class="text-xs text-gray-400">Last 30 days</p> *@
                     <p class="text-2xl font-bold text-white mt-2">
                         @if (Model.Summary != null)
                         {
@@ -105,7 +102,6 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-xl font-medium text-white">Pending Order</p>
-                    @* <p class="text-xs text-gray-400">Last 30 days</p> *@
                     <p class="text-2xl font-bold text-white mt-2">
                         @if (Model.Summary != null)
                         {
@@ -133,15 +129,6 @@
         <div style="flex: 7" class="bg-[#1E293B] rounded-xl p-6 flex flex-col">
             <div class="flex items-center justify-between mb-4">
                 <span class="font-semibold text-white text-lg">Sales Analytic</span>
-                @* Remove the select dropdown as granularity is now determined by backend *@
-                @* <div class="relative">
-                    <select id="chartType"
-                        class="appearance-none bg-[#1E293B] border text-center border-gray-300 text-white py-2 p-4 rounded-xl shadow transition text-sm font-medium">
-                        <option value="day">Day</option>
-                        <option value="week">Week</option>
-                        <option value="month">Month</option>
-                    </select>
-                </div> *@
                 <span id="chartGranularityLabel" class="text-gray-400 text-sm"></span>
             </div>
             <div class="flex-1 flex items-center">
@@ -307,7 +294,6 @@
     </script>
 
     <script>
-        // --- BẢN ĐỒ ÁNH XẠ TÊN TỈNH/THÀNH VỚI ID SVG (ĐÃ CẬP NHẬT TỪ DỮ LIỆU CỦA BẠN) ---
         const provinceMap = {
             'kon tum': 'VN28',
             'đắk nông': 'VN72',
@@ -316,22 +302,22 @@
             'bình phước': 'VN58',
             'tây ninh': 'VN37',
             'long an': 'VN41',
-            'đong tháp': 'VN45', // Lưu ý: 'Ðong Tháp' từ SVG đã được chuyển thành 'dong thap' không dấu. Nếu backend của bạn trả về có dấu, bạn cần điều chỉnh.
+            'đong tháp': 'VN45',
             'an giang': 'VN44',
             'kiên giang': 'VN47',
             'điện biên': 'VN71',
-            'son la': 'VN05', // 'Son La' từ SVG
+            'son la': 'VN05', 
             'thanh hóa': 'VN21',
             'nghệ an': 'VN22',
-            'ha tinh': 'VN23', // 'Ha Tinh' từ SVG
+            'ha tinh': 'VN23', 
             'quảng bình': 'VN24',
             'quảng trị': 'VN25',
             'thừa thiên - huế': 'VN26',
-            'quàng nam': 'VN27', // 'Quàng Nam' từ SVG
+            'quàng nam': 'VN27', 
             'hà giang': 'VN03',
             'cao bằng': 'VN04',
             'lào cai': 'VN02',
-            'lai chau': 'VN01', // 'Lai Chau' từ SVG
+            'lai chau': 'VN01', 
             'lạng sơn': 'VN09',
             'quảng ninh': 'VN13',
             'sóc trăng': 'VN52',
@@ -341,11 +327,11 @@
             'khánh hòa': 'VN34',
             'cà mau': 'VN59',
             'bạc liêu': 'VN55',
-            'hau giang': 'VN73', // 'Hau Giang' từ SVG
+            'hau giang': 'VN73', 
             'vĩnh long': 'VN49',
             'trà vinh': 'VN51',
             'bến tre': 'VN50',
-            'đông nam bộ': 'VN39', // Đây là một vùng, không phải tỉnh. Cần cân nhắc có highlight không.
+            'đông nam bộ': 'VN39', 
             'bình thuận': 'VN40',
             'ninh thuận': 'VN36',
             'phú yên': 'VN32',
@@ -361,9 +347,9 @@
             'yên bái': 'VN06',
             'vĩnh phúc': 'VN70',
             'phú thọ': 'VN68',
-            'ha noi': 'VNHN', // 'Ha Noi' từ SVG
-            'đông bắc': 'VN53', // Vùng
-            'đồng bằng sông hồng': 'VN66', // Vùng
+            'ha noi': 'VNHN', 
+            'đông bắc': 'VN53', 
+            'đồng bằng sông hồng': 'VN66', 
             'bắc ninh': 'VN56',
             'bắc giang': 'VN54',
             'thái nguyên': 'VN69',
@@ -371,7 +357,7 @@
             'hà nam': 'VN63',
             'bình dương': 'VN57',
             'lâm đồng': 'VN35',
-            'can tho': 'VNCT' // 'Can Tho' từ SVG
+            'can tho': 'VNCT' 
         };
 
         fetch('/svg/vn-map.svg')
@@ -380,16 +366,13 @@
                 document.getElementById('vn-map-container').innerHTML = svg;
 
                 const topLocationsData = @Html.Raw(JsonSerializer.Serialize(Model.TopLocations));
-                console.log("TopLocations Data from Model:", topLocationsData); // THÊM DÒNG NÀY
                 const locationMap = new Map();
 
                 topLocationsData.forEach(loc => {
-                    // Chuẩn hóa tên thành phố từ backend (chữ thường, loại bỏ khoảng trắng thừa)
                     const normalizedCityName = loc.city.toLowerCase().trim();
-                    const svgId = provinceMap[normalizedCityName]; // Sử dụng bảng ánh xạ
+                    const svgId = provinceMap[normalizedCityName]; 
 
                     if (svgId) {
-                        // Kiểm tra xem phần tử SVG có tồn tại không trước khi cố gắng thay đổi style
                         const path = document.getElementById(svgId);
                         if (path) {
                             locationMap.set(svgId, loc.totalSold);
@@ -404,22 +387,16 @@
                 document.querySelectorAll('#vn-map-container path').forEach(path => {
                     const id = path.id;
                     if (locationMap.has(id)) {
-                        // Tùy chỉnh màu sắc dựa trên số lượng đơn hàng nếu muốn
-                        // Ví dụ: màu đậm hơn cho số lượng lớn hơn
-                        path.style.fill = "#FF9800"; // Màu nổi bật cho các tỉnh/thành phố top
+                      
+                        path.style.fill = "#FF9800"; 
                         path.style.stroke = "#fff";
                         path.style.strokeWidth = "2";
                     } else {
-                        path.style.fill = "#4A5568"; // Màu mặc định cho các tỉnh/thành phố khác (màu xám đậm)
+                        path.style.fill = "#4A5568"; 
                         path.style.stroke = "#fff";
                         path.style.strokeWidth = "1";
                     }
                 });
-
-                // Nếu bạn cũng có các ID cho các vùng lớn như "Đông Nam Bộ" hay "Đông Bắc"
-                // và bạn muốn highlight chúng nếu chúng xuất hiện trong topLocations,
-                // bạn có thể thêm logic tương tự ở đây.
-                // Tuy nhiên, thông thường bản đồ cấp tỉnh thì chỉ highlight tỉnh.
 
             });
     </script>
@@ -431,8 +408,8 @@
             const scrollLeftBtn = document.getElementById('scrollLeftBtn');
             const scrollRightBtn = document.getElementById('scrollRightBtn');
 
-            const productWidth = 192; // w-48 = 12rem = 192px (1rem = 16px)
-            const gapWidth = 16;     // gap-4 = 1rem = 16px
+            const productWidth = 192; 
+            const gapWidth = 16;   
             const itemsToScroll = 4;
             const scrollAmount = (productWidth + gapWidth) * itemsToScroll;
 
