@@ -189,20 +189,5 @@ namespace api.Repositories.Customer
                 message = dto.message
             };
         }
-
-        public async Task<ResponseStripeCallbackDto> StripeCallback(StripeCallbackDto dto)
-        {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(item => item._id == ObjectId.Parse(dto.orderId)) ?? throw new AppException("OrderId not found", 404);
-
-            order.stripeSessionId = dto.stripeSessionId;
-            await _context.SaveChangesAsync();
-
-            return new ResponseStripeCallbackDto
-            {
-                orderId = order._id.ToString(),
-                message = "Updated stripe session id successfully"
-            };
-        }
     }
 }

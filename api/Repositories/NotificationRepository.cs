@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Interfaces.Repositories;
+using api.Interfaces.Services;
 using api.models;
 using api.Models;
+using api.Services;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 
@@ -13,7 +15,6 @@ namespace api.Repositories
     public class NotificationRepository : INotificationRepository
     {
         private readonly iTribeDbContext _context;
-
         public NotificationRepository(iTribeDbContext context)
         {
             _context = context;
@@ -40,6 +41,14 @@ namespace api.Repositories
         {
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
+        }
+        public async Task<bool> AlreadySentMilestoneNotification(string userId, int milestone)
+        {
+            return await _context.Notifications.AnyAsync(n =>
+                n.userId == ObjectId.Parse(userId) &&
+                n.type == "promotion" &&
+                n.message.Contains($"mốc {milestone}")
+            );
         }
     }
 }

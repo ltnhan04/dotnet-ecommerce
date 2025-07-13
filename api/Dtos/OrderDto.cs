@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.models;
 using MongoDB.Bson;
 using Stripe;
+using Stripe.Tax;
 
 namespace api.Dtos
 {
@@ -81,6 +82,7 @@ namespace api.Dtos
         public string shippingAddress { get; set; } = string.Empty;
         public string paymentMethod { get; set; } = string.Empty;
         public string stripeSessionId { get; set; } = string.Empty;
+        public bool? isPaymentMomo { get; set; } = false;
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
     }
@@ -100,9 +102,9 @@ namespace api.Dtos
         public DateTime updatedAt { get; set; }
     }
 
-    public class CancelOrderDto
+    public class CancelOrderDto : OrderDtoResponse
     {
-        public string message { get; set; } = string.Empty;
+        
     }
 
     public class UpdateOrderPaymentDto
@@ -111,9 +113,9 @@ namespace api.Dtos
         public string orderId { get; set; } = string.Empty;
     }
 
-    public class UpdateOrderPaymentResponseDto
+    public class UpdateOrderPaymentResponseDto : OrderDtoResponse
     {
-        public string message { get; set; } = string.Empty;
+
     }
 
     public class AdminGetAllOrder

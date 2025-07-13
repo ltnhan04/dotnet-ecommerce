@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Interfaces.Repositories;
 using api.Interfaces.Services;
+using api.Models;
+using api.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace api.Controllers
 {
@@ -15,9 +19,11 @@ namespace api.Controllers
     public class PointController : ControllerBase
     {
         private readonly IPointService _pointService;
-        public PointController(IPointService pointService)
+        private readonly INotificationRepository _notificationRepository;
+        public PointController(IPointService pointService, INotificationRepository notificationRepository)
         {
             _pointService = pointService;
+            _notificationRepository = notificationRepository;
         }
 
         [HttpGet]
@@ -57,6 +63,17 @@ namespace api.Controllers
             {
                 var userId = User.FindFirst("userId")?.Value;
                 var data = await _pointService.HandleExchangePointForVoucher(dto, userId!);
+                await _notificationRepository.Create(new Notification
+                {
+                    userId = ObjectId.Parse(userId),
+                    title = "🎁 Nhận được voucher mới",
+                    message = $"Bạn vừa đổi điểm lấy mã giảm giá {data.code}",
+                    type = "promotion",
+                    targetRole = "user",
+                    isRead = false,
+                    redirectUrl = "/exchange-voucher",
+                    createdAt = DateTime.UtcNow
+                });
                 await ResponseHandler.SendSuccess(Response, data, 200, "Exchange point for voucher successfully");
             }
             catch (Exception ex)

@@ -9,16 +9,19 @@ using api.Utils;
 using MongoDB.Bson;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace api.Repositories.Customer
 {
     public class OrderRepository : IOrderRepository
     {
         private readonly iTribeDbContext _context;
+        private readonly IProductVariantRepository _productVariantRepository;
 
-        public OrderRepository(iTribeDbContext context)
+        public OrderRepository(iTribeDbContext context, IProductVariantRepository productVariantRepository)
         {
             _context = context;
+            _productVariantRepository = productVariantRepository;
         }
         public async Task<Order> CreateOrder(Order order)
         {
@@ -34,7 +37,7 @@ namespace api.Repositories.Customer
                 .Where(item => item.user == userObjectId)
                 .ToListAsync();
 
-            if (orders == null || !orders.Any())
+            if (orders == null || orders.Count == 0)
             {
                 throw new AppException("Get orders failed", 400);
             }
@@ -102,15 +105,9 @@ namespace api.Repositories.Customer
 
         public async Task<CancelOrderDto> CancelOrder(string orderId)
         {
-
             var order = await _context.Orders
                 .Where(item => item._id == ObjectId.Parse(orderId))
-                .FirstOrDefaultAsync();
-
-            if (order == null)
-            {
-                throw new AppException("Order not found", 404);
-            }
+                .FirstOrDefaultAsync() ?? throw new AppException("Order not found", 404);
             if (order.status != OrderStatus.pending.ToString() && order.status != OrderStatus.processing.ToString())
             {
                 throw new AppException("Order cannot be cancelled", 400);
@@ -125,13 +122,51 @@ namespace api.Repositories.Customer
 
                 match.stock_quantity += quantity;
                 _context.ProductVariants.Update(match);
+                await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
 
                 order.status = "cancel";
                 await _context.SaveChangesAsync();
             }
+            var variantIds = order.variants.Select(item => item.variant).ToList();
+            var variants = await _context.ProductVariants
+                .Where(item => variantIds.Contains(item._id))
+                .ToListAsync();
+
+            var productIds = variants.Select(item => item.product).ToList();
+            var products = await _context.Products
+                .Where(item => productIds.Contains(item._id))
+                .ToListAsync();
+
+            var variantDict = variants.ToDictionary(item => item._id, item => item);
+            var productDict = products.ToDictionary(item => item._id, item => item);
+
             return new CancelOrderDto
             {
-                message = "Order cancelled successfully"
+                _id = order._id.ToString(),
+                user = order.user.ToString(),
+                variants = order.variants.Select(v => new OrderVariantDetail
+                {
+                    quantity = v.quantity,
+                    variant = new VariantOrderDto
+                    {
+                        _id = v.variant.ToString(),
+                        product = variantDict[v.variant].product.ToString(),
+                        productName = productDict[variantDict[v.variant].product].name,
+                        colorName = variantDict[v.variant].color.colorName,
+                        colorCode = variantDict[v.variant].color.colorCode,
+                        storage = variantDict[v.variant].storage,
+                        price = variantDict[v.variant].price,
+                        images = variantDict[v.variant].images ?? new List<string>()
+                    }
+                }).ToList(),
+                totalAmount = order.totalAmount,
+                paymentMethod = order.paymentMethod,
+                status = order.status,
+                shippingAddress = order.shippingAddress,
+                isPaymentMomo = order.isPaymentMomo,
+                stripeSessionId = order.stripeSessionId ?? "null",
+                createdAt = order.createdAt,
+                updatedAt = order.updatedAt
             };
         }
 
@@ -139,30 +174,61 @@ namespace api.Repositories.Customer
         {
             var order = await _context.Orders
                 .Where(item => item._id == ObjectId.Parse(dto.orderId))
-                .FirstOrDefaultAsync();
-
-            if (order == null)
-            {
-                throw new AppException("Order not found", 404);
-            }
-
+                .FirstOrDefaultAsync() ?? throw new AppException("Order not found", 404);
             foreach (var item in order.variants)
             {
                 var variantId = item.variant;
                 var quantity = item.quantity;
 
-                var variant = await _context.ProductVariants.ToListAsync();
-                var match = variant.FirstOrDefault(item => item._id.ToString() == variantId.ToString());
+                var variantList = await _context.ProductVariants.ToListAsync();
+                var match = variantList.FirstOrDefault(item => item._id.ToString() == variantId.ToString());
                 match.stock_quantity -= quantity;
                 _context.ProductVariants.Update(match);
+                await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
             }
 
             order.status = "processing";
             order.stripeSessionId = dto.stripeSessionId;
             await _context.SaveChangesAsync();
+
+            var variantIds = order.variants.Select(item => item.variant).ToList();
+            var variants = await _context.ProductVariants
+                .Where(item => variantIds.Contains(item._id))
+                .ToListAsync();
+
+            var productIds = variants.Select(item => item.product).Distinct().ToList();
+            var products = await _context.Products
+                .Where(item => productIds.Contains(item._id))
+                .ToListAsync();
+
+            var variantDict = variants.ToDictionary(item => item._id, item => item);
+            var productDict = products.ToDictionary(item => item._id, item => item);
             return new UpdateOrderPaymentResponseDto
             {
-                message = "Order updated successfully"
+                _id = order._id.ToString(),
+                user = order.user.ToString(),
+                variants = order.variants.Select(v => new OrderVariantDetail
+                {
+                    quantity = v.quantity,
+                    variant = new VariantOrderDto
+                    {
+                        _id = v.variant.ToString(),
+                        product = variantDict[v.variant].product.ToString(),
+                        productName = productDict[variantDict[v.variant].product].name,
+                        colorName = variantDict[v.variant].color.colorName,
+                        colorCode = variantDict[v.variant].color.colorCode,
+                        storage = variantDict[v.variant].storage,
+                        price = variantDict[v.variant].price,
+                        images = variantDict[v.variant].images ?? new List<string>(),
+                    }
+                }).ToList(),
+                totalAmount = order.totalAmount,
+                paymentMethod = order.paymentMethod,
+                stripeSessionId = order.stripeSessionId,
+                status = order.status,
+                shippingAddress = order.shippingAddress,
+                createdAt = order.createdAt,
+                updatedAt = order.updatedAt
             };
         }
     }

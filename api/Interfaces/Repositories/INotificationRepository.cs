@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
+using api.Services;
 
 namespace api.Interfaces.Repositories
 {
@@ -11,5 +12,6 @@ namespace api.Interfaces.Repositories
         Task<List<Notification>> GetByUserIdOrRole(string userId, string role);
         Task<bool> MarkAsRead(string id);
         Task Create(Notification notification);
+        Task<bool> AlreadySentMilestoneNotification(string userId, int milestone);
     }
 }

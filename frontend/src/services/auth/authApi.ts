@@ -76,7 +76,7 @@ export const updateProfile = async ({
   };
   phoneNumber: string;
 }) => {
-  return await axiosInstance.post(`/api/v1/auth/update-profile`, {
+  return await axiosInstance.put(`/api/v1/auth/update-profile`, {
     name,
     address,
     phoneNumber,

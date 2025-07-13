@@ -158,7 +158,7 @@ namespace api.Services
         public async Task<UserProfileDto> GetProfile(string userId)
         {
             var customer = await _customerRepository.FindById(userId) ?? throw new AppException("Customer not found");
-            UserProfileDto dto = new UserProfileDto
+            UserProfileDto dto = new()
             {
                 _id = customer._id.ToString(),
                 email = customer.email,

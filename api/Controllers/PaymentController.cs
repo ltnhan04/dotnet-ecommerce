@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Interfaces.Repositories;
 using api.Interfaces.Services;
+using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace api.Controllers
 {
@@ -15,10 +18,13 @@ namespace api.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
+        private readonly INotificationRepository _notificationRepository;
 
-        public PaymentController(IPaymentService paymentService)
+
+        public PaymentController(IPaymentService paymentService, INotificationRepository notificationRepository)
         {
             _paymentService = paymentService;
+            _notificationRepository = notificationRepository;
         }
 
         [HttpPost("create-checkout-session")]
@@ -55,23 +61,31 @@ namespace api.Controllers
         {
             try
             {
+                var userId = User.FindFirst("userId")?.Value;
                 var data = await _paymentService.HandleMomoCallback(dto);
-                await ResponseHandler.SendSuccess(Response, data, 200, "Callback momo payment successfully");
-            }
-            catch (Exception ex)
-            {
-                await ResponseHandler.SendError(Response, ex.Message, 500);
-            }
-        }
+                await _notificationRepository.Create(new Notification
+                {
+                    userId = ObjectId.Parse(userId),
+                    title = "✅ Thanh toán thành công",
+                    message = $"Bạn đã thanh toán thành công đơn hàng #{data.orderId}.",
+                    type = "payment",
+                    targetRole = "user",
+                    isRead = false,
+                    redirectUrl = $"/orders",
+                    createdAt = DateTime.UtcNow
+                });
 
-        [AllowAnonymous]
-        [HttpPost("callback")]
-        public async Task StripeCallback([FromBody] StripeCallbackDto dto)
-        {
-            try
-            {
-                var data = await _paymentService.HandleStripeCallback(dto);
-                await ResponseHandler.SendSuccess(Response, data, 200, "Callback stripe payment successfully");
+                await _notificationRepository.Create(new Notification
+                {
+                    title = "💰 Đơn hàng đã được thanh toán",
+                    message = $"Khách hàng đã thanh toán đơn hàng #{data.orderId}.",
+                    type = "payment",
+                    targetRole = "admin",
+                    isRead = false,
+                    redirectUrl = $"/Admin/Orders/Details/{data.orderId}",
+                    createdAt = DateTime.UtcNow
+                });
+                await ResponseHandler.SendSuccess(Response, data, 200, "Callback momo payment successfully");
             }
             catch (Exception ex)
             {

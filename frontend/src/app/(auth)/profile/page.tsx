@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,13 +15,12 @@ import {
 import { Label } from "@/components/ui/label";
 
 import { useToast } from "@/hooks/use-toast";
-import { User, Phone, Mail, Shield } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { validatePhoneNumber } from "@/utils/validate-phoneNumber";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AddressSection from "@/app/(auth)/profile/components/address";
-import { ProfileType } from "@/types/auth";
 import { EditedProfile } from "@/types/profile";
+import { ProfileType } from "@/types/auth";
 
 const UserProfile = () => {
   const { toast } = useToast();
@@ -99,110 +98,142 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-4xl mx-auto shadow-2xl rounded-2xl overflow-hidden border-0 transition-all duration-300 hover:shadow-3xl">
-        <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-8">
-          <div className="flex items-center space-x-8">
-            <Avatar className="w-24 h-24 border-4 border-white/30 shadow-xl transition-transform duration-300 hover:scale-105">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-5xl mx-auto shadow-2xl rounded-[8px] overflow-hidden border transition-all duration-300 hover:shadow-3xl">
+        <CardHeader className="p-8 border-b">
+          <p className="text-2xl font-medium text-blue-800 pb-6">Hồ sơ của tôi </p>
+          <div className="flex items-center space-x-6">
+
+            <Avatar className="size-24 shadow-xl transition-transform duration-300 hover:scale-105">
               <AvatarImage
                 src={`https://api.dicebear.com/6.x/initials/svg?seed=${profile?.name}`}
                 className="object-cover"
               />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-2xl font-bold">
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-xl font-bold">
                 {profile?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="space-y-2">
-              <CardTitle className="text-3xl font-bold tracking-tight">
+              <CardTitle className="text-xl font-bold tracking-tight">
                 {profile?.name}
               </CardTitle>
-              <CardDescription className="text-blue-100/90 flex items-center space-x-2 text-lg">
-                <Shield className="w-5 h-5" />
-                <span className="font-medium">{profile?.role}</span>
+              <CardDescription className="flex items-center space-x-2 text-blue-800">
+                <span className="font-medium">{profile?.role && profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}</span>
+              </CardDescription>
+              <CardDescription className="flex items-center space-x-2">
+                <span className="font-medium">
+                  <AddressSection
+                    userData={profile as ProfileType}
+                    setEditedProfile={setEditedProfile}
+                    editedProfile={editedProfile}
+                  />
+                </span>
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-
-        <CardContent className="p-8">
-          <div className="space-y-8">
-            <div className="grid gap-8 p-8 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold text-gray-600 flex items-center">
-                  <User className="w-5 h-5 mr-2 text-gray-500" />
-                  Họ và tên
-                </Label>
-                {editedProfile.isEdited ? (
-                  <Input
-                    value={editedProfile.editedName}
-                    maxLength={50}
-                    onChange={(e) =>
-                      setEditedProfile((prev) => ({
-                        ...prev,
-                        editedName: e.target.value,
-                      }))
-                    }
-                    className="border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 h-12 text-lg"
-                    placeholder="Nhập họ và tên"
-                  />
-                ) : (
-                  <div className="text-lg font-medium text-gray-900 py-2 px-3 rounded-md bg-gray-50">
-                    {editedProfile.editedName || "Chưa cập nhật"}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold text-gray-600 flex items-center">
-                  <Phone className="w-5 h-5 mr-2 text-gray-500" />
-                  Số điện thoại
-                </Label>
-                {editedProfile.isEdited ? (
-                  <Input
-                    value={editedProfile.editedPhoneNumber}
-                    onChange={(e) =>
-                      setEditedProfile((prev) => ({
-                        ...prev,
-                        editedPhoneNumber: e.target.value,
-                      }))
-                    }
-                    className="border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 h-12 text-lg"
-                    placeholder="Nhập số điện thoại"
-                  />
-                ) : (
-                  <div className="text-lg text-gray-900 py-2 px-3 rounded-md bg-gray-50">
-                    {profile?.phoneNumber || "Chưa cập nhật số điện thoại"}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold text-gray-600 flex items-center">
-                  <Mail className="w-5 h-5 mr-2 text-gray-500" />
-                  Email
-                </Label>
-                <div className="text-lg text-gray-900 py-2 px-3 rounded-md bg-gray-50">
-                  {profile?.email || "Chưa cập nhật email"}
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
-                <AddressSection
-                  userData={profile as ProfileType}
-                  setEditedProfile={setEditedProfile}
-                  editedProfile={editedProfile}
+        <CardContent className="p-6 border-b">
+          <p className="text-2xl font-medium pb-6 text-blue-800">Thông tin cá nhân</p>
+          <div className="grid grid-cols-2 gap-y-8 gap-x-6">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-300 flex items-center">
+                Họ và tên
+              </Label>
+              {editedProfile.isEdited ? (
+                <Input
+                  value={editedProfile.editedName}
+                  maxLength={50}
+                  onChange={(e) =>
+                    setEditedProfile((prev) => ({
+                      ...prev,
+                      editedName: e.target.value,
+                    }))
+                  }
+                  className="border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 h-12 font-medium text-md"
+                  placeholder="Nhập họ và tên"
                 />
+              ) : (
+                <div className="font-medium text-gray-900 rounded-md">
+                  {editedProfile.editedName || "Chưa cập nhật"}
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-300 flex items-center">
+                Số điện thoại
+              </Label>
+              {editedProfile.isEdited ? (
+                <Input
+                  value={editedProfile.editedPhoneNumber}
+                  onChange={(e) =>
+                    setEditedProfile((prev) => ({
+                      ...prev,
+                      editedPhoneNumber: e.target.value,
+                    }))
+                  }
+                  className="focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 h-12 font-medium text-md"
+                  placeholder="Nhập số điện thoại"
+                />
+              ) : (
+                <div className="text-gray-900 rounded-md font-medium">
+                  {profile?.phoneNumber || "Chưa cập nhật số điện thoại"}
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-300 flex items-center no">
+                Email
+              </Label>
+              <div className="text-gray-900 rounded-md font-medium">
+                {profile?.email || "Chưa cập nhật email"}
               </div>
             </div>
           </div>
         </CardContent>
+        <CardContent>
+          <p className="text-2xl font-medium text-blue-800 py-6">Địa chỉ</p>
+          <div className="grid grid-cols-2 gap-y-8">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-300 flex items-center">
+                Số nhà, đường
+              </Label>
+              <div className="text-gray-900 rounded-md font-medium">
+                {profile?.address?.street || "Chưa cập nhật email"}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-300 flex items-center">
+                Phường
+              </Label>
+              <div className="text-gray-900 rounded-md font-medium">
+                {profile?.address?.ward || "Chưa cập nhật email"}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-300 flex items-center">
+                Quận
+              </Label>
+              <div className="text-gray-900 rounded-md font-medium">
+                {profile?.address?.district || "Chưa cập nhật email"}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-300 flex items-center">
+                Tỉnh / Thành phố
+              </Label>
+              <div className="text-gray-900 rounded-md font-medium">
+                {profile?.address?.city || "Chưa cập nhật email"}
+              </div>
+            </div>
+          </div>
 
-        <CardFooter className="flex justify-end gap-4 p-8 bg-gray-50 border-t border-gray-100">
+        </CardContent>
+        <CardFooter className="flex justify-end gap-4 p-6">
           {editedProfile.isEdited ? (
             <>
               <Button
                 onClick={handleUpdateProfile}
-                className="bg-primary text-white px-8 py-6 text-lg font-semibold shadow-lg transition-all duration-300"
+                className="bg-primary text-white px-8 py-6 font-semibold shadow-lg transition-all duration-300"
               >
                 Lưu thay đổi
               </Button>
@@ -211,7 +242,7 @@ const UserProfile = () => {
                 onClick={() =>
                   setEditedProfile((prev) => ({ ...prev, isEdited: false }))
                 }
-                className="border-gray-300 hover:bg-gray-100 px-8 py-6 text-lg font-semibold transition-all duration-300"
+                className="border-gray-300 hover:bg-gray-100 px-8 py-6 font-semibold transition-all duration-300"
               >
                 Hủy
               </Button>
@@ -221,7 +252,7 @@ const UserProfile = () => {
               onClick={() =>
                 setEditedProfile((prev) => ({ ...prev, isEdited: true }))
               }
-              className=" text-white px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl bg-primary transition-all duration-300"
+              className=" text-white px-8 py-6 font-semibold shadow-lg hover:shadow-xl bg-primary transition-all duration-300"
             >
               Chỉnh sửa thông tin
             </Button>
