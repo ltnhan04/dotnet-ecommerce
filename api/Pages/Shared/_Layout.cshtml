@@ -76,11 +76,35 @@
                     </div>
 
                     <div class="flex items-center space-x-4">
-                        <button class="text-gray-300 hover:text-white relative">
-                            <i data-lucide="bell" class="w-6 h-6"></i>
-                            <span
-                                class="absolute -top-1 -right-1 bg-[#F44336] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
-                        </button>
+                        <div class="relative">
+                            <button id="notificationBtn" class="text-gray-300 hover:text-white relative">
+                                <i data-lucide="bell" class="w-6 h-6"></i>
+                                <span id="notificationCount"
+                                    class="absolute -top-1 -right-1 bg-[#F44336] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                            </button>
+
+                            <div id="notificationDropdown"
+                                class="absolute right-0 mt-2 w-96 bg-[#1E293B] border border-gray-700 rounded-lg shadow-xl z-50 hidden max-h-[80vh] flex flex-col">
+                                <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                                    <h3 class="text-white font-semibold">Notifications</h3>
+                                    <button id="markAllRead" class="text-[#2196F3] hover:text-[#1E88E5] text-xs">Mark
+                                        all read</button>
+                                </div>
+
+                                <div id="notificationList" class="flex-1 overflow-y-auto max-h-96">
+                                    <!-- Notifications will be loaded here -->
+                                </div>
+
+                                <div id="notificationPagination"
+                                    class="p-3 border-t border-gray-700 flex items-center justify-between text-xs text-gray-400">
+                                    <button id="prevPage"
+                                        class="px-2 py-1 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                                    <span id="pageInfo">Page 1 of 1</span>
+                                    <button id="nextPage"
+                                        class="px-2 py-1 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="flex items-center space-x-2">
                             <div class="w-8 h-8 bg-[#2196F3] rounded-full flex items-center justify-center">
@@ -100,10 +124,8 @@
     </div>
 
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
 
-        // Mobile menu toggle
         const menuButton = document.querySelector('button[data-lucide="menu"]');
         const sidebar = document.querySelector('aside');
         if (menuButton && sidebar) {
@@ -111,6 +133,229 @@
                 sidebar.classList.toggle('hidden');
             });
         }
+
+        let notifications = [];
+        let currentPage = 1;
+        const itemsPerPage = 5;
+
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationList = document.getElementById('notificationList');
+        const notificationCount = document.getElementById('notificationCount');
+        const markAllReadBtn = document.getElementById('markAllRead');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const pageInfo = document.getElementById('pageInfo');
+
+        notificationBtn.addEventListener('click', () => {
+            notificationDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('/api/v1/notifications', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    notifications = data.data || [];
+                    currentPage = 1;
+                    updateNotificationUI();
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+            }
+        }
+
+        function getPaginatedNotifications() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            return notifications.slice(startIndex, endIndex);
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(notifications.length / itemsPerPage);
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+
+            const paginationDiv = document.getElementById('notificationPagination');
+            if (totalPages <= 1) {
+                paginationDiv.style.display = 'none';
+            } else {
+                paginationDiv.style.display = 'flex';
+            }
+        }
+
+        function updateNotificationUI() {
+            const unreadCount = notifications.filter(n => !n.isRead).length;
+
+            if (unreadCount > 0) {
+                notificationCount.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                notificationCount.classList.remove('hidden');
+            } else {
+                notificationCount.classList.add('hidden');
+            }
+
+            notificationList.innerHTML = '';
+
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<div class="p-6 text-gray-400 text-center">No notifications</div>';
+                updatePagination();
+                return;
+            }
+
+            const paginatedNotifications = getPaginatedNotifications();
+
+            paginatedNotifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                const hasRedirect = notification.redirectUrl && notification.redirectUrl.trim() !== '';
+                notificationItem.className = `p-4 border-b border-gray-700 hover:bg-gray-800 transition-colors ${!notification.isRead ? 'bg-gray-800/50' : ''} ${hasRedirect ? 'cursor-pointer hover:bg-gray-700' : ''}`;
+
+                const truncatedMessage = notification.message.length > 100
+                    ? notification.message.substring(0, 100) + '...'
+                    : notification.message;
+
+                const date = new Date(notification.createdAt);
+                const timeAgo = getTimeAgo(date);
+
+                notificationItem.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-2 h-2 rounded-full ${!notification.isRead ? 'bg-[#2196F3]' : 'bg-gray-600'}"></div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-white truncate">${notification.title}</p>
+                                ${!notification.isRead ? `<button onclick="event.stopPropagation(); markAsRead('${notification._id}')" class="text-[#2196F3] hover:text-[#1E88E5] text-xs ml-2">Mark read</button>` : ''}
+                            </div>
+                            <p class="text-sm text-gray-300 mt-1 line-clamp-2">${truncatedMessage}</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="text-xs text-gray-400">${timeAgo}</span>
+                                <span class="text-xs px-2 py-1 bg-gray-700 rounded-full text-gray-300">${notification.type}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (hasRedirect) {
+                    notificationItem.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Notification clicked:', notification.redirectUrl);
+                        handleNotificationClick(notification);
+                    });
+                }
+
+                notificationList.appendChild(notificationItem);
+            });
+
+            updatePagination();
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+
+            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+            if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updateNotificationUI();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(notifications.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                updateNotificationUI();
+            }
+        });
+
+        async function markAsRead(notificationId) {
+            try {
+                const response = await fetch(`/api/v1/notifications/${notificationId}/read`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const notification = notifications.find(n => n._id === notificationId);
+                    if (notification) {
+                        notification.isRead = true;
+                        updateNotificationUI();
+                    }
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        async function handleNotificationClick(notification) {
+            try {
+                console.log('Handling notification click:', notification);
+
+                if (!notification.isRead) {
+                    console.log('Marking notification as read...');
+                    await markAsRead(notification._id);
+                }
+
+                notificationDropdown.classList.add('hidden');
+
+                if (notification.redirectUrl) {
+                    console.log('Navigating to:', notification.redirectUrl);
+
+                    if (notification.redirectUrl.startsWith('/')) {
+                        console.log('Internal route detected');
+                        window.location.href = notification.redirectUrl;
+                    } else if (notification.redirectUrl.startsWith('http')) {
+                        console.log('External URL detected');
+                        window.open(notification.redirectUrl, '_blank');
+                    } else {
+                        console.log('Default route detected');
+                        window.location.href = notification.redirectUrl;
+                    }
+                } else {
+                    console.log('No redirectUrl found');
+                }
+            } catch (error) {
+                console.error('Error handling notification click:', error);
+            }
+        }
+
+        markAllReadBtn.addEventListener('click', async () => {
+            try {
+                const unreadNotifications = notifications.filter(n => !n.isRead);
+                await Promise.all(unreadNotifications.map(n => markAsRead(n._id)));
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+            }
+        });
+
+        fetchNotifications();
+        setInterval(fetchNotifications, 30000);
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

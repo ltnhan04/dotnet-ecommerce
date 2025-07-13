@@ -8,9 +8,11 @@ using Microsoft.Extensions.Logging;
 using api.Dtos;
 using api.models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api.Pages.Admin.Customers
 {
+    [Authorize(Roles = "admin")]
     public class Index : PageModel
     {
         private readonly ILogger<Index> _logger;
@@ -30,9 +32,10 @@ namespace api.Pages.Admin.Customers
             _context = context;
         }
 
-        public async Task OnGetAsync(string? search, string? email, string? phone, int page = 1, int size = 10)
+        public async Task OnGetAsync(string? search, string? email, string? phone, [FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             var query = _context.Users.Where(u => u.role == "user");
+
             if (!string.IsNullOrEmpty(search))
                 query = query.Where(u => u.name.Contains(search));
             if (!string.IsNullOrEmpty(email))
@@ -40,13 +43,16 @@ namespace api.Pages.Admin.Customers
             if (!string.IsNullOrEmpty(phone))
                 query = query.Where(u => u.phoneNumber.Contains(phone));
             TotalCount = await query.CountAsync();
+
             Customers = await query.OrderByDescending(u => u.createdAt)
                                    .Skip((page - 1) * size)
                                    .Take(size)
                                    .ToListAsync();
+
             CurrentPage = page;
             PageSize = size;
             TotalPages = (int)Math.Ceiling((double)TotalCount / size);
+
             Search = search;
             Email = email;
             Phone = phone;

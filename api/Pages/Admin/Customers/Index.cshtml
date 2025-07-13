@@ -20,18 +20,17 @@
                     class="bg-gray-800 text-white px-2 py-2 rounded-lg w-48" />
                 <input name="phone" value="@Model.Phone" placeholder="Phone"
                     class="bg-gray-800 text-white px-2 py-2 rounded-lg w-36" />
+                <input type="hidden" name="size" value="@Model.PageSize" />
                 <button type="submit"
                     class="bg-[#2196F3] hover:bg-[#1E88E5] text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                     <i data-lucide="search" class="w-4 h-4"></i>
                 </button>
             </form>
             <div class="flex space-x-3">
-                <!-- Add create customer button if needed -->
             </div>
         </div>
     </div>
 
-    <!-- Customers Table -->
     <div class="bg-[#1E293B] rounded-xl shadow-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-700">
             <h3 class="text-lg font-semibold text-white">Customers List</h3>
@@ -99,8 +98,9 @@
         </div>
     </div>
 
+
     <!-- Pagination -->
-    @if (Model.TotalPages > 1)
+    @if (Model.TotalPages > 0)
     {
         <div class="flex justify-center mt-6">
             <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
