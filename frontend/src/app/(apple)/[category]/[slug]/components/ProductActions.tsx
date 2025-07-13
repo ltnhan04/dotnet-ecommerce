@@ -15,11 +15,14 @@ import { WishlistType } from "@/types/wishlist";
 import { ProductVariant } from "@/types/product";
 
 interface ProductActionsProps {
-  variant: ProductVariant,
+  variant: ProductVariant;
   product: ProductResponse;
 }
 
-export default function ProductActions({ variant, product }: ProductActionsProps) {
+export default function ProductActions({
+  variant,
+  product,
+}: ProductActionsProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
@@ -46,7 +49,7 @@ export default function ProductActions({ variant, product }: ProductActionsProps
     } else {
       const cartItem = {
         id: variant._id,
-        name: `${product.name} - ${variant.color.colorName} - ${variant.storage}`,
+        name: `${product.name} ${variant.color.colorName} ${variant.storage}`,
         image: variant.images[0],
         price: variant.price,
         quantity: 1,
@@ -74,7 +77,7 @@ export default function ProductActions({ variant, product }: ProductActionsProps
     } else {
       const wishlistItem = {
         id: variant._id,
-        name: `${product.name} - ${variant.color.colorName} - ${variant.storage}`,
+        name: `${product.name} ${variant.color.colorName} ${variant.storage}`,
         image: variant.images[0],
         price: variant.price,
         quantity: 1,
@@ -95,7 +98,7 @@ export default function ProductActions({ variant, product }: ProductActionsProps
     }
     const cartItem = {
       id: variant._id,
-      name: `${product.name} - ${variant.color.colorName} - ${variant.storage}`,
+      name: `${product.name} ${variant.color.colorName} ${variant.storage}`,
       image: variant.images[0],
       price: variant.price,
       quantity: 1,

@@ -18,11 +18,12 @@ export interface Color {
 export type ProductStatus = "out of stock" | "in stock";
 
 export interface ProductVariant {
-   _id: string;
+  _id: string;
   color: {
     colorName: string;
     colorCode: string;
   };
+  product: string;
   storage: string;
   price: number;
   status: string;
@@ -32,7 +33,7 @@ export interface ProductVariant {
   images: string[];
   reviews: {
     _id: string;
-    variant: string,
+    variant: string;
     rating: number;
     comment: string;
   }[];

@@ -95,7 +95,6 @@ const authSlice = createSlice({
       }>
     ) => {
       const { accessToken, name, email } = action.payload;
-      console.log({ accessToken, name, email });
       state.accessToken = accessToken;
       state.name = name;
       state.email = email;

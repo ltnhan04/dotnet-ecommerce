@@ -21,6 +21,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AddressSection from "@/app/(auth)/profile/components/address";
 import { EditedProfile } from "@/types/profile";
 import { ProfileType } from "@/types/auth";
+import Loading from "@/app/loading";
+import Breadcrumb from "@/components/common/breadcrumb";
 
 const UserProfile = () => {
   const { toast } = useToast();
@@ -90,20 +92,25 @@ const UserProfile = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
-
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return toast({
+      title: "Đã xảy ra lỗi!",
+      description: error.message || "Something went wrong!",
+      variant: "destructive",
+    });
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-5xl mx-auto shadow-2xl rounded-[8px] overflow-hidden border transition-all duration-300 hover:shadow-3xl">
+    <div className="min-h-screen sm:px-6 lg:px-8">
+      <Breadcrumb />
+      <Card className="w-full max-w-7xl mx-auto shadow-2xl rounded-lg overflow-hidden shadow-[#e6e6e6] transition-all duration-300 hover:shadow-3xl">
         <CardHeader className="p-8 border-b">
-          <p className="text-2xl font-medium text-blue-800 pb-6">Hồ sơ của tôi </p>
+          <p className="text-2xl font-medium text-blue-800 pb-6">
+            Hồ sơ của tôi{" "}
+          </p>
           <div className="flex items-center space-x-6">
-
             <Avatar className="size-24 shadow-xl transition-transform duration-300 hover:scale-105">
               <AvatarImage
                 src={`https://api.dicebear.com/6.x/initials/svg?seed=${profile?.name}`}
@@ -118,7 +125,11 @@ const UserProfile = () => {
                 {profile?.name}
               </CardTitle>
               <CardDescription className="flex items-center space-x-2 text-blue-800">
-                <span className="font-medium">{profile?.role && profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}</span>
+                <span className="font-medium">
+                  {profile?.role &&
+                    profile.role.charAt(0).toUpperCase() +
+                      profile.role.slice(1)}
+                </span>
               </CardDescription>
               <CardDescription className="flex items-center space-x-2">
                 <span className="font-medium">
@@ -133,7 +144,9 @@ const UserProfile = () => {
           </div>
         </CardHeader>
         <CardContent className="p-6 border-b">
-          <p className="text-2xl font-medium pb-6 text-blue-800">Thông tin cá nhân</p>
+          <p className="text-2xl font-medium pb-6 text-blue-800">
+            Thông tin cá nhân
+          </p>
           <div className="grid grid-cols-2 gap-y-8 gap-x-6">
             <div className="space-y-2">
               <Label className="text-sm font-semibold text-gray-300 flex items-center">
@@ -226,7 +239,6 @@ const UserProfile = () => {
               </div>
             </div>
           </div>
-
         </CardContent>
         <CardFooter className="flex justify-end gap-4 p-6">
           {editedProfile.isEdited ? (

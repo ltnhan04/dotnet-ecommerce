@@ -5,7 +5,7 @@ import { Menu, Loader2 } from "lucide-react";
 import { AxiosError } from "axios";
 import { useGetProductByCategory } from "@/hooks/useProducts";
 import { useSubCategory } from "@/hooks/useCategories";
-import BreadCrumb from "./components/breadcrumb";
+import BreadCrumb from "../../../components/common/breadcrumb";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Loading from "@/app/loading";
@@ -60,7 +60,7 @@ const CategoryPage = ({ params }: { params: { category: string } }) => {
     (product: Product) => product.variants
   );
   const paginatedVariants =
-    products?.pages.flatMap((page, pageIndex) => {
+    products?.pages.flatMap((_page, pageIndex) => {
       const startIndex = pageIndex * 10;
       const endIndex = startIndex + 10;
       return allVariants.slice(startIndex, endIndex);
