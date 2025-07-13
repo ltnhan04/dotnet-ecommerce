@@ -13,7 +13,6 @@ namespace api.Pages.Admin.Categories
     [Authorize(Roles = "admin")]
     public class Create : PageModel
     {
-        private readonly ILogger<Create> _logger;
 
         private readonly HttpClient _httpClient;
         [BindProperty]

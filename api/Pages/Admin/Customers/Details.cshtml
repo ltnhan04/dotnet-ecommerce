@@ -1,11 +1,145 @@
-@page
+@page "{id}"
 @model api.Pages.Admin.Customers.Details
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Customer Details";
+    ViewData["PageTitle"] = "Customer Details";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="space-y-6">
+    @if (Model.Customer != null)
+    {
+        <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-white">Customer Information</h2>
+                <a href="/Admin/Customers" class="text-[#2196F3] hover:text-[#1E88E5] flex items-center space-x-2">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Back to Customers</span>
+                </a>
+            </div>
 
-<div>
-    
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-300">Name</label>
+                        <p class="text-white text-lg">@Model.Customer.name</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-300">Email</label>
+                        <p class="text-white">@Model.Customer.email</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-300">Phone</label>
+                        <p class="text-white">@Model.Customer.phoneNumber</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-gray-300">Created At</label>
+                        <p class="text-white">@Model.Customer.createdAt.ToString("dd/MM/yyyy HH:mm")</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-300">Address</label>
+                        @if (Model.Customer.address != null)
+                        {
+                            var addr = Model.Customer.address;
+                            <p class="text-white">
+                                @if (!string.IsNullOrWhiteSpace(addr.street))
+                                {
+                                    @addr.street
+                        
+                                    <br />
+                                }
+                                @if (!string.IsNullOrWhiteSpace(addr.city))
+                                {
+                                    @addr.city
+                        
+                                    <br />
+                                }
+                                @if (!string.IsNullOrWhiteSpace(addr.country))
+                                {
+                                    @addr.country
+                                }
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="text-gray-400">No address provided</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Points Information</h3>
+            @if (Model.CustomerPoints != null)
+            {
+                <div class="flex items-center space-x-4">
+                    <div class="bg-[#4CAF50] rounded-full p-4">
+                        <i data-lucide="star" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-white">@Model.CustomerPoints.points</p>
+                        <p class="text-gray-300">Total Points</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="text-gray-400">No points information available</p>
+            }
+        </div>
+
+        <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Vouchers</h3>
+            @if (Model.CustomerVouchers != null && Model.CustomerVouchers.Count > 0)
+            {
+                <div class="space-y-4">
+                    @foreach (var voucherGroup in Model.CustomerVouchers)
+                    {
+                        @if (voucherGroup.vouchers != null)
+                        {
+                            @foreach (var voucher in voucherGroup.vouchers)
+                            {
+                                <div class="border border-gray-700 rounded-lg p-4">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-2">
+                                                <span class="text-sm font-medium text-[#2196F3]">@voucher.code</span>
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded-full @(voucher.status == "unused" ? "bg-[#4CAF50] text-white" : "bg-[#F44336] text-white")">
+                                                    @voucher.status
+                                                </span>
+                                            </div>
+                                            <p class="text-white font-semibold">@voucher.discountAmount.ToString("N0")₫</p>
+                                            <p class="text-gray-300 text-sm">Points Used: @voucher.pointsUsed</p>
+                                            <p class="text-gray-300 text-sm">
+                                                Valid: @voucher.validFrom.ToString("dd/MM/yyyy") - @voucher.validTo.ToString("dd/MM/yyyy")
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-gray-400">No vouchers available</p>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="bg-[#1E293B] rounded-xl shadow-md p-6">
+            <div class="text-center">
+                <p class="text-gray-400">Customer not found</p>
+                <a href="/Admin/Customers" class="text-[#2196F3] hover:text-[#1E88E5] mt-4 inline-block">
+                    Back to Customers
+                </a>
+            </div>
+        </div>
+    }
 </div>

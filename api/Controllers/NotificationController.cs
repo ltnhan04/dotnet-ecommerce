@@ -7,6 +7,8 @@ using api.Interfaces.Repositories;
 using api.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using api.Dtos;
+using api.Models;
 
 namespace api.Controllers
 {
@@ -20,22 +22,39 @@ namespace api.Controllers
         {
             _repo = repo;
         }
+
         [HttpGet]
         [Authorize]
-        public async Task GetAll()
+        public async Task GetAll([FromQuery] string type = "all")
         {
             try
             {
                 var userId = User.FindFirst("userId")?.Value;
                 var role = User.FindFirst(ClaimTypes.Role)?.Value;
-                var result = await _repo.GetByUserIdOrRole(userId!, role!);
-                await ResponseHandler.SendSuccess(Response, result, 200, "Get all notifications successfully");
+                var notifications = await _repo.GetByUserIdOrRole(userId!, role!, type);
+
+                var notificationDtos = notifications.Select(n => new NotificationDto
+                {
+                    _id = n._id.ToString(),
+                    userId = n.userId?.ToString(),
+                    targetRole = n.targetRole,
+                    type = n.type,
+                    title = n.title,
+                    message = n.message ?? "",
+                    isRead = n.isRead,
+                    redirectUrl = n.redirectUrl,
+                    createdAt = n.createdAt,
+                    updatedAt = n.updatedAt
+                }).ToList();
+
+                await ResponseHandler.SendSuccess(Response, notificationDtos, 200, "Get all notifications successfully");
             }
             catch (Exception ex)
             {
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
+
         [HttpPut("{id}/read")]
         [Authorize]
         public async Task MarkAsRead(string id)

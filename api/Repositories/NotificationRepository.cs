@@ -19,11 +19,18 @@ namespace api.Repositories
         {
             _context = context;
         }
-        public async Task<List<Notification>> GetByUserIdOrRole(string userId, string role)
+        public async Task<List<Notification>> GetByUserIdOrRole(string userId, string role, string type = "all")
         {
             var userObjectId = ObjectId.Parse(userId);
-            return await _context.Notifications
-                .Where(n => n.userId == userObjectId || n.userId == null || n.targetRole == role)
+            var query = _context.Notifications
+                .Where(n => n.userId == userObjectId || n.userId == null || n.targetRole == role);
+            
+            if (type != "all")
+            {
+                query = query.Where(n => n.type == type);
+            }
+            
+            return await query
                 .OrderByDescending(n => n.createdAt)
                 .ToListAsync();
         }

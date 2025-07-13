@@ -9,7 +9,7 @@ namespace api.Interfaces.Repositories
 {
     public interface INotificationRepository
     {
-        Task<List<Notification>> GetByUserIdOrRole(string userId, string role);
+        Task<List<Notification>> GetByUserIdOrRole(string userId, string role, string type = "all");
         Task<bool> MarkAsRead(string id);
         Task Create(Notification notification);
         Task<bool> AlreadySentMilestoneNotification(string userId, int milestone);
