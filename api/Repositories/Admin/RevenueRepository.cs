@@ -9,27 +9,40 @@ using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using Microsoft.Extensions.Logging;
 
-
 namespace api.Repositories.Admin
 {
     public class RevenueRepository : IRevenueRepository
     {
         private readonly iTribeDbContext _context;
         private readonly ILogger<RevenueRepository> _logger;
+
         public RevenueRepository(iTribeDbContext context, ILogger<RevenueRepository> logger)
         {
             _context = context;
             _logger = logger;
         }
-        public async Task<TotalDto> getTotalRevenue()
-        {
-            var orders = await _context.Orders.ToListAsync();
 
-            var totalOrder = orders.Count;
+        public async Task<TotalDto> GetTotalDashboardData(DateTime? fromDate = null, DateTime? toDate = null)
+        {
+            var query = _context.Orders.AsQueryable();
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(o => o.createdAt >= fromDate.Value.Date);
+            }
+            if (toDate.HasValue)
+            {
+                query = query.Where(o => o.createdAt <= toDate.Value.Date.AddDays(1).AddTicks(-1));
+            }
+
+            var orders = await query.ToListAsync();
+
+            var totalOrder = orders.Count();
             var totalAmount = orders
                 .Where(o => o.status == "delivered")
                 .Sum(o => o.totalAmount);
             var totalPendingOrder = orders.Count(o => o.status == "pending");
+
             var totalCustomer = await _context.Users.CountAsync(u => u.role == "user");
 
             return new TotalDto
@@ -41,97 +54,148 @@ namespace api.Repositories.Admin
             };
         }
 
-        public async Task<List<RevenueDto>> getRevenueChart(string type)
+        public async Task<List<RevenueDto>> GetRevenueChartData(DateTime fromDate, DateTime toDate, string granularity)
         {
-            DateTime now = DateTime.Now;
-            DateTime from;
-            DateTime to = now;
-
-            // Xác định khoảng thời gian dựa vào type
-            switch (type)
-            {
-                case "day":
-                    from = now.Date; // Từ đầu ngày hôm nay
-                    break;
-
-                case "week":
-                    int daysSinceMonday = ((int)now.DayOfWeek + 6) % 7; // chuyển Sunday=0 thành Sunday=6
-                    from = now.Date.AddDays(-daysSinceMonday); // Từ thứ 2 đầu tuần
-                    break;
-
-                case "month":
-                    from = new DateTime(now.Year, 1, 1); // Từ đầu năm
-                    break;
-
-                default:
-                    throw new ArgumentException("Invalid type");
-            }
-
-            // Đảm bảo to là cuối ngày hiện tại
-            to = to.Date.AddDays(1).AddTicks(-1);
+            fromDate = fromDate.Date;
+            toDate = toDate.Date.AddDays(1).AddTicks(-1);
 
             var orders = await _context.Orders
-                .Where(o => o.status == "delivered" && o.createdAt >= from && o.createdAt <= to)
+                .Where(o => o.status == "delivered" && o.createdAt >= fromDate && o.createdAt <= toDate)
                 .ToListAsync();
 
-            List<RevenueDto> result;
+            List<RevenueDto> result = new List<RevenueDto>();
 
-            switch (type)
+            switch (granularity.ToLower())
             {
-                case "day":
-                    // Chia theo giờ
-                    result = Enumerable.Range(0, 24)
-                        .Select(hour => new RevenueDto
+                case "hourly":
+                    for (DateTime date = fromDate.Date; date <= toDate.Date; date = date.AddDays(1))
+                    {
+                        for (int hour = 0; hour < 24; hour++)
                         {
-                            label = $"{hour}h",
-                            totalRevenue = orders
-                                .Where(o => o.createdAt.Hour == hour)
-                                .Sum(o => o.totalAmount)
-                        }).ToList();
+                            var currentPointTime = date.AddHours(hour);
+                            var nextPointTime = currentPointTime.AddHours(1);
+
+                            var totalRevenue = orders
+                                .Where(o => o.createdAt >= currentPointTime && o.createdAt < nextPointTime)
+                                .Sum(o => o.totalAmount);
+
+                            result.Add(new RevenueDto
+                            {
+                                label = currentPointTime.ToString("HH:mm"), 
+                                totalRevenue = totalRevenue
+                            });
+                        }
+                    }
                     break;
 
-                case "week":
-                    string[] days = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-                    result = Enumerable.Range(0, 7)
-                        .Select(i => new RevenueDto
+                case "daily":
+                    for (DateTime date = fromDate.Date; date <= toDate.Date; date = date.AddDays(1))
+                    {
+                        var nextDay = date.AddDays(1);
+                        var totalRevenue = orders
+                            .Where(o => o.createdAt >= date && o.createdAt < nextDay)
+                            .Sum(o => o.totalAmount);
+
+                        result.Add(new RevenueDto
                         {
-                            label = days[i],
-                            totalRevenue = orders
-                                .Where(o => (int)o.createdAt.DayOfWeek == (i + 1) % 7)
-                                .Sum(o => o.totalAmount)
-                        }).ToList();
+                            label = date.ToString("dd/MM"),
+                            totalRevenue = totalRevenue
+                        });
+                    }
                     break;
 
-                case "month":
-                    string[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-                    result = Enumerable.Range(1, 12)
-                        .Select(m => new RevenueDto
+                case "weekly":
+                    DayOfWeek firstDayOfWeek = DayOfWeek.Monday;
+                    DateTime currentWeekStart = fromDate.Date;
+                    while (currentWeekStart.DayOfWeek != firstDayOfWeek)
+                    {
+                        currentWeekStart = currentWeekStart.AddDays(-1);
+                    }
+
+                    while (currentWeekStart <= toDate)
+                    {
+                        DateTime nextWeekStart = currentWeekStart.AddDays(7);
+                        var totalRevenue = orders
+                            .Where(o => o.createdAt >= currentWeekStart && o.createdAt < nextWeekStart)
+                            .Sum(o => o.totalAmount);
+
+                        result.Add(new RevenueDto
                         {
-                            label = months[m - 1],
-                            totalRevenue = orders
-                                .Where(o => o.createdAt.Month == m)
-                                .Sum(o => o.totalAmount)
-                        }).ToList();
+                            label = $"{currentWeekStart:dd/MM} - {nextWeekStart.AddDays(-1):dd/MM}",
+                            totalRevenue = totalRevenue
+                        });
+                        currentWeekStart = nextWeekStart;
+                    }
+                    break;
+
+                case "monthly":
+                    DateTime currentMonth = new DateTime(fromDate.Year, fromDate.Month, 1);
+                    DateTime endMonth = new DateTime(toDate.Year, toDate.Month, 1);
+
+                    while (currentMonth <= endMonth)
+                    {
+                        DateTime nextMonth = currentMonth.AddMonths(1);
+                        var totalRevenue = orders
+                            .Where(o => o.createdAt >= currentMonth && o.createdAt < nextMonth)
+                            .Sum(o => o.totalAmount);
+
+                        result.Add(new RevenueDto
+                        {
+                            label = currentMonth.ToString("MM/yyyy"),
+                            totalRevenue = totalRevenue
+                        });
+                        currentMonth = nextMonth;
+                    }
+                    break;
+
+                case "yearly":
+                    int currentYear = fromDate.Year;
+                    int endYear = toDate.Year;
+
+                    for (int year = currentYear; year <= endYear; year++)
+                    {
+                        DateTime yearStart = new DateTime(year, 1, 1);
+                        DateTime nextYearStart = new DateTime(year + 1, 1, 1);
+                        var totalRevenue = orders
+                            .Where(o => o.createdAt >= yearStart && o.createdAt < nextYearStart)
+                            .Sum(o => o.totalAmount);
+
+                        result.Add(new RevenueDto
+                        {
+                            label = year.ToString(), 
+                            totalRevenue = totalRevenue
+                        });
+                    }
                     break;
 
                 default:
-                    throw new ArgumentException("Invalid type");
+                    _logger.LogWarning("Invalid granularity type provided: {Granularity}", granularity);
+                    throw new ArgumentException("Invalid granularity type. Supported types: hourly, daily, weekly, monthly, yearly.");
             }
 
             return result;
         }
 
-        public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts()
+        public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts(DateTime? fromDate = null, DateTime? toDate = null)
         {
-            // Bước 1: Lấy tất cả đơn hàng có trạng thái 'delivered'
-            var deliveredOrders = await _context.Orders
+            var query = _context.Orders.AsQueryable();
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(o => o.createdAt >= fromDate.Value.Date);
+            }
+            if (toDate.HasValue)
+            {
+                query = query.Where(o => o.createdAt <= toDate.Value.Date.AddDays(1).AddTicks(-1));
+            }
+
+            var deliveredOrders = await query
                 .Where(o => o.status == "delivered")
                 .ToListAsync();
 
             if (!deliveredOrders.Any())
                 return new List<TopProductDtoRes>();
 
-            // Bước 2: Lấy tất cả các variants từ đơn hàng
             var allOrderVariants = deliveredOrders
                 .SelectMany(o => o.variants)
                 .ToList();
@@ -139,7 +203,6 @@ namespace api.Repositories.Admin
             if (!allOrderVariants.Any())
                 return new List<TopProductDtoRes>();
 
-            // Bước 3: Đếm số lượng bán theo variantId
             var variantSales = allOrderVariants
                 .GroupBy(v => v.variant)
                 .Select(g => new TopProductDto
@@ -151,7 +214,6 @@ namespace api.Repositories.Admin
                 .Take(7)
                 .ToList();
 
-            // Chuyển đổi từ TopProductDto sang TopProductDtoRes
             List<TopProductDtoRes> listVariants = variantSales.Select(x => new TopProductDtoRes
             {
                 variantId = x.variantId.ToString(),
@@ -164,7 +226,7 @@ namespace api.Repositories.Admin
                 .Where(v => variantIds.Contains(v._id))
                 .ToListAsync();
 
-            _logger.LogInformation("Processing!");
+            _logger.LogInformation("Processing GetTop10BestSellingProducts!");
 
             var productIds = productVariants.Select(v => v.product).Distinct().ToList();
 
@@ -188,9 +250,21 @@ namespace api.Repositories.Admin
 
             return listVariants;
         }
-        public async Task<List<TopSalesByLocationDto>> GetTopSalesByLocation()
+
+        public async Task<List<TopSalesByLocationDto>> GetTopSalesByLocation(DateTime? fromDate = null, DateTime? toDate = null)
         {
-            var deliveredOrders = await _context.Orders
+            var query = _context.Orders.AsQueryable();
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(o => o.createdAt >= fromDate.Value.Date);
+            }
+            if (toDate.HasValue)
+            {
+                query = query.Where(o => o.createdAt <= toDate.Value.Date.AddDays(1).AddTicks(-1));
+            }
+
+            var deliveredOrders = await query
                 .Where(o => o.status == "delivered")
                 .ToListAsync();
 
@@ -202,7 +276,7 @@ namespace api.Repositories.Admin
                 {
                     var addressParts = o.shippingAddress.Split(',');
                     string province = addressParts.Length >= 2
-                        ? addressParts[^2].Trim()
+                        ? addressParts[^2].Trim() 
                         : "Unknown";
 
                     return province;
@@ -211,7 +285,7 @@ namespace api.Repositories.Admin
                 .Select(g => new TopSalesByLocationDto
                 {
                     city = g.Key,
-                    totalSold = g.Count()
+                    totalSold = g.Count() 
                 })
                 .OrderByDescending(x => x.totalSold)
                 .Take(5)
@@ -219,6 +293,5 @@ namespace api.Repositories.Admin
 
             return provinceCount;
         }
-
     }
 }

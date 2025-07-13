@@ -16,6 +16,7 @@ using api.Services.Admin;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
 using api.Utils;
+using api.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -74,6 +75,9 @@ builder.Services.AddScoped<IPointRepository, PointRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IGranularityHelper, GranularityHelper>();
+builder.Services.AddScoped<IRevenueService, RevenueService>();
 
 builder.Services.AddAuthentication(options =>
 {

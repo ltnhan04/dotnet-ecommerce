@@ -3,36 +3,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Interfaces;
+using api.Interfaces.Services;
 using api.Interfaces.Repositories;
 using api.Dtos;
-
+using api.Enums; // Thêm namespace cho Granularity enum
+using api.Common; // Thêm namespace cho GranularityHelper
 
 namespace api.Services.Admin
 {
-    public class RevenueService
+    public class RevenueService : IRevenueService // Kế thừa từ interface
     {
-        private readonly IRevenueRepository revenueRepository;
+        private readonly IRevenueRepository _revenueRepository;
+        private readonly IGranularityHelper _granularityHelper; // Thêm helper
 
-        public RevenueService(IRevenueRepository revenueRepository)
+        public RevenueService(IRevenueRepository revenueRepository, IGranularityHelper granularityHelper)
         {
-            this.revenueRepository = revenueRepository;
+            _revenueRepository = revenueRepository;
+            _granularityHelper = granularityHelper;
         }
 
-        public async Task<TotalDto> getTotalRevenue()
+        // Cập nhật phương thức để nhận fromDate và toDate
+        public async Task<TotalDto> GetTotalDashboardData(DateTime? fromDate, DateTime? toDate)
         {
-            return await revenueRepository.getTotalRevenue();
+            return await _revenueRepository.GetTotalDashboardData(fromDate, toDate);
         }
-        public async Task<List<RevenueDto>> getRevenueChart(string type)
+
+        // Cập nhật phương thức để nhận fromDate, toDate và granularity
+        public async Task<List<RevenueDto>> GetRevenueChartData(DateTime fromDate, DateTime toDate, Granularity granularity)
         {
-            return await revenueRepository.getRevenueChart(type);
+            // Không cần tính granularity ở đây vì Controller sẽ gửi nó đến.
+            // Service chỉ chuyển tiếp yêu cầu đến Repository.
+            return await _revenueRepository.GetRevenueChartData(fromDate, toDate, granularity.ToString().ToLower());
         }
-        public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts()
+
+        // Cập nhật phương thức để nhận fromDate và toDate
+        public async Task<List<TopProductDtoRes>> GetTop10BestSellingProducts(DateTime? fromDate, DateTime? toDate)
         {
-            return await revenueRepository.GetTop10BestSellingProducts();
+            return await _revenueRepository.GetTop10BestSellingProducts(fromDate, toDate);
         }
-        public async Task<List<TopSalesByLocationDto>> GetTopSalesByLocation()
+
+        // Cập nhật phương thức để nhận fromDate và toDate
+        public async Task<List<TopSalesByLocationDto>> GetTopSalesByLocation(DateTime? fromDate, DateTime? toDate)
         {
-            return await revenueRepository.GetTopSalesByLocation();
+            return await _revenueRepository.GetTopSalesByLocation(fromDate, toDate);
         }
     }
 }
