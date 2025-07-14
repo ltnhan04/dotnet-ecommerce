@@ -23,9 +23,23 @@ namespace api.Repositories.Customer
             _context = context;
             _productVariantRepository = productVariantRepository;
         }
+        public async Task<Order?> GetOrderById(string orderId)
+        {
+            var objectId = ObjectId.Parse(orderId);
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o._id == objectId);
+            return order;
+        }
+
         public async Task<Order> CreateOrder(Order order)
         {
             _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+            return order;
+        }
+        public async Task<Order> UpdateOrder(Order order)
+        {
+
+            _context.Orders.Update(order);
             await _context.SaveChangesAsync();
             return order;
         }
@@ -233,5 +247,20 @@ namespace api.Repositories.Customer
                 updatedAt = order.updatedAt
             };
         }
+
+        public async Task<ProductVariant?> GetVariantById(string variantId)
+        {
+            var objectId = ObjectId.Parse(variantId);
+            var variants = await _context.ProductVariants.ToListAsync();
+            return variants.FirstOrDefault(v => v._id == objectId);
+        }
+
+        public async Task<ProductVariant> UpdateVariant(ProductVariant variant)
+        {
+            _context.ProductVariants.Update(variant);
+            await _context.SaveChangesAsync();
+            return variant;
+        }
+
     }
 }

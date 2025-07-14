@@ -67,4 +67,9 @@ namespace api.Dtos
         public string message { get; set; } = string.Empty;
     }
 
+    public class RefundDto
+    {
+        public string orderId { get; set; } = string.Empty;
+        public string reason { get; set; } = string.Empty;
+    }
 }
