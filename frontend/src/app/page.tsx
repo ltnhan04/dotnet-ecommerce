@@ -23,7 +23,6 @@ export default function Home() {
     const email = searchParams.get("email");
 
     if (accessToken && name && email) {
-      console.log("Google Auth Data:", { accessToken, name, email });
       dispatch(updateGoogleAuth({ accessToken, name, email }));
       toast({
         title: "Đăng nhập thành công",

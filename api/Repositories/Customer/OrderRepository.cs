@@ -99,44 +99,47 @@ namespace api.Repositories.Customer
                 createdAt = order.createdAt,
                 updatedAt = order.updatedAt
             }).ToList();
+
             return result;
         }
 
         public async Task<CancelOrderDto> CancelOrder(string orderId)
-        {   
-            var orders = await _context.Orders.ToListAsync();
-            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(orderId)) 
+        {
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o._id == ObjectId.Parse(orderId))
                 ?? throw new AppException("Order not found", 404);
+
             if (order.status != OrderStatus.pending.ToString() && order.status != OrderStatus.processing.ToString())
-            {
                 throw new AppException("Order cannot be cancelled", 400);
-            }
+            var variantIds = order.variants.Select(v => v.variant).ToList();
+            var variants = await _context.ProductVariants
+                .Where(v => variantIds.Contains(v._id))
+                .ToListAsync();
+
             foreach (var item in order.variants)
             {
-                var variantId = item.variant;
-                var quantity = item.quantity;
+                var variant = variants.FirstOrDefault(v => v._id == item.variant);
+                if (variant == null) continue;
 
-                var match = await _context.ProductVariants.FirstOrDefaultAsync(item => item._id == variantId);
+                variant.stock_quantity += item.quantity;
+                _context.ProductVariants.Update(variant);
 
-                match.stock_quantity += quantity;
-                _context.ProductVariants.Update(match);
-                await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
-
-                order.status = "cancel";
-                await _context.SaveChangesAsync();
+                await _productVariantRepository.CheckVariantLowStock(variant._id.ToString());
             }
-            var variantIds = order.variants.Select(item => item.variant).ToList();
-            var variants = await _context.ProductVariants
-                .Where(item => variantIds.Contains(item._id))
-                .ToListAsync();
 
-            var productIds = variants.Select(item => item.product).ToList();
+            order.status = "cancel";
+            order.updatedAt = DateTime.UtcNow;
+            _context.Orders.Update(order);
+
+            await _context.SaveChangesAsync();
+
+            var productIds = variants.Select(v => v.product).ToList();
             var products = await _context.Products
-                .Where(item => productIds.Contains(item._id))
+                .Where(p => productIds.Contains(p._id))
                 .ToListAsync();
 
-            var variantDict = variants.ToDictionary(item => item._id, item => item);
-            var productDict = products.ToDictionary(item => item._id, item => item);
+            var variantDict = variants.ToDictionary(v => v._id, v => v);
+            var productDict = products.ToDictionary(p => p._id, p => p);
 
             return new CancelOrderDto
             {
@@ -162,28 +165,31 @@ namespace api.Repositories.Customer
                 status = order.status,
                 shippingAddress = order.shippingAddress,
                 isPaymentMomo = order.isPaymentMomo,
-                stripeSessionId = order.stripeSessionId!,
+                stripeSessionId = order.stripeSessionId ?? "null",
                 createdAt = order.createdAt,
                 updatedAt = order.updatedAt
             };
         }
 
+
         public async Task<UpdateOrderPaymentResponseDto> UpdateOrderPayment(UpdateOrderPaymentDto dto)
         {
-            var orders = await _context.Orders.ToListAsync();
-            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId)) ?? throw new AppException("Order not found", 404);
-        
+            var order = await _context.Orders
+                .Where(item => item._id == ObjectId.Parse(dto.orderId))
+                .FirstOrDefaultAsync() ?? throw new AppException("Order not found", 404);
             foreach (var item in order.variants)
             {
                 var variantId = item.variant;
                 var quantity = item.quantity;
-                var match = await _context.ProductVariants.FirstOrDefaultAsync(item => item._id == variantId);
 
+                var variantList = await _context.ProductVariants.ToListAsync();
+                var match = variantList.FirstOrDefault(item => item._id.ToString() == variantId.ToString());
                 match.stock_quantity -= quantity;
                 _context.ProductVariants.Update(match);
                 await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
             }
 
+            order.status = "processing";
             order.stripeSessionId = dto.stripeSessionId;
             await _context.SaveChangesAsync();
 

@@ -23,13 +23,13 @@ namespace api.Repositories
         {
             var userObjectId = ObjectId.Parse(userId);
             var query = _context.Notifications
-                .Where(n => n.userId == userObjectId || n.userId == null || n.targetRole == role);
-            
+                .Where(n => n.userId == userObjectId || n.targetRole == role);
+
             if (type != "all")
             {
                 query = query.Where(n => n.type == type);
             }
-            
+
             return await query
                 .OrderByDescending(n => n.createdAt)
                 .ToListAsync();

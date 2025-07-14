@@ -59,7 +59,7 @@ const OrderList = ({
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "all"
                 ? "bg-gray-900 text-white"
-                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                : "bg-gray-50 text-gray-900 hover:bg-[#e6e6e6]"
             }`}
           >
             Tất cả
@@ -69,7 +69,7 @@ const OrderList = ({
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "pending"
                 ? "bg-gray-900 text-white"
-                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                : "bg-gray-50 text-gray-900 hover:bg-[#e6e6e6]"
             }`}
           >
             Chờ xử lý
@@ -79,7 +79,7 @@ const OrderList = ({
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "processing"
                 ? "bg-gray-900 text-white"
-                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                : "bg-gray-50 text-gray-900 hover:bg-[#e6e6e6]"
             }`}
           >
             Đang giao
@@ -89,7 +89,7 @@ const OrderList = ({
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === "delivered"
                 ? "bg-gray-900 text-white"
-                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                : "bg-gray-50 text-gray-900 hover:bg-[#e6e6e6]"
             }`}
           >
             Đã giao

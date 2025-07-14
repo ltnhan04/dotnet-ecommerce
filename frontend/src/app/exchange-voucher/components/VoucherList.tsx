@@ -1,6 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CheckCircle2, XCircle, Copy, Loader2, Gift, Ticket } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  Copy,
+  Loader2,
+  Gift,
+  Ticket,
+} from "lucide-react";
 import { IVoucherList } from "@/types/promotion";
 import { formatCurrency } from "@/utils/format-currency";
 import { toast } from "@/hooks/use-toast";
@@ -60,7 +67,9 @@ export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
     <Card className="p-8 bg-white rounded-2xl shadow-lg border-0">
       <div className="flex items-center justify-center gap-2 mb-6">
         <Ticket className="w-7 h-7 text-yellow-400" />
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Voucher của bạn</h2>
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+          Voucher của bạn
+        </h2>
       </div>
       <ScrollArea className="h-[400px] pr-2">
         {isLoading ? (
@@ -71,8 +80,12 @@ export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
         ) : !vouchers?.length ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Gift className="w-16 h-16 text-yellow-200 mb-3" />
-            <div className="text-gray-500 text-xl font-semibold mb-1">Bạn chưa có voucher nào</div>
-            <div className="text-blue-500 text-base mt-1 font-medium">Hãy đổi điểm để nhận voucher đầu tiên!</div>
+            <div className="text-gray-500 text-xl font-semibold mb-1">
+              Bạn chưa có voucher nào
+            </div>
+            <div className="text-blue-500 text-base mt-1 font-medium">
+              Hãy đổi điểm để nhận voucher đầu tiên!
+            </div>
           </div>
         ) : (
           <div className="space-y-5">
@@ -85,7 +98,9 @@ export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
                 >
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-lg text-gray-900">Mã: {voucher.code}</span>
+                      <span className="font-bold text-lg text-gray-900">
+                        Mã: {voucher.code}
+                      </span>
                       <button
                         onClick={() => copyToClipboard(voucher.code)}
                         className="p-1 hover:bg-yellow-100 rounded-full border border-yellow-200 ml-1 transition"
@@ -96,7 +111,10 @@ export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
                       {status.icon}
                     </div>
                     <div className="text-xs text-gray-500">
-                      Điểm đã dùng: <span className="font-semibold text-gray-900">{voucher.pointsUsed}</span>
+                      Điểm đã dùng:{" "}
+                      <span className="font-semibold text-gray-900">
+                        {voucher.pointsUsed}
+                      </span>
                     </div>
                   </div>
                   <div className="text-right min-w-[140px]">
@@ -104,9 +122,15 @@ export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
                       {formatCurrency(voucher.discountAmount)} giảm giá
                     </div>
                     <div className="text-xs text-gray-500">
-                      Hiệu lực: {new Date(voucher.validFrom).toLocaleDateString()} - {new Date(voucher.validTo).toLocaleDateString()}
+                      Hiệu lực:{" "}
+                      {new Date(voucher.validFrom).toLocaleDateString()} -{" "}
+                      {new Date(voucher.validTo).toLocaleDateString()}
                     </div>
-                    <div className={`text-xs mt-1 font-semibold ${status.textColor}`}>{status.text}</div>
+                    <div
+                      className={`text-xs mt-1 font-semibold ${status.textColor}`}
+                    >
+                      {status.text == "unused" ? "Chưa sử dụng" : "Đã sử dụng"}
+                    </div>
                   </div>
                 </div>
               );

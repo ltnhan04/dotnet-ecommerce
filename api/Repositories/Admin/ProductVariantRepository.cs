@@ -67,7 +67,7 @@ namespace api.Repositories.Admin
                     targetRole = "admin",
                     type = "inventory",
                     isRead = false,
-                    redirectUrl = "/admin/products",
+                    redirectUrl = "/Admin/Products",
                     createdAt = DateTime.UtcNow
                 });
             }
