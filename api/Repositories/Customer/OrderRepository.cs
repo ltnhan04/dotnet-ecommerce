@@ -99,15 +99,14 @@ namespace api.Repositories.Customer
                 createdAt = order.createdAt,
                 updatedAt = order.updatedAt
             }).ToList();
-
             return result;
         }
 
         public async Task<CancelOrderDto> CancelOrder(string orderId)
-        {
-            var order = await _context.Orders
-                .Where(item => item._id == ObjectId.Parse(orderId))
-                .FirstOrDefaultAsync() ?? throw new AppException("Order not found", 404);
+        {   
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(orderId)) 
+                ?? throw new AppException("Order not found", 404);
             if (order.status != OrderStatus.pending.ToString() && order.status != OrderStatus.processing.ToString())
             {
                 throw new AppException("Order cannot be cancelled", 400);
@@ -117,8 +116,7 @@ namespace api.Repositories.Customer
                 var variantId = item.variant;
                 var quantity = item.quantity;
 
-                var variant = await _context.ProductVariants.ToListAsync();
-                var match = variant.FirstOrDefault(item => item._id.ToString() == variantId.ToString());
+                var match = await _context.ProductVariants.FirstOrDefaultAsync(item => item._id == variantId);
 
                 match.stock_quantity += quantity;
                 _context.ProductVariants.Update(match);
@@ -164,7 +162,7 @@ namespace api.Repositories.Customer
                 status = order.status,
                 shippingAddress = order.shippingAddress,
                 isPaymentMomo = order.isPaymentMomo,
-                stripeSessionId = order.stripeSessionId ?? "null",
+                stripeSessionId = order.stripeSessionId!,
                 createdAt = order.createdAt,
                 updatedAt = order.updatedAt
             };
@@ -172,22 +170,20 @@ namespace api.Repositories.Customer
 
         public async Task<UpdateOrderPaymentResponseDto> UpdateOrderPayment(UpdateOrderPaymentDto dto)
         {
-            var order = await _context.Orders
-                .Where(item => item._id == ObjectId.Parse(dto.orderId))
-                .FirstOrDefaultAsync() ?? throw new AppException("Order not found", 404);
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId)) ?? throw new AppException("Order not found", 404);
+        
             foreach (var item in order.variants)
             {
                 var variantId = item.variant;
                 var quantity = item.quantity;
+                var match = await _context.ProductVariants.FirstOrDefaultAsync(item => item._id == variantId);
 
-                var variantList = await _context.ProductVariants.ToListAsync();
-                var match = variantList.FirstOrDefault(item => item._id.ToString() == variantId.ToString());
                 match.stock_quantity -= quantity;
                 _context.ProductVariants.Update(match);
                 await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
             }
 
-            order.status = "processing";
             order.stripeSessionId = dto.stripeSessionId;
             await _context.SaveChangesAsync();
 

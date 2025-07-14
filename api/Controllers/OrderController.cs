@@ -21,7 +21,6 @@ namespace api.Controllers
         private readonly IOrderService _orderService = orderService;
         private readonly INotificationRepository _notificationRepository = notificationRepository;
 
-
         [HttpPost]
         public async Task CreateOrder([FromBody] OrderCreateDto dto)
         {
