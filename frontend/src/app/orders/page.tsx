@@ -10,13 +10,14 @@ import { useOrders } from "@/hooks/useOrders";
 import OrderStats from "./components/OrderStats";
 import RecentOrders from "./components/RecentOrders";
 import OrderList from "./components/OrderList";
+import Loading from "../loading";
 
 const noOrder = "/assets/images/no-order.jpg";
 
 const OrderTracker = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const { orders: ordersData, isLoading, error, cancelOrder } = useOrders();
-  const orders = ordersData?.orders || [];
+  const orders = ordersData?.data || [];
 
   const handleCancelOrder = async (orderId: string) => {
     try {
@@ -34,23 +35,7 @@ const OrderTracker = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-8">
-                <div className="h-96 bg-white rounded-lg shadow-sm"></div>
-              </div>
-              <div className="col-span-4">
-                <div className="h-96 bg-white rounded-lg shadow-sm"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
@@ -91,20 +76,11 @@ const OrderTracker = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Theo dõi đơn hàng
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Quản lý và theo dõi trạng thái đơn hàng của bạn
-          </p>
-        </div>
-
         <div className="grid grid-cols-12 gap-8">
           <div className="col-span-8 space-y-8">
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white rounded-xl shadow-sm">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
                 Thống kê đơn hàng
               </h2>

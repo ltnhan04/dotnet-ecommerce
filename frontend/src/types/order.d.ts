@@ -12,7 +12,7 @@ export interface Variant {
 
 export interface Orders {
   message: string;
-  orders: Order[];
+  data: Order[];
 }
 
 export interface Order {

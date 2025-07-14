@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useCategory } from "@/hooks/useCategories";
-import { User, ShoppingCart, Heart, UserCheck, Bell } from "lucide-react";
+import { User, ShoppingCart, Heart, UserCheck } from "lucide-react";
 
 import { useAccessTokenExpired } from "@/utils/expired-token";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
@@ -31,6 +31,7 @@ import { APPLE_CATEGORIES } from "@/constants/categories";
 import { logout } from "@/services/auth/authApi";
 import { clearAccessToken } from "@/lib/features/authentication/authSlice";
 import { ErrorType } from "@/types/common";
+import { NotificationDropdown } from "@/components/common/NotificationDropdown";
 
 const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
   const dispatch = useAppDispatch();
@@ -125,9 +126,9 @@ const Navbar = ({ isFixed }: { isFixed?: boolean }) => {
                     </span>
                   )}
                 </Link>
-                <span>
-                  <Bell className="w-5 h-5 sm:h-6 sm:w-6" />
-                </span>
+                <div>
+                  <NotificationDropdown />
+                </div>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger>

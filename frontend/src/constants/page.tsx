@@ -90,3 +90,12 @@ export const carousel = [
 ];
 
 export const COLORS = ["#FFB020", "#14B8A6", "#10B981"];
+
+export const ITEMS_PER_PAGE = 5;
+export const NOTIFICATION_TYPES = [
+  { label: "Tất cả", value: "all" },
+  { label: "Thanh toán", value: "payment" },
+  { label: "Đơn hàng", value: "order" },
+  { label: "Đánh giá", value: "review" },
+  { label: "Khuyến mãi", value: "promotion" },
+];
