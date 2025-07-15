@@ -92,11 +92,8 @@ namespace api.Repositories.Customer
 
         public async Task<PointVoucher> UpdateStatusVoucher(UpdateStatusVoucherDto dto)
         {
-            var pointVoucher = await _context.PointVouchers
-                .Where(item => item.code == dto.voucherCode &&
-                        item.status == "unused")
-                .FirstOrDefaultAsync();
-
+            var pointVoucherId = await _context.PointVouchers.ToListAsync();
+            var pointVoucher = pointVoucherId.FirstOrDefault(item => item.code == dto.voucherCode && item.status == "unused");
             pointVoucher.status = "used";
             pointVoucher.usedOrder = ObjectId.Parse(dto.orderId.ToString());
             await _context.SaveChangesAsync();

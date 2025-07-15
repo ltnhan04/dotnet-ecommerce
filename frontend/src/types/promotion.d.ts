@@ -33,11 +33,12 @@ export interface ExchangeVoucher {
 
 export interface IResponseVoucherList {
   message: string;
-  data: IVoucherList[];
+  data: IVoucherList[],
+  length?: number
 }
 
 export interface IVoucherList {
-  _id: string;
+  _id: string
   customer: string;
   code: string;
   discountAmount: number;
@@ -45,9 +46,6 @@ export interface IVoucherList {
   validFrom: string;
   validTo: string;
   status: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
 }
 
 export interface IResponseAppliedVoucher {

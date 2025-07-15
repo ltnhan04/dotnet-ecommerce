@@ -61,7 +61,7 @@ const PaymentMethodSection: React.FC<PaymentMethodProps> = ({
               >
                 {typeof method.icon === "string" ? (
                   <div className="w-6 h-6 rounded-full overflow-hidden">
-                    <Image src={method.icon} alt="image" width={24} height={24} />
+                    <Image src={method.icon} alt="image" width={64} height={64} />
                   </div>
                 ) : (
                   <method.icon size={24} />

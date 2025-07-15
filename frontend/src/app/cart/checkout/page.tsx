@@ -22,12 +22,9 @@ import { IShippingMethod } from "@/types/checkout";
 
 const CheckoutPage = () => {
   const { total, cart } = useAppSelector((state) => state.cart);
-  const [loadingState, setLoadingState] = useState<{
-    [id: string]: "isConfirming" | "isApplying" | null;
-  }>({});
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedShippingMethod, setSelectedShippingMethod] = useState("");
-  const [discountedTotal, setDiscountedTotal] = useState<number | null>(null);
+  const [voucherCode, setVoucherCode] = useState<string | null>(null);
   const [discountAmount, setDiscountAmount] = useState<number | null>(null);
   const [checkoutData, setCheckoutData] = useState<{
     variants: { variant: string; quantity: number }[];
@@ -35,6 +32,7 @@ const CheckoutPage = () => {
     shippingAddress: string;
     paymentMethod: string;
     shippingMethod?: string;
+    voucherCode?: string
   }>({
     variants: cart.map((item) => ({
       variant: item.id,
@@ -43,6 +41,7 @@ const CheckoutPage = () => {
     totalAmount: total,
     shippingAddress: "",
     paymentMethod: "",
+    voucherCode: ""
   });
 
   const { toast } = useToast();
@@ -68,10 +67,13 @@ const CheckoutPage = () => {
       }));
     }
   }, [profile]);
-
+  const selectedShippingMethodDetail: IShippingMethod =
+    shippingFee?.data?.methods?.find(
+      (item: IShippingMethod) => item.name == selectedShippingMethod
+    );
+  const shippingCost = selectedShippingMethodDetail?.fee || 0;
+  const finalTotal = total + shippingCost - discountAmount!;
   const handleConfirmOrder = async () => {
-    setLoadingState((prev) => ({ ...prev, ["confirm"]: "isConfirming" }));
-
     try {
       if (!checkoutData.shippingAddress) {
         toast({
@@ -97,10 +99,10 @@ const CheckoutPage = () => {
         });
         return;
       }
-
+      checkoutData.voucherCode = voucherCode ? voucherCode : "null";
       const response = await createOrder({
         ...checkoutData,
-        totalAmount: discountedTotal !== null ? discountedTotal : total,
+        totalAmount: finalTotal
       });
       console.log(response);
       if (response.status === 201) {
@@ -144,18 +146,10 @@ const CheckoutPage = () => {
         variant: "destructive",
       });
     } finally {
-      setLoadingState((prev) => ({ ...prev, ["confirm"]: null }));
       setShowConfirmDialog(false);
     }
   };
 
-  const selectedShippingMethodDetail: IShippingMethod =
-    shippingFee?.data?.methods?.find(
-      (item: IShippingMethod) => item.name == selectedShippingMethod
-    );
-  const shippingCost = selectedShippingMethodDetail?.fee || 0;
-  const finalTotal =
-    (discountedTotal !== null ? discountedTotal : total) + shippingCost;
   return (
     <div className="container mx-auto px-4 md:px-6 max-w-7xl">
       <Breadcrumb />
@@ -180,11 +174,8 @@ const CheckoutPage = () => {
           />
 
           <PromotionSection
-            loadingState={loadingState}
-            setLoadingState={setLoadingState}
-            setCheckoutData={setCheckoutData}
-            totalAmount={checkoutData.totalAmount}
-            setDiscountedTotal={setDiscountedTotal}
+            setVoucherCode={setVoucherCode}
+            setDiscounted={setDiscountAmount}
           />
         </div>
         <div className="md:col-span-5 space-y-8">

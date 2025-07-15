@@ -1,79 +1,24 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ErrorType } from "@/types/common";
 import {
-  useApplyVoucher,
-  useUpdateVoucherAsUsed,
+  useGetVouchers,
 } from "@/hooks/useExchangeVoucher";
-interface LoadingState {
-  [key: string]: "isConfirming" | "isApplying" | null;
-}
+import { IVoucherList } from "@/types/promotion";
+import { formatCurrency } from "@/utils/format-currency";
+import { formatDate } from '../../../utils/format-day';
+import Image from "next/image";
 
 interface PromotionProps {
-  loadingState: LoadingState;
-  setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>;
-  setCheckoutData: React.Dispatch<
-    React.SetStateAction<{
-      variants: { variant: string; quantity: number }[];
-      totalAmount: number;
-      shippingAddress: string;
-      paymentMethod: string;
-    }>
-  >;
-  totalAmount: number;
-  setDiscountedTotal: React.Dispatch<React.SetStateAction<number | null>>;
+  setVoucherCode: React.Dispatch<React.SetStateAction<string | null>>;
+  setDiscounted: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const PromotionSection: React.FC<PromotionProps> = ({
-  setLoadingState,
-  setCheckoutData,
-  totalAmount,
-  loadingState,
-  setDiscountedTotal,
+  setVoucherCode,
+  setDiscounted
 }) => {
-  const { toast } = useToast();
-  const [promoCode, setPromoCode] = useState("");
-  const { mutateAsync: applyVoucher } = useApplyVoucher();
-  const { mutateAsync: updateVoucherAsUsed } = useUpdateVoucherAsUsed();
-
-  const applyAPromotion = async () => {
-    setLoadingState((prev) => ({ ...prev, ["apply"]: "isApplying" }));
-    try {
-      const response = await applyVoucher({
-        voucherCode: promoCode,
-        orderTotal: totalAmount,
-      });
-
-      await updateVoucherAsUsed({
-        voucherId: response.data.voucherId,
-        orderId: response.data.orderId,
-      });
-
-      const newTotal = response.data.discountedTotal;
-      setDiscountedTotal(newTotal);
-      setCheckoutData((prev) => ({
-        ...prev,
-        totalAmount: newTotal,
-      }));
-
-      toast({
-        title: "Sử dụng khuyến mãi thành công",
-        description: `Giảm giá còn ${response.data.discountAmount} VND cho đơn hàng.`,
-        variant: "default",
-      });
-    } catch (error: unknown) {
-      toast({
-        title: "Đã xảy ra lỗi",
-        description: (error as ErrorType).response.data.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingState((prev) => ({ ...prev, ["apply"]: null }));
-    }
-  };
+  const [selected, setSelected] = useState<IVoucherList | null>(null);
+  const { data: getVoucher } = useGetVouchers();
   return (
     <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-md">
       <CardHeader className="pb-2 border-b">
@@ -85,26 +30,40 @@ const PromotionSection: React.FC<PromotionProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-4">
-        <div className="flex items-center space-x-2">
-          <Input
-            placeholder="Nhập mã khuyến mãi"
-            disabled={loadingState["apply"] === "isApplying"}
-            value={promoCode}
-            maxLength={20}
-            onChange={(e) => setPromoCode(e.target.value)}
-            className="flex-1 text-sm md:text-base bg-gray-50 border rounded-xl px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-          <Button
-            variant={"default"}
-            disabled={
-              loadingState["apply"] === "isApplying" || promoCode.length === 0
-            }
-            onClick={applyAPromotion}
-            className="text-sm md:text-base h-10 rounded-xl px-5"
-          >
-            Sử dụng
-          </Button>
-        </div>
+        {Array.isArray(getVoucher?.data) && getVoucher.data.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-gray-700">Mã khuyến mãi có sẵn:</h4>
+            <ul className="space-y-4">
+              {getVoucher?.data?.map((voucher: IVoucherList) => (
+                <li
+                  key={voucher._id}
+                  onClick={() => {
+                    setSelected(voucher)
+                    setVoucherCode(voucher.code)
+                    setDiscounted(voucher.discountAmount)
+                  }}
+                  className={`flex justify-between items-center border px-3 py-2 rounded-[16px] cursor-pointer transition ${selected?._id === voucher._id ? "ring-2 ring-primary" : "hover:ring-2 hover:ring-gray-700"} `}
+                >
+                  <span className="text-sm font-medium text-gray-800 flex items-center space-x-2">
+                    <div>
+                      <Image src={'/assets/images/voucher.png'} alt="voucher" width={52} height={52} />
+                    </div>
+                    <div>
+                      {voucher.code}
+                    </div>
+                  </span>
+                  <div>
+                    <span className="text-green-500">Giảm giá: {formatCurrency(voucher.discountAmount)}</span>
+                    <div>
+                      <p>Đến: {formatDate(voucher.validTo)}</p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
       </CardContent>
     </Card>
   );

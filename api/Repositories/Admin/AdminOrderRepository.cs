@@ -190,7 +190,7 @@ namespace api.Repositories.Admin
                     storage = v.storage,
                     prices = v.price,
                     images = v.images.FirstOrDefault()! ?? "null",
-                    quantity = v.stock_quantity
+                    quantity = order.variants.First(item => item.variant == v._id).quantity
                 }).ToList(),
                 stripeSessionId = order.stripeSessionId ?? "null",
                 isPaymentMomo = order.isPaymentMomo ?? false,
@@ -201,13 +201,10 @@ namespace api.Repositories.Admin
             };
         }
 
-
-
         public async Task<AdminResponseUpdateOrderStatus> UpdateOrderStatus(string orderId, stateDto dto)
         {
-            var order = await _context.Orders
-                .Where(item => item._id == ObjectId.Parse(orderId))
-                .FirstOrDefaultAsync();
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(orderId));
 
             var currentStatus = order.status;
             if (currentStatus == "delivered" || currentStatus == "cancel")

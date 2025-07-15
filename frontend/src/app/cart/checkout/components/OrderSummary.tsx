@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { formatCurrency } from "@/utils/format-currency";
 
 interface OrderSummaryProps {
   cart: any[];
@@ -71,7 +72,7 @@ const OrderSummary = ({
               </div>
             </div>
             <p className="font-medium">
-              {(item.price * item.quantity).toLocaleString()} VND
+              {formatCurrency((item.price * item.quantity))}
             </p>
           </div>
         ))}
@@ -79,12 +80,12 @@ const OrderSummary = ({
         <div className="space-y-3 pt-6 border-t">
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Tạm tính</span>
-            <span>{checkoutData.totalAmount.toLocaleString()} VND</span>
+            <span>{formatCurrency(checkoutData.totalAmount)}</span>
           </div>
           {discountAmount !== null && discountAmount > 0 && (
             <div className="flex justify-between items-center text-green-600">
               <span className="text-muted-foreground">Giảm giá</span>
-              <span>-{discountAmount.toLocaleString()} VND</span>
+              <span>-{formatCurrency(discountAmount)}</span>
             </div>
           )}
           {selectedMethod && (
@@ -92,13 +93,13 @@ const OrderSummary = ({
               <span className="text-muted-foreground">
                 Phí vận chuyển ({selectedMethod.name})
               </span>
-              <span>{shippingCost.toLocaleString()} VND</span>
+              <span>{formatCurrency(shippingCost)} </span>
             </div>
           )}
           <div className="flex justify-between items-center pt-4 border-t">
             <span className="text-lg font-medium">Tổng tiền</span>
             <span className="text-xl font-semibold">
-              {finalTotal.toLocaleString()} VND
+              {formatCurrency(finalTotal)}
             </span>
           </div>
         </div>

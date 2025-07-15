@@ -88,7 +88,7 @@ export default function ExchangeVoucherPage() {
       },
     });
   };
-
+  console.log(vouchersData?.data)
   return (
     <div className="min-h-screen sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -109,7 +109,7 @@ export default function ExchangeVoucherPage() {
             <RulesCard />
           </div>
           <VoucherList
-            vouchers={vouchersData?.data}
+            vouchers={vouchersData?.data ?? []}
             isLoading={isLoadingVouchers}
           />
         </div>
