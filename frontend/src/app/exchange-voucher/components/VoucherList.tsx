@@ -98,7 +98,7 @@ export function VoucherList({ vouchers, isLoading }: VoucherListProps) {
                 >
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-lg text-gray-900">
+                      <span className="font-bold text-sm text-gray-900">
                         Mã: {voucher.code}
                       </span>
                       <button

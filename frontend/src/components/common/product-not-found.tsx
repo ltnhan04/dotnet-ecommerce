@@ -17,7 +17,7 @@ function ProductOutOfStock() {
         </div>
 
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Điện thoại này đã tạm hết hàng
+          Sản phẩm này đã tạm hết hàng
         </h1>
         <p className="text-gray-500">
           Bạn vui lòng quay lại sau hoặc tham khảo sản phẩm khác nhé! 🙏
