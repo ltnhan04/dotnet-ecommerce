@@ -32,21 +32,25 @@ import { ErrorType as ErrorResponse } from "@/types/common";
 import { formatCurrency } from "@/utils/format-currency";
 import { formatDate } from "@/utils/format-day";
 import { OrderDetails } from "@/types/order";
+import Image from "next/image";
+import { updateVoucherAsUsed } from "@/services/promotions/promotionApi";
 
 export default function SuccessPage() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-
-  const sessionId = searchParams.get("session_id") as string;
+  console.log(order)
+  const stripeSessionId = searchParams.get("session_id") as string;
   const orderId = searchParams.get("orderId") as string;
+  const voucherCode = searchParams.get("voucherCode") as string;
 
   useEffect(() => {
     const updatePayment = async () => {
       try {
         let response;
-        if (sessionId) {
-          response = await updateOrderPayment({ sessionId, orderId });
+        if (stripeSessionId) {
+          response = await updateOrderPayment({ stripeSessionId, orderId });
+          await updateVoucherAsUsed(voucherCode, orderId);
         } else if (orderId) {
           response = await updateMomoPaymentStatus(orderId);
         }
@@ -61,6 +65,7 @@ export default function SuccessPage() {
           dispatch(clearCart());
         }
       } catch (error: unknown) {
+        console.log(error)
         toast({
           title: "Lỗi",
           description: (error as ErrorResponse).response.data.message,
@@ -69,10 +74,10 @@ export default function SuccessPage() {
       }
     };
     updatePayment();
-  }, [dispatch, orderId, sessionId]);
+  }, [dispatch, orderId, stripeSessionId, voucherCode]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-2xl shadow-xl">
         <CardHeader className="space-y-4">
           <div className="flex items-center justify-center">
@@ -92,7 +97,7 @@ export default function SuccessPage() {
             <>
               <div className="bg-white p-4 md:p-6 rounded-lg shadow-xl">
                 <h3 className="font-semibold text-base md:text-lg mb-4 text-gray-800">
-                  Chi tiết đơn hàng
+                  Thông tin đơn hàng
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                   <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg">
@@ -135,7 +140,45 @@ export default function SuccessPage() {
                   </div>
                 </div>
               </div>
-
+              <div className="bg-white p-4 md:p-6 rounded-lg shadow-xl">
+                <h3 className="font-semibold text-base md:text-lg mb-4 text-gray-800">
+                  Chi tiết đơn hàng
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-1 md:gap-4">
+                  {order.variants.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center space-x-4 bg-gray-50 p-3 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <Image
+                          src={item.variant.images[0]}
+                          alt={item.variant.productName}
+                          width={100}
+                          height={100}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col justify-between">
+                        <span className="font-medium text-gray-800">
+                          {item.variant.productName} {item.variant.colorName} {item.variant.storage}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          Số lượng: {item.quantity}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          Giá: {formatCurrency(item.variant.price)}
+                        </span>
+                      </div>
+                      </div>
+                      <div className="ml-auto font-semibold text-gray-800">
+                        {formatCurrency(item.variant.price * item.quantity)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="bg-white p-4 md:p-6 rounded-lg shadow-xl">
                 <h3 className="font-semibold text-base md:text-lg mb-4 text-gray-800">
                   Thông tin giao hàng
@@ -153,7 +196,7 @@ export default function SuccessPage() {
                     </div>
                   </div>
                   <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-lg">
-                    <CreditCard className="h-5 w-5 flex-shrink-0 text-gray-600 mt-0.5" />
+                    <Image src={"/assets/images/stripe.png"} alt="stripe" width={52} height={52} className="rounded-full" />
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-500">
                         Phương thức thanh toán
@@ -162,8 +205,8 @@ export default function SuccessPage() {
                         {order.paymentMethod === "stripe"
                           ? "Stripe"
                           : order.paymentMethod === "momo"
-                          ? "MoMo"
-                          : "Thanh toán khi nhận hàng"}
+                            ? "MoMo"
+                            : "Thanh toán khi nhận hàng"}
                       </span>
                     </div>
                   </div>

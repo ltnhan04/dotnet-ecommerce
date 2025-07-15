@@ -66,7 +66,7 @@ namespace api.Services.Customer
             {
                 {100, 100000},
                 {300, 500000},
-                {500, 10000000}
+                {500, 1000000}
             };
 
             var discountAmount = discount[dto.pointsToUse];
@@ -159,7 +159,8 @@ namespace api.Services.Customer
         }
 
         public async Task<PointVoucherDto> HandleUpdateStatusVoucher(UpdateStatusVoucherDto dto)
-        {
+        {   
+            
             var data = await _pointRepository.UpdateStatusVoucher(dto) ?? throw new AppException("Voucher invalid or already used", 400);
             return new PointVoucherDto
             {

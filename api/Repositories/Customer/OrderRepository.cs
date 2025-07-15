@@ -10,6 +10,7 @@ using MongoDB.Bson;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Microsoft.AspNetCore.Http.Features;
+using api.Interfaces.Repositories;
 
 namespace api.Repositories.Customer
 {
@@ -17,11 +18,13 @@ namespace api.Repositories.Customer
     {
         private readonly iTribeDbContext _context;
         private readonly IProductVariantRepository _productVariantRepository;
+        private readonly IAdminOrderRepository _adminOrderRepository;
 
-        public OrderRepository(iTribeDbContext context, IProductVariantRepository productVariantRepository)
+        public OrderRepository(iTribeDbContext context, IProductVariantRepository productVariantRepository, IAdminOrderRepository adminOrderRepository)
         {
             _context = context;
             _productVariantRepository = productVariantRepository;
+            _adminOrderRepository = adminOrderRepository;
         }
         public async Task<Order?> GetOrderById(string orderId)
         {
@@ -119,10 +122,8 @@ namespace api.Repositories.Customer
 
         public async Task<CancelOrderDto> CancelOrder(string orderId)
         {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o._id == ObjectId.Parse(orderId))
-                ?? throw new AppException("Order not found", 404);
-
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(orderId));
             if (order.status != OrderStatus.pending.ToString() && order.status != OrderStatus.processing.ToString())
                 throw new AppException("Order cannot be cancelled", 400);
             var variantIds = order.variants.Select(v => v.variant).ToList();
@@ -185,25 +186,17 @@ namespace api.Repositories.Customer
             };
         }
 
-
         public async Task<UpdateOrderPaymentResponseDto> UpdateOrderPayment(UpdateOrderPaymentDto dto)
         {
-            var order = await _context.Orders
-                .Where(item => item._id == ObjectId.Parse(dto.orderId))
-                .FirstOrDefaultAsync() ?? throw new AppException("Order not found", 404);
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId));
+
             foreach (var item in order.variants)
             {
-                var variantId = item.variant;
-                var quantity = item.quantity;
-
-                var variantList = await _context.ProductVariants.ToListAsync();
-                var match = variantList.FirstOrDefault(item => item._id.ToString() == variantId.ToString());
-                match.stock_quantity -= quantity;
-                _context.ProductVariants.Update(match);
-                await _productVariantRepository.CheckVariantLowStock(variantId.ToString());
+                await _productVariantRepository.CheckVariantLowStock(item.variant.ToString());
             }
 
-            order.status = "processing";
+            await _adminOrderRepository.UpdateOrderStatus(dto.orderId, new stateDto { status = "processing" });
             order.stripeSessionId = dto.stripeSessionId;
             await _context.SaveChangesAsync();
 

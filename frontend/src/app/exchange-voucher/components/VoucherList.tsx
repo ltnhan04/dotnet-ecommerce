@@ -13,7 +13,7 @@ import { formatCurrency } from "@/utils/format-currency";
 import { toast } from "@/hooks/use-toast";
 
 interface VoucherListProps {
-  vouchers: IVoucherList[] | undefined;
+  vouchers?: IVoucherList[] 
   isLoading: boolean;
 }
 
