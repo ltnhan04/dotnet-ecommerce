@@ -14,9 +14,9 @@ export const loginThunk = createAsyncThunk(
   ) => {
     try {
       const response = await login(user);
-      if (response.status === 200) {
+      if (response.status == 200) {
         router.push("/iphone");
-        return response.data;
+        return response.data.data;
       } else {
         return rejectWithValue(response.data.message);
       }

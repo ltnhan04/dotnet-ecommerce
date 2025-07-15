@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos;
 using api.Interfaces;
+using api.Interfaces.Services;
 using api.models;
 using api.Utils;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 
 namespace api.Services.Customer
@@ -14,16 +16,18 @@ namespace api.Services.Customer
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IRedisRepository _redisRepository;
+        private readonly IRefundService _refundService;
 
-        public OrderService(IOrderRepository orderRepository, IRedisRepository redisRepository)
+        public OrderService(IOrderRepository orderRepository, IRedisRepository redisRepository, IRefundService refundService)
         {
             _orderRepository = orderRepository;
             _redisRepository = redisRepository;
+            _refundService = refundService;
         }
 
         public async Task<OrderCreateDto> HandleCreateOrder(OrderCreateDto dto, string userId)
-        {   
-            if (dto.variants == null || !dto.variants.Any())
+        {
+            if (dto.variants == null || dto.variants.Count == 0)
             {
                 throw new AppException("Product variants is required", 400);
             }
@@ -43,7 +47,8 @@ namespace api.Services.Customer
             };
 
             var createOrder = await _orderRepository.CreateOrder(order) ?? throw new AppException("Failed to create order", 400);
-            if (!string.IsNullOrEmpty(dto.voucherCode)) {
+            if (!string.IsNullOrEmpty(dto.voucherCode))
+            {
                 var voucherCode = _redisRepository.SetAsync($"voucher-{createOrder._id}", dto.voucherCode, TimeSpan.FromMinutes(15));
             }
             return new OrderCreateDto
@@ -72,6 +77,14 @@ namespace api.Services.Customer
         public async Task<CancelOrderDto> HandleCancelOrder(string orderId)
         {
             var orders = await _orderRepository.CancelOrder(orderId);
+            if (orders.paymentMethod == "stripe")
+            {
+                var requestRefunded = await _refundService.HandleStripeRefund(orderId, "requested_by_customer");
+                if (string.IsNullOrEmpty(requestRefunded))
+                {
+                    throw new AppException("Cannot refund for this order");
+                }
+            }
             return orders;
         }
 

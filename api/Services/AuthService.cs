@@ -171,10 +171,7 @@ namespace api.Services
         }
         public async Task<UserProfileDto> UpdateProfile(string userId, UpdateCustomerProfileDto dto)
         {
-            var customer = await _customerRepository.FindById(userId);
-            if (customer == null)
-                throw new AppException("User not found", 404);
-
+            var customer = await _customerRepository.FindById(userId) ?? throw new AppException("User not found", 404);
             customer.name = dto.name;
             customer.phoneNumber = dto.phoneNumber;
             customer.address = new api.models.Address
@@ -186,11 +183,7 @@ namespace api.Services
                 country = dto.address.country
             };
 
-            var result = await _customerRepository.UpdateUser(customer);
-            if (result == null)
-            {
-                throw new AppException("Update profile failed", 400);
-            }
+            var result = await _customerRepository.UpdateUser(customer) ?? throw new AppException("Update profile failed", 400);
             return new UserProfileDto
             {
                 _id = result._id.ToString(),
