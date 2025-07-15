@@ -12,8 +12,6 @@ import RecentOrders from "./components/RecentOrders";
 import OrderList from "./components/OrderList";
 import Loading from "../loading";
 
-const noOrder = "/assets/images/no-order.jpg";
-
 const OrderTracker = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const { orders: ordersData, isLoading, error, cancelOrder } = useOrders();
@@ -45,7 +43,7 @@ const OrderTracker = () => {
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <div className="w-[300px] h-[300px] relative">
               <Image
-                src={noOrder}
+                src={"/assets/images/no-order.jpg"}
                 alt="no order"
                 fill
                 className="object-contain"
