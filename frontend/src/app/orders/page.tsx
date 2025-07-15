@@ -38,19 +38,7 @@ const OrderTracker = () => {
     return <Loading />;
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-600">Đã xảy ra lỗi khi tải đơn hàng</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (orders.length === 0) {
+  if (orders.length === 0 || error) {
     return (
       <div className="min-h-screen p-6">
         <div className="max-w-7xl mx-auto">
