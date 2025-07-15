@@ -12,14 +12,14 @@ export const createCheckoutSession = async ({
 };
 
 export const updateOrderPayment = async ({
-  sessionId,
+  stripeSessionId,
   orderId,
 }: {
-  sessionId: string;
+  stripeSessionId: string;
   orderId: string;
 }) => {
   return await axiosInstance.post("/api/v1/orders/update-order-payment", {
-    sessionId,
+    stripeSessionId,
     orderId,
   });
 };

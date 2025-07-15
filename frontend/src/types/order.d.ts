@@ -57,7 +57,19 @@ export interface OrderDetails {
   _id: string;
   totalAmount: number;
   status: string;
-  shippingAddress: string;
-  paymentMethod: string;
   createdAt: string;
+  paymentMethod: string;
+  shippingAddress: string;
+  variants: {
+    variant: {
+      _id: string;
+      productName: string;
+      price: number;
+      images: string;
+      colorName: string,
+      storage: number
+    };
+    quantity: number;
+  }[];
 }
+

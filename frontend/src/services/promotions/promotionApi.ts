@@ -25,7 +25,7 @@ export const getVouchers = async (): Promise<IResponseVoucherList> => {
 };
 
 export const applyVoucher = async (voucherCode: string, orderTotal: number) => {
-  const res = await axiosInstance.post("/api/v1/points/apply", {
+  const res = await axiosInstance.post("/api/v1/points/apply-voucher", {
     voucherCode,
     orderTotal,
   });
@@ -33,11 +33,11 @@ export const applyVoucher = async (voucherCode: string, orderTotal: number) => {
 };
 
 export const updateVoucherAsUsed = async (
-  voucherId: string,
+  voucherCode: string,
   orderId: string
 ) => {
-  const res = await axiosInstance.put("/api/v1/points/status", {
-    voucherId,
+  const res = await axiosInstance.put("/api/v1/points/status-voucher", {
+    voucherCode,
     orderId,
   });
   return res.data;

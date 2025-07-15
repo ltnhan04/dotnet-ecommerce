@@ -5,7 +5,7 @@ import {
   applyVoucher,
   updateVoucherAsUsed,
 } from "@/services/promotions/promotionApi";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useRetrievePoints = () => {
   return useQuery({
@@ -15,8 +15,19 @@ export const useRetrievePoints = () => {
 };
 
 export const useExchangeVoucher = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (pointsToUse: number) => exchangeVoucher(pointsToUse),
+    onSuccess: () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      queryClient.invalidateQueries({
+        queryKey: ['vouchers']
+      }),
+      queryClient.invalidateQueries({
+        queryKey: ['points']
+      })
+    }
   });
 };
 
