@@ -5,11 +5,6 @@ export interface OrderType {
   paymentMethod: string | "ship-cod";
 }
 
-export interface Variant {
-  variant: string;
-  quantity: number;
-}
-
 export interface Orders {
   message: string;
   data: Order[];
@@ -17,32 +12,34 @@ export interface Orders {
 
 export interface Order {
   _id: string;
-  user: User;
-  variants: Variant1[];
+  user: string;
+  variants: Variant[];
   totalAmount: number;
   status: string;
   shippingAddress: string;
   paymentMethod: string;
   stripeSessionId?: string;
+  isPaymentMomo: boolean;
   createdAt: string;
   updatedAt: string;
-  __v: number;
 }
 
 export interface User {
   _id: string;
   name: string;
 }
-
-export interface Variant1 {
-  variant?: Variant2;
+export interface Variant {
+  variant: Variant2;
   quantity: number;
-  _id: string;
 }
 
 export interface Variant2 {
   _id: string;
-  color: Color;
+  product: string;
+  productName: string;
+  colorName: string;
+  colorCode: string;
+  stock_quantity: number;
   storage: string;
   price: number;
   images: string[];

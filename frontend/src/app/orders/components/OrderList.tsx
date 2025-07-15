@@ -5,11 +5,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import OrderTimeline from "./OrderTimeline";
 import { Order } from "@/types/order";
 import { useState } from "react";
 import ReviewModal from "./ReviewModal";
-import { Button } from "@/components/ui/button";
 
 interface OrderListProps {
   orders: Order[];
@@ -17,8 +17,6 @@ interface OrderListProps {
   setActiveFilter: (filter: string) => void;
   handleCancelOrder: (orderId: string) => void;
 }
-
-const noOrder = "/assets/images/no-order.jpg";
 
 const OrderList = ({
   orders,
@@ -49,7 +47,7 @@ const OrderList = ({
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col space-y-4 items-left mb-6">
         <h2 className="text-xl font-semibold text-gray-900">
           Chi tiết đơn hàng
         </h2>
@@ -82,7 +80,17 @@ const OrderList = ({
                 : "bg-gray-50 text-gray-900 hover:bg-[#e6e6e6]"
             }`}
           >
-            Đang giao
+            Đang xử lý
+          </button>
+          <button
+            onClick={() => setActiveFilter("shipped")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeFilter === "shipped"
+                ? "bg-gray-900 text-white"
+                : "bg-gray-50 text-gray-900 hover:bg-[#e6e6e6]"
+            }`}
+          >
+            Đã gửi hàng
           </button>
           <button
             onClick={() => setActiveFilter("delivered")}
@@ -94,6 +102,16 @@ const OrderList = ({
           >
             Đã giao
           </button>
+          <button
+            onClick={() => setActiveFilter("cancel")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeFilter === "cancel"
+                ? "bg-gray-900 text-white"
+                : "bg-gray-50 text-gray-900 hover:bg-[#e6e6e6]"
+            }`}
+          >
+            Đã hủy
+          </button>
         </div>
       </div>
 
@@ -101,7 +119,7 @@ const OrderList = ({
         <div className="flex flex-col items-center justify-center py-12">
           <div className="w-[200px] h-[200px] relative mb-6">
             <Image
-              src={noOrder}
+              src={"/assets/images/no-order.jpg"}
               alt="no order"
               fill
               className="object-contain"
@@ -181,7 +199,16 @@ const OrderList = ({
                 <AccordionContent>
                   <div className="space-y-6 pt-4">
                     <div className="mb-8">
-                      <OrderTimeline status={order.status} />
+                      <OrderTimeline
+                        status={
+                          order.status as
+                            | "pending"
+                            | "processing"
+                            | "shipped"
+                            | "delivered"
+                            | "cancel"
+                        }
+                      />{" "}
                     </div>
 
                     <div className="space-y-6">
@@ -191,15 +218,13 @@ const OrderList = ({
                       <div className="space-y-4">
                         {order.variants.map((variant) => (
                           <div
-                            key={variant._id}
+                            key={variant.variant._id}
                             className="flex items-center space-x-6 p-4 bg-gray-50 rounded-xl hover:shadow-sm transition-all duration-300"
                           >
                             <div className="relative w-20 h-20 rounded-lg overflow-hidden">
                               <Image
-                                src={variant.variant?.images[0] as string}
-                                alt={
-                                  variant.variant?.color?.colorName || "Product"
-                                }
+                                src={variant.variant.images[0]}
+                                alt={variant.variant.colorCode}
                                 width={80}
                                 height={80}
                                 className="object-cover w-full h-full"
@@ -207,7 +232,9 @@ const OrderList = ({
                             </div>
                             <div className="flex-1 space-y-1">
                               <p className="text-base font-medium text-gray-900">
-                                {variant.variant?.color?.colorName}
+                                {variant.variant.productName}{" "}
+                                {variant.variant.storage}{" "}
+                                {variant.variant.colorName}
                               </p>
                               <p className="text-sm text-gray-500">
                                 Số lượng: {variant.quantity}
@@ -218,7 +245,7 @@ const OrderList = ({
                                 {new Intl.NumberFormat("vi-VN", {
                                   style: "currency",
                                   currency: "VND",
-                                }).format(variant.variant?.price || 0)}
+                                }).format(variant?.variant.price || 0)}
                               </p>
                               {order.status === "delivered" && (
                                 <Button
@@ -226,8 +253,8 @@ const OrderList = ({
                                   size="sm"
                                   onClick={() =>
                                     handleOpenReviewModal(
-                                      variant.variant?._id || "",
-                                      variant.variant?.color?.colorName || ""
+                                      variant.variant._id || "",
+                                      variant.variant.colorName || ""
                                     )
                                   }
                                 >
@@ -240,14 +267,18 @@ const OrderList = ({
                       </div>
                     </div>
 
-                    <div className="pt-6 border-t border-gray-100">
+                    <div className="pt-6 border-t border-[#e6e6e6]">
                       <div className="flex justify-between items-center">
                         <div className="space-y-1">
                           <p className="text-sm text-gray-500">
                             Phương thức thanh toán
                           </p>
                           <p className="text-sm font-medium text-gray-900">
-                            {order.paymentMethod}
+                            {order.paymentMethod == "stripe"
+                              ? "Stripe"
+                              : order.paymentMethod == "momo"
+                              ? "MoMo"
+                              : "Thanh toán khi nhận hàng"}
                           </p>
                         </div>
                         <div className="text-right">
