@@ -179,7 +179,7 @@ namespace api.Services.Customer
         public async Task<VoucherFreeShipDto> CreateFirstOrderFreeShipPromotion(string customerId)
         {
             await _pointRepository.CheckFirstOrderOfCustomer(customerId);
-            var code = "FREESHIP" + "-" + ObjectId.GenerateNewId(16);
+            var code = "FREESHIP" + "-" + ObjectId.GenerateNewId(6);
             var voucher = new models.PointVoucher
             {
                 _id = ObjectId.GenerateNewId(),
@@ -195,7 +195,6 @@ namespace api.Services.Customer
                 updatedAt = DateTime.UtcNow
             };
             await _pointRepository.ExchangePointForVoucher(voucher);
-            Console.WriteLine("VOUCHER: " + voucher);
             return new VoucherFreeShipDto
             {
                 _id = voucher._id.ToString(),

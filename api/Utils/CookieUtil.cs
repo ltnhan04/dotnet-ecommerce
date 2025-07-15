@@ -12,7 +12,7 @@ namespace api.Utils
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
+                Secure = true,
                 SameSite = SameSiteMode.None,
                 Path = "/",
                 MaxAge = TimeSpan.FromDays(7)

@@ -9,7 +9,7 @@ namespace api.models
     public class Order
     {
         [BsonId]
-        public ObjectId _id { get; set; } 
+        public ObjectId _id { get; set; }
 
         [BsonElement("user")]
         public ObjectId user { get; set; }
@@ -31,10 +31,23 @@ namespace api.models
 
         [BsonElement("stripeSessionId")]
         public string? stripeSessionId { get; set; }
-        
+
         [BsonElement("isPaymentMomo")]
         public bool? isPaymentMomo { get; set; } = false;
-        
+
+        [BsonElement("isRefunded")]
+        public bool? isRefunded { get; set; } = false;
+        [BsonElement("refundMethod")]
+        public string? refundMethod { get; set; } //stripe, momo
+        [BsonElement("refundTransactionId")]
+        public string? refundTransactionId { get; set; }
+        [BsonElement("refundStatus")]
+        public string? refundStatus { get; set; } // pending, succeeded, failed
+        [BsonElement("refundAmount")]
+        public int? refundAmount { get; set; }
+        [BsonElement("refundReason")]
+        public string? refundReason { get; set; }
+
         [BsonElement("createdAt")]
         public DateTime createdAt { get; set; } = DateTime.UtcNow;
 
@@ -43,7 +56,7 @@ namespace api.models
     }
 
     public class OrderVariant
-    {   
+    {
         [BsonElement("variant")]
         public ObjectId variant { get; set; }
 

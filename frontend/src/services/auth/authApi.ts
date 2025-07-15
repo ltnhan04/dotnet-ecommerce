@@ -15,6 +15,7 @@ export const login = async ({ email, password }: LoginType) => {
     {
       email,
       password,
+      role: "user",
     },
     {
       withCredentials: true,

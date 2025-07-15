@@ -61,7 +61,6 @@ namespace api.Controllers
             try
             {
                 var verificationCode = await _authService.ResendOtp(dto.email);
-                Console.WriteLine("Verification Code" + verificationCode);
                 await _emailService.SendVerificationEmail(dto.email, verificationCode, EmailTemplates.VerificationEmail(verificationCode));
                 await ResponseHandler.SendSuccess(Response, null, 200, "Verification code resent successfully.");
             }
@@ -153,8 +152,9 @@ namespace api.Controllers
             Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                Secure = true,
+                Path = "/",
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(7)
             });
 
@@ -169,14 +169,9 @@ namespace api.Controllers
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             var response = await client.GetAsync("https://www.googleapis.com/oauth2/v2/userinfo");
             response.EnsureSuccessStatusCode();
-            var userInfo = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
-
-            if (userInfo == null)
-                throw new Exception("Failed to deserialize user info from Google");
-
+            var userInfo = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>() ?? throw new AppException("Failed to deserialize user info from Google");
             return userInfo;
         }
-
 
         [HttpPost("logout")]
         public async Task Logout()
@@ -217,7 +212,6 @@ namespace api.Controllers
             {
                 var userId = User.FindFirst("userId")?.Value;
                 var customer = await _authService.GetProfile(userId!);
-                Console.WriteLine(customer);
                 await ResponseHandler.SendSuccess(Response, customer, 200, "Get profile successfully");
             }
             catch (Exception ex)

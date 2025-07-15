@@ -1,3 +1,8 @@
+export interface IResponseAuthState {
+  message: string;
+  data: LoginState;
+}
+
 export interface SignUpState {
   email: string;
   message: string;
