@@ -39,18 +39,23 @@ export default function SuccessPage() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
-  console.log(order)
   const stripeSessionId = searchParams.get("session_id") as string;
   const orderId = searchParams.get("orderId") as string;
   const voucherCode = searchParams.get("voucherCode") as string;
 
   useEffect(() => {
+    const paidKey = `orderPaid-${orderId}`;
+    const voucherKey = voucherCode ? `voucherUsed-${voucherCode}` : null;
+    
     const updatePayment = async () => {
       try {
         let response;
+        let update;
         if (stripeSessionId) {
           response = await updateOrderPayment({ stripeSessionId, orderId });
-          await updateVoucherAsUsed(voucherCode, orderId);
+          if (voucherCode && orderId && !localStorage.getItem(voucherKey!)) {
+            update = await updateVoucherAsUsed(voucherCode, orderId); 
+          }
         } else if (orderId) {
           response = await updateMomoPaymentStatus(orderId);
         }
@@ -63,6 +68,10 @@ export default function SuccessPage() {
           });
           setOrder(response.data.data);
           dispatch(clearCart());
+          localStorage.setItem(paidKey, "true");
+        }
+        if (update?.status === 200) {
+          localStorage.setItem(voucherKey!, "true");
         }
       } catch (error: unknown) {
         console.log(error)
@@ -73,6 +82,7 @@ export default function SuccessPage() {
         });
       }
     };
+
     updatePayment();
   }, [dispatch, orderId, stripeSessionId, voucherCode]);
 
@@ -152,25 +162,25 @@ export default function SuccessPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                        <Image
-                          src={item.variant.images[0]}
-                          alt={item.variant.productName}
-                          width={100}
-                          height={100}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-col justify-between">
-                        <span className="font-medium text-gray-800">
-                          {item.variant.productName} {item.variant.colorName} {item.variant.storage}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          Số lượng: {item.quantity}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          Giá: {formatCurrency(item.variant.price)}
-                        </span>
-                      </div>
+                          <Image
+                            src={item.variant.images[0]}
+                            alt={item.variant.productName}
+                            width={100}
+                            height={100}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-between">
+                          <span className="font-medium text-gray-800">
+                            {item.variant.productName} {item.variant.colorName} {item.variant.storage}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            Số lượng: {item.quantity}
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            Giá: {formatCurrency(item.variant.price)}
+                          </span>
+                        </div>
                       </div>
                       <div className="ml-auto font-semibold text-gray-800">
                         {formatCurrency(item.variant.price * item.quantity)}
@@ -196,7 +206,7 @@ export default function SuccessPage() {
                     </div>
                   </div>
                   <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-lg">
-                    <Image src={"/assets/images/stripe.png"} alt="stripe" width={52} height={52} className="rounded-full" />
+                    <Image src={"/assets/images/stripe.png"} alt="stripe" width={32} height={32} className="rounded-full" />
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-500">
                         Phương thức thanh toán

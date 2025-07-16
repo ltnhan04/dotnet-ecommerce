@@ -30,7 +30,7 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
   useEffect(() => {
     if (profile?.address) {
       const { street, ward, city, district, country } = profile.address;
-      if (street && ward && district && city ) {
+      if (street && ward && district && city) {
         const address = `${street}, ${ward}, ${district}, ${city}, ${country}`;
         setCheckoutData((prev) => ({
           ...prev,
@@ -73,13 +73,20 @@ const AddressSection: React.FC<AddressProps> = ({ setCheckoutData }) => {
       </CardHeader>
       <CardContent className="pt-4">
         <p className="text-sm md:text-base text-gray-600">
-          {isLoading
-            ? "Đang tải..."
-            : error
-            ? "Không thể tải địa chỉ."
-            : profile?.address
-            ? `${profile.address.street}, ${profile.address.ward}, ${profile.address.district}, ${profile.address.city}`
-            : "Vui lòng thêm địa chỉ của bạn!"}
+          {isLoading ? (
+            "Đang tải..."
+          ) : error ? (
+            "Không thể tải địa chỉ."
+          ) : !profile?.address ? (
+            "Vui lòng thêm địa chỉ của bạn!"
+          ) : profile.address.street &&
+            profile.address.ward &&
+            profile.address.district &&
+            profile.address.city ? (
+            `${profile.address.street}, ${profile.address.ward}, ${profile.address.district}, ${profile.address.city}`
+          ) : (
+            "Vui lòng cập nhật đầy đủ địa chỉ của bạn!"
+          )}
         </p>
       </CardContent>
     </Card>
