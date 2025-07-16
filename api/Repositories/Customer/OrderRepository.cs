@@ -195,8 +195,10 @@ namespace api.Repositories.Customer
             {
                 await _productVariantRepository.CheckVariantLowStock(item.variant.ToString());
             }
-
-            await _adminOrderRepository.UpdateOrderStatus(dto.orderId, new stateDto { status = "processing" });
+            if (order.status == "pending")
+            {
+                await _adminOrderRepository.UpdateOrderStatus(order._id.ToString(), new stateDto { status = "processing" });
+            }
             order.stripeSessionId = dto.stripeSessionId;
             await _context.SaveChangesAsync();
 

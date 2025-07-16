@@ -32,7 +32,7 @@ const CheckoutPage = () => {
     shippingAddress: string;
     paymentMethod: string;
     shippingMethod?: string;
-    voucherCode?: string
+    voucherCode?: string | null
   }>({
     variants: cart.map((item) => ({
       variant: item.id,
@@ -99,7 +99,7 @@ const CheckoutPage = () => {
         });
         return;
       }
-      checkoutData.voucherCode = voucherCode ? voucherCode : "null";
+      checkoutData.voucherCode = voucherCode ? voucherCode : null;
       const response = await createOrder({
         ...checkoutData,
         totalAmount: finalTotal

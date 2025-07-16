@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { LoaderCircle } from "lucide-react";
-import { ShippingMethodSectionProps, ShippingMethod } from "@/types/checkout";
+import { ShippingMethodSectionProps, IShippingMethod } from "@/types/checkout";
 
 const ShippingMethodSection = ({
   isLoadingMethods,
@@ -31,23 +31,27 @@ const ShippingMethodSection = ({
             onValueChange={handleShippingMethodChange}
             className="space-y-4"
           >
-            {shippingMethods?.data.methods?.map((method: ShippingMethod, index: number) => (
-              <div
-                key={index}
-                className={`flex items-center space-x-4 p-4 rounded-xl border transition-colors cursor-pointer bg-gray-50 hover:bg-primary/10 hover:border-primary ${
-                  selectedShippingMethod === method._id
-                    ? "border-primary ring-2 ring-primary/30"
-                    : "border-gray-200"
-                }`}
-              >
-                <RadioGroupItem value={method.name} />
-                <Label
-                  className="flex flex-1 justify-between items-center cursor-pointer text-base font-medium text-gray-700"
+            {shippingMethods?.data.methods?.length > 0 ? (
+              shippingMethods.data.methods.map((method: IShippingMethod, index: number) => (
+                <div
+                  key={index}
+                  className={`flex items-center space-x-4 p-4 rounded-xl border transition-colors cursor-pointer bg-gray-50 hover:bg-primary/10 hover:border-primary ${selectedShippingMethod === method.name
+                      ? "border-primary ring-2 ring-primary/30"
+                      : "border-gray-200"
+                    }`}
                 >
-                  <span>{method.name}</span>
-                </Label>
-              </div>
-            ))}
+                  <RadioGroupItem value={method.name} />
+                  <Label className="flex flex-1 justify-between items-center cursor-pointer text-base font-medium text-gray-700">
+                    <span>{method.name}</span>
+                  </Label>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">
+                Hiện tại không có phương thức vận chuyển nào khả dụng.
+              </p>
+            )}
+
           </RadioGroup>
         )}
       </CardContent>
