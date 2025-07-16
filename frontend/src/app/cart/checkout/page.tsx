@@ -104,18 +104,14 @@ const CheckoutPage = () => {
         ...checkoutData,
         totalAmount: finalTotal
       });
-      console.log(response);
       if (response.status === 201) {
         const { variants } = checkoutData;
-        console.log(checkoutData);
         const orderId = response.data.data._id;
-        console.log(orderId);
         if (checkoutData.paymentMethod === "stripe") {
           const checkoutSession = await createCheckoutSession({
             variants,
             orderId,
           });
-          console.log(checkoutSession);
           if (checkoutSession.status === 201) {
             window.location.href = checkoutSession.data.data.url;
           }
@@ -123,11 +119,11 @@ const CheckoutPage = () => {
           const momoResponse = await createMomoPayment({
             orderId,
             amount: finalTotal,
-            orderInfo: "Thanh toán đơn hàng iTribe",
+            orderInfo: `Thanh toán đơn hàng ${orderId}`,
           });
-
-          if (momoResponse.status === 200) {
-            window.location.href = momoResponse.data.url.url;
+          console.log(momoResponse)
+          if (momoResponse.status === 201) {
+            window.location.href = momoResponse.data.data.url;
           }
         } else if (checkoutData.paymentMethod === "cash on delivery") {
           window.location.href = `/checkout/success?orderId=${orderId}`;
@@ -140,6 +136,7 @@ const CheckoutPage = () => {
         });
       }
     } catch (error: any) {
+      console.log(error)
       toast({
         title: "Đã xảy ra lỗi",
         description: "Có lỗi trong quá trình đặt hàng. Vui lòng thử lại.",

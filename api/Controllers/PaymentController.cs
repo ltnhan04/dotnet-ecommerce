@@ -20,7 +20,6 @@ namespace api.Controllers
         private readonly IPaymentService _paymentService;
         private readonly INotificationRepository _notificationRepository;
 
-
         public PaymentController(IPaymentService paymentService, INotificationRepository notificationRepository)
         {
             _paymentService = paymentService;
@@ -55,7 +54,6 @@ namespace api.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpPost("momo/callback")]
         public async Task MomoCallback([FromBody] MomoCallbackDto dto)
         {
@@ -67,7 +65,7 @@ namespace api.Controllers
                 {
                     userId = ObjectId.Parse(userId),
                     title = "✅ Thanh toán thành công",
-                    message = $"Bạn đã thanh toán thành công đơn hàng #{data.orderId}.",
+                    message = $"Bạn đã thanh toán thành công đơn hàng #{data._id}.",
                     type = "payment",
                     targetRole = "user",
                     isRead = false,
@@ -78,11 +76,11 @@ namespace api.Controllers
                 await _notificationRepository.Create(new Notification
                 {
                     title = "💰 Đơn hàng đã được thanh toán",
-                    message = $"Khách hàng đã thanh toán đơn hàng #{data.orderId}.",
+                    message = $"Khách hàng đã thanh toán đơn hàng #{data._id}.",
                     type = "payment",
                     targetRole = "admin",
                     isRead = false,
-                    redirectUrl = $"/Admin/Orders/Details/{data.orderId}",
+                    redirectUrl = $"/Admin/Orders/Details/{data._id}",
                     createdAt = DateTime.UtcNow
                 });
                 await ResponseHandler.SendSuccess(Response, data, 200, "Callback momo payment successfully");

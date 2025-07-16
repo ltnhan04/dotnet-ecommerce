@@ -26,7 +26,7 @@ import { toast } from "@/hooks/use-toast";
 import { clearCart } from "@/lib/features/cart/cartSlice";
 import {
   updateOrderPayment,
-  updateMomoPaymentStatus,
+  momoCallback,
 } from "@/services/payment/paymentApi";
 import { ErrorType as ErrorResponse } from "@/types/common";
 import { formatCurrency } from "@/utils/format-currency";
@@ -39,27 +39,50 @@ export default function SuccessPage() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
+
+  //Stripe
   const stripeSessionId = searchParams.get("session_id") as string;
+
   const orderId = searchParams.get("orderId") as string;
   const voucherCode = searchParams.get("voucherCode") as string;
+
+  //Momo
+  const voucherMomoCode = searchParams.get("extraData") as string;
+  const partnerCode = searchParams.get("partnerCode") as string;
+  const requestId = searchParams.get("requestId") as string;
+  const amount = parseFloat(searchParams.get("amount")!);
+  const orderInfo = searchParams.get("orderInfo") as string;
+  const orderType = searchParams.get("orderType") as string;
+  const transId = parseFloat(searchParams.get("transId")!);
+  const resultCode = parseFloat(searchParams.get("resultCode")!);
+  const message = searchParams.get("message") as string;
+  const payType = searchParams.get("payType") as string;
+  const responseTime = searchParams.get("responseTime") as string;
+  const extraData = searchParams.get("extraData") ?? "";
+  const signature = searchParams.get("signature") as string;
 
   useEffect(() => {
     const paidKey = `orderPaid-${orderId}`;
     const voucherKey = voucherCode ? `voucherUsed-${voucherCode}` : null;
-    
+    const voucherMomoKey = voucherMomoCode ? `voucherUsed-${voucherMomoCode}` : null;
+
     const updatePayment = async () => {
       try {
         let response;
         let update;
+        if (partnerCode) {
+          response = await momoCallback({ partnerCode, orderId, requestId, amount, orderInfo, orderType, transId, resultCode, message, payType, responseTime, extraData, signature });
+          if (voucherMomoCode && orderId && !localStorage.getItem(voucherMomoKey!)) {
+            update = await updateVoucherAsUsed(voucherMomoCode, orderId);
+          }
+        }
+        console.log(response)
         if (stripeSessionId) {
           response = await updateOrderPayment({ stripeSessionId, orderId });
           if (voucherCode && orderId && !localStorage.getItem(voucherKey!)) {
-            update = await updateVoucherAsUsed(voucherCode, orderId); 
+            update = await updateVoucherAsUsed(voucherCode, orderId);
           }
-        } else if (orderId) {
-          response = await updateMomoPaymentStatus(orderId);
         }
-
         if (response?.status === 200) {
           toast({
             title: "Thành công",
@@ -71,6 +94,7 @@ export default function SuccessPage() {
           localStorage.setItem(paidKey, "true");
         }
         if (update?.status === 200) {
+          localStorage.setItem(voucherMomoKey!, "true");
           localStorage.setItem(voucherKey!, "true");
         }
       } catch (error: unknown) {
@@ -84,7 +108,7 @@ export default function SuccessPage() {
     };
 
     updatePayment();
-  }, [dispatch, orderId, stripeSessionId, voucherCode]);
+  }, [amount, dispatch, extraData, message, orderId, orderInfo, orderType, partnerCode, payType, requestId, responseTime, resultCode, signature, stripeSessionId, transId, voucherCode, voucherMomoCode]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -206,7 +230,9 @@ export default function SuccessPage() {
                     </div>
                   </div>
                   <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-lg">
-                    <Image src={"/assets/images/stripe.png"} alt="stripe" width={32} height={32} className="rounded-full" />
+                    {
+                      order.status == "processing" ? (<Image src={"/assets/images/stripe.png"} alt="stripe" width={32} height={32} className="rounded-full" />) : (<Image src={"/assets/images/momo.png"} alt="momo" width={32} height={32} className="rounded-full" />)
+                    }
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-500">
                         Phương thức thanh toán

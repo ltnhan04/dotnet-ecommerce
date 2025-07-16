@@ -9,6 +9,7 @@ using api.models;
 using api.Utils;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
+using ZstdSharp.Unsafe;
 
 namespace api.Services.Customer
 {
@@ -76,11 +77,12 @@ namespace api.Services.Customer
 
         public async Task<CancelOrderDto> HandleCancelOrder(string orderId)
         {
-            var orders = await _orderRepository.CancelOrder(orderId);
-            if (orders.paymentMethod == "stripe")
+            var order = await _orderRepository.GetOrderById(orderId);
+            if (order.paymentMethod == "stripe")
             {
-                var refundId = await _refundService.HandleStripeRefund(orderId, "requested_by_customer");
+                await _refundService.HandleStripeRefund(orderId, "requested_by_customer");
             }
+            var orders = await _orderRepository.CancelOrder(orderId);
             return orders;
         }
 
