@@ -84,6 +84,20 @@ namespace api.Controllers
             {
                 var userId = User.FindFirst("userId")?.Value;
                 var data = await _orderService.HandleCancelOrder(orderId);
+                if (data.paymentMethod == "stripe")
+                {
+                    await _notificationRepository.Create(new Notification
+                    {
+                        userId = ObjectId.Parse(userId),
+                        title = "💰 Đơn hàng đã được hoàn tiền",
+                        message = $"Đơn hàng #{data._id} đã được hoàn tiền thành công qua Stripe.",
+                        targetRole = "user",
+                        type = "refund",
+                        isRead = false,
+                        redirectUrl = "/orders",
+                        createdAt = DateTime.UtcNow
+                    });
+                }
                 if (data.status == "cancel")
                 {
                     await _notificationRepository.Create(new Notification

@@ -4,13 +4,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Threading.Tasks;
 using api.Dtos;
 using api.Interfaces;
 using api.Interfaces.Services;
 using api.models;
-using api.Repositories;
-using api.Repositories.Customer;
 using api.Utils;
 
 namespace api.Services

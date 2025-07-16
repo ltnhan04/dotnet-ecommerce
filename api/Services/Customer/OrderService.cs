@@ -79,11 +79,7 @@ namespace api.Services.Customer
             var orders = await _orderRepository.CancelOrder(orderId);
             if (orders.paymentMethod == "stripe")
             {
-                var requestRefunded = await _refundService.HandleStripeRefund(orderId, "requested_by_customer");
-                if (string.IsNullOrEmpty(requestRefunded))
-                {
-                    throw new AppException("Cannot refund for this order");
-                }
+                var refundId = await _refundService.HandleStripeRefund(orderId, "requested_by_customer");
             }
             return orders;
         }
