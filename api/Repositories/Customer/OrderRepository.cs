@@ -28,8 +28,8 @@ namespace api.Repositories.Customer
         }
         public async Task<Order?> GetOrderById(string orderId)
         {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o._id.ToString() == orderId);
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(o => o._id.ToString() == orderId);
             return order;
         }
 

@@ -2,7 +2,7 @@ export interface OrderType {
   variants: Variant[];
   totalAmount: number;
   shippingAddress: string;
-  paymentMethod: string | "ship-cod";
+  paymentMethod: string | "cash on delivery";
 }
 
 export interface Orders {
@@ -29,7 +29,7 @@ export interface User {
   name: string;
 }
 export interface Variant {
-  variant: Variant2;
+  variant: string;
   quantity: number;
 }
 

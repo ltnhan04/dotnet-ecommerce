@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/config/axiosInstance";
-import { PaymentType } from "@/types/payment";
+import { IMomoCallback, PaymentType } from "@/types/payment";
 
 export const createCheckoutSession = async ({
   variants,
@@ -35,10 +35,9 @@ export const createMomoPayment = async (data: {
   );
   return response;
 };
-export const updateMomoPaymentStatus = async (orderId: string) => {
-  const response = await axiosInstance.post(
-    `/api/v1/payment/momo/transaction-status`,
-    { orderId }
-  );
+
+export const momoCallback = async (data: IMomoCallback) => {
+  const response = await axiosInstance.post('/api/v1/payment/momo/callback', data);
   return response;
-};
+}
+

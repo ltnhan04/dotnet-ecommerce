@@ -21,11 +21,13 @@ namespace api.Repositories.Customer
         private readonly iTribeDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IRedisRepository _redisRepository;
-        public PaymentRepository(iTribeDbContext context, IHttpClientFactory httpClientFactory, IRedisRepository redisRepository)
+        private readonly IAdminOrderRepository _adminOrderRepository;
+        public PaymentRepository(iTribeDbContext context, IHttpClientFactory httpClientFactory, IRedisRepository redisRepository, IAdminOrderRepository adminOrderRepository)
         {
             _context = context;
             _httpClientFactory = httpClientFactory;
             _redisRepository = redisRepository;
+            _adminOrderRepository = adminOrderRepository;
         }
 
         public async Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
@@ -126,7 +128,7 @@ namespace api.Repositories.Customer
                 lang = "vi",
                 requestType = "payWithMethod",
                 autoCapture = true,
-                extraData = voucherCode,
+                extraData = voucherCode ?? "",
                 signature
             };
 
@@ -154,8 +156,9 @@ namespace api.Repositories.Customer
             var secretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY");
             var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
 
+            var extraData = dto.extraData ?? "";
             var rawSignature =
-            $"accessKey={accessKey}&amount={dto.amount}&extraData={dto.extraData}" +
+            $"accessKey={accessKey}&amount={dto.amount}&extraData={extraData}" +
             $"&message={dto.message}&orderId={dto.orderId}&orderInfo={dto.orderInfo}" +
             $"&orderType={dto.orderType}&partnerCode={partnerCode}&payType={dto.payType}" +
             $"&requestId={dto.requestId}&responseTime={dto.responseTime}&resultCode={dto.resultCode}" +
@@ -163,30 +166,62 @@ namespace api.Repositories.Customer
 
             var computerSignature = Momo.ComputerSHA256(secretKey!, rawSignature);
 
-            if (!computerSignature.Equals(dto.signature, StringComparison.OrdinalIgnoreCase))
-            {
-                return new ResponseMomoCallBackDto
-                {
-                    success = "false",
-                    orderId = dto.orderId,
-                    message = "Invalid signature"
-                };
-            }
-
             var isSuccess = dto.resultCode == 0;
             if (isSuccess)
             {
-                var orders = await _context.Orders.ToListAsync();
-                var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId));
-                order.isPaymentMomo = true;
+                var orderList = await _context.Orders.ToListAsync();
+                var orderSuccess = orderList.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId));
+                orderSuccess.isPaymentMomo = true;
                 await _context.SaveChangesAsync();
             }
+
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId));
+
+            var variantIds = order.variants.Select(item => item.variant).ToList();
+            var variants = await _context.ProductVariants
+                .Where(item => variantIds.Contains(item._id))
+                .ToListAsync();
+
+            var productIds = variants.Select(item => item.product).ToList();
+            var products = await _context.Products
+                .Where(item => productIds.Contains(item._id))
+                .ToListAsync();
+
+            var variantDict = variants.ToDictionary(v => v._id, v => v);
+            var productDict = products.ToDictionary(p => p._id, p => p);
+
+            if (order.status == "pending")
+            {
+                await _adminOrderRepository.UpdateOrderStatus(order._id.ToString(), new stateDto { status = "processing" });
+            }
+           
             return new ResponseMomoCallBackDto
             {
-                success = isSuccess.ToString().ToLower(),
-                orderId = dto.orderId,
-                transId = dto.transId.ToString(),
-                message = dto.message
+                _id = dto.orderId.ToString(),
+                user = order.user.ToString(),
+                variants = order.variants.Select(v => new OrderVariantDetail
+                {
+                    quantity = v.quantity,
+                    variant = new VariantOrderDto
+                    {
+                        _id = v.variant.ToString(),
+                        product = variantDict[v.variant].product.ToString(),
+                        productName = productDict[variantDict[v.variant].product].name,
+                        colorName = variantDict[v.variant].color.colorName,
+                        colorCode = variantDict[v.variant].color.colorCode,
+                        storage = variantDict[v.variant].storage,
+                        price = variantDict[v.variant].price,
+                        images = variantDict[v.variant].images ?? new List<string>(),
+                    }
+                }).ToList(),
+                totalAmount = order.totalAmount,
+                paymentMethod = order.paymentMethod,
+                stripeSessionId = order.stripeSessionId ?? "",
+                status = order.status,
+                shippingAddress = order.shippingAddress,
+                createdAt = order.createdAt,
+                updatedAt = order.updatedAt
             };
         }
     }
