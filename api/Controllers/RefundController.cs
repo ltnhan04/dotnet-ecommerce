@@ -38,7 +38,7 @@ namespace api.Controllers
         {
             try
             {
-                var data = await _refundService.HandleMomoRefund(dto);
+                var data = await _refundService.HandleMomoRefund(dto.orderId, dto.reason);
                 await ResponseHandler.SendSuccess(Response, data, 200, "Refund momo successfully");
             }
             catch (Exception ex)

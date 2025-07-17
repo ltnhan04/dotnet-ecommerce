@@ -19,7 +19,7 @@ export interface IMomoCallback {
   resultCode: number
   message: string
   payType: string
-  responseTime: string
+  responseTime: number
   extraData: string
   signature: string
 }
