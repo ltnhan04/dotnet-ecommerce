@@ -53,6 +53,19 @@ namespace api.Controllers
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
+        [HttpPost("momo/check-order-status")]
+        public async Task CheckOrderStatusMomo([FromBody] CheckOrderStatusMomo dto)
+        {   
+            try
+            {
+                var data = await _paymentService.HandleCheckOrderStatusMomo(dto);
+                await ResponseHandler.SendSuccess(Response, data, 201, "Check order status momo successfully");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
 
         [HttpPost("momo/callback")]
         public async Task MomoCallback([FromBody] MomoCallbackDto dto)

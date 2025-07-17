@@ -32,5 +32,19 @@ namespace api.Controllers
                 await ResponseHandler.SendError(Response, ex.Message, 500);
             }
         }
+
+        [HttpPost("momo")]
+        public async Task RefundMomo([FromBody] RefundMomoDto dto)
+        {
+            try
+            {
+                var data = await _refundService.HandleMomoRefund(dto);
+                await ResponseHandler.SendSuccess(Response, data, 200, "Refund momo successfully");
+            }
+            catch (Exception ex)
+            {
+                await ResponseHandler.SendError(Response, ex.Message, 500);
+            }
+        }
     }
 }

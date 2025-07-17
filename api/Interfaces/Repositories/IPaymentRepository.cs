@@ -12,5 +12,6 @@ namespace api.Interfaces.Repositories
         Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants);
         Task<UrlMomo> CreateMomoPayment(PaymentMomoDto dto);
         Task<ResponseMomoCallBackDto> MomoCallback(MomoCallbackDto dto);
+        Task<MomoQueryResponseDto> CheckOrderStatusMomo(CheckOrderStatusMomo dto);
     }
 }

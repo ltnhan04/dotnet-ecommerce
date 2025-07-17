@@ -30,6 +30,8 @@ namespace api.Repositories.Customer
             _adminOrderRepository = adminOrderRepository;
         }
 
+
+
         public async Task<Session> CreateCheckoutSession(string orderId, List<VariantPaymentDto> variants)
         {
             if (variants == null || variants.Count == 0)
@@ -114,7 +116,7 @@ namespace api.Repositories.Customer
                 $"&orderId={dto.orderId}&orderInfo={infoPayment}&partnerCode={partnerCode}" +
                 $"&redirectUrl={redirectUrl}&requestId={dto.orderId}&requestType=payWithMethod";
 
-            var signature = Momo.ComputerSHA256(secretKey!, rawSignature);
+            var signature = Momo.CreateSignature(secretKey!, rawSignature);
 
             var requestBody = new
             {
@@ -164,7 +166,7 @@ namespace api.Repositories.Customer
             $"&requestId={dto.requestId}&responseTime={dto.responseTime}&resultCode={dto.resultCode}" +
             $"&transId={dto.transId}";
 
-            var computerSignature = Momo.ComputerSHA256(secretKey!, rawSignature);
+            var computerSignature = Momo.CreateSignature(secretKey!, rawSignature);
 
             var isSuccess = dto.resultCode == 0;
             if (isSuccess)
@@ -195,7 +197,11 @@ namespace api.Repositories.Customer
             {
                 await _adminOrderRepository.UpdateOrderStatus(order._id.ToString(), new stateDto { status = "processing" });
             }
-           
+
+            order.transId = dto.transId;
+            order.payType = dto.payType;
+            await _context.SaveChangesAsync();
+
             return new ResponseMomoCallBackDto
             {
                 _id = dto.orderId.ToString(),
@@ -220,9 +226,85 @@ namespace api.Repositories.Customer
                 stripeSessionId = order.stripeSessionId ?? "",
                 status = order.status,
                 shippingAddress = order.shippingAddress,
+                transId = order.transId,
+                payType = order.payType,
                 createdAt = order.createdAt,
                 updatedAt = order.updatedAt
             };
         }
+
+        public async Task<MomoQueryResponseDto> CheckOrderStatusMomo(CheckOrderStatusMomo dto)
+        {
+            var orders = await _context.Orders.ToListAsync();
+            var order = orders.FirstOrDefault(item => item._id == ObjectId.Parse(dto.orderId)) ?? throw new AppException("Order not found", 404);
+
+            var accessKey = Environment.GetEnvironmentVariable("MOMO_ACCESS_KEY");
+            var secretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY");
+            var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
+
+            var requestId = Guid.NewGuid().ToString();
+            var rawData = $"accessKey={accessKey}&orderId={dto.orderId}&partnerCode={partnerCode}&requestId={requestId}";
+            var signature = Momo.CreateSignature(secretKey!, rawData);
+
+            var checkRequest = new ResponseCheckOrderStatusMomoDto
+            {
+                partnerCode = partnerCode!,
+                orderId = order._id.ToString(),
+                requestId = requestId,
+                lang = "vi",
+                signature = signature
+            };
+
+            var client = new HttpClient();
+            var data = new StringContent(JsonSerializer.Serialize(checkRequest), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("https://test-payment.momo.vn/v2/gateway/api/query", data);
+
+            var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            var message = json.RootElement.GetProperty("message").GetString() ?? "";
+            var responseTime = json.RootElement.GetProperty("responseTime").GetInt64();
+
+            var resultCode = json.RootElement.GetProperty("resultCode").GetInt32();
+            if (resultCode != 0)
+            {
+                var fullJson = await response.Content.ReadAsStringAsync();
+                throw new AppException($"Refund failed {fullJson}", 400);
+            }
+
+            var jsonData = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+            var refundTrans = new List<MomoRefundTrans>();
+            if (jsonData.RootElement.TryGetProperty("refundTrans", out var refundTransElement))
+            {
+                foreach (var item in refundTransElement.EnumerateArray())
+                {
+                    refundTrans.Add(new MomoRefundTrans
+                    {
+                        refundId = item.GetProperty("refundId").GetInt64(),
+                        amount = item.GetProperty("amount").GetInt64(),
+                        description = item.GetProperty("description").GetString() ?? "",
+                        resultCode = item.GetProperty("resultCode").GetInt32(),
+                        responseTime = item.GetProperty("responseTime").GetInt64()
+                    });
+                }
+            }
+
+            return new MomoQueryResponseDto
+            {
+                partnerCode = jsonData.RootElement.GetProperty("partnerCode").GetString() ?? "",
+                requestId = jsonData.RootElement.GetProperty("requestId").GetString() ?? "",
+                orderId = jsonData.RootElement.GetProperty("orderId").GetString() ?? "",
+                extraData = jsonData.RootElement.GetProperty("extraData").GetString() ?? "",
+                amount = jsonData.RootElement.GetProperty("amount").GetInt64(),
+                transId = jsonData.RootElement.GetProperty("transId").GetInt64(),
+                payType = jsonData.RootElement.GetProperty("payType").GetString() ?? "",
+                resultCode = jsonData.RootElement.GetProperty("resultCode").GetInt32(),
+                refundTrans = refundTrans,
+                message = jsonData.RootElement.GetProperty("message").GetString() ?? "",
+                responseTime = jsonData.RootElement.GetProperty("responseTime").GetInt64()
+            };
+
+        }
+
     }
 }
