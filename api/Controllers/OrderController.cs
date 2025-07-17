@@ -98,6 +98,20 @@ namespace api.Controllers
                         createdAt = DateTime.UtcNow
                     });
                 }
+                if (data.paymentMethod == "momo")
+                {
+                    await _notificationRepository.Create(new Notification
+                    {
+                        userId = ObjectId.Parse(userId),
+                        title = "💰 Đơn hàng đã được hoàn tiền",
+                        message = $"Đơn hàng #{data._id} đã được hoàn tiền thành công qua Momo.",
+                        targetRole = "user",
+                        type = "refund",
+                        isRead = false,
+                        redirectUrl = "/orders",
+                        createdAt = DateTime.UtcNow
+                    });
+                }
                 if (data.status == "cancel")
                 {
                     await _notificationRepository.Create(new Notification

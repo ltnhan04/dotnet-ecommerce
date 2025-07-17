@@ -72,9 +72,9 @@ namespace api.Services.Customer
             return refund.Id;
         }
 
-        public async Task<RefundMomoResponseDto> HandleMomoRefund(RefundMomoDto dto)
+        public async Task<RefundMomoResponseDto> HandleMomoRefund(string orderId, string reason)
         {
-            var order = await _orderRepository.GetOrderById(dto.orderId) ?? throw new AppException("Order not found", 404);
+            var order = await _orderRepository.GetOrderById(orderId) ?? throw new AppException("Order not found", 404);
 
             if (order.status != "processing")
             {
@@ -100,7 +100,7 @@ namespace api.Services.Customer
 
             var refundOrderId = Guid.NewGuid().ToString();
             var requestId = Guid.NewGuid().ToString();
-            var description = $"Refund 20% for order {dto.orderId}";
+            var description = $"Refund 20% for order {orderId}";
             var transId = order.transId;
             Console.WriteLine(transId);
             var rawData = $"accessKey={accessKey}&amount={refundAmount}&description={description}&orderId={refundOrderId}&partnerCode={partnerCode}&requestId={requestId}&transId={transId}";
@@ -126,24 +126,20 @@ namespace api.Services.Customer
             var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
             var message = json.RootElement.GetProperty("message").GetString() ?? "";
             var responseTime = json.RootElement.GetProperty("responseTime").GetInt64();
-            Console.WriteLine($"Refund Request: transId={transId}, refundOrderId={refundOrderId}, amount={refundAmount}");
-            Console.WriteLine($"MoMo Refund Raw JSON: {await response.Content.ReadAsStringAsync()}");
 
             var resultCode = json.RootElement.GetProperty("resultCode").GetInt32();
             if (resultCode != 0)
             {
                 var fullJson = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(fullJson);
                 throw new AppException($"Refund failed {fullJson}", 400);
             }
 
             order.isRefunded = true;
             order.refundAmount = (int)refundAmount;
             order.refundMethod = "momo";
-            order.refundReason = dto.reason;
+            order.refundReason = reason;
             order.refundStatus = "succeeded";
             order.refundTransactionId = refundOrderId;
-            await _orderRepository.CancelOrder(order._id.ToString());
 
             return new RefundMomoResponseDto
             {

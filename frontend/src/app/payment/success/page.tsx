@@ -57,7 +57,7 @@ export default function SuccessPage() {
   const resultCode = parseFloat(searchParams.get("resultCode")!);
   const message = searchParams.get("message") as string;
   const payType = searchParams.get("payType") as string;
-  const responseTime = searchParams.get("responseTime") as string;
+  const responseTime = parseFloat(searchParams.get("responseTime")!);
   const extraData = searchParams.get("extraData") ?? "";
   const signature = searchParams.get("signature") as string;
 

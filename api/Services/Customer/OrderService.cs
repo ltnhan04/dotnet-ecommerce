@@ -82,6 +82,10 @@ namespace api.Services.Customer
             {
                 await _refundService.HandleStripeRefund(orderId, "requested_by_customer");
             }
+            if (order.paymentMethod == "momo")
+            {
+                await _refundService.HandleMomoRefund(orderId, "requested_by_customer");
+            }
             var orders = await _orderRepository.CancelOrder(orderId);
             return orders;
         }

@@ -9,6 +9,6 @@ namespace api.Interfaces.Services
     public interface IRefundService
     {
         Task<string> HandleStripeRefund(string orderId, string reason);
-        Task<RefundMomoResponseDto> HandleMomoRefund(RefundMomoDto dto);
+        Task<RefundMomoResponseDto> HandleMomoRefund(string orderId, string reason);
     }
 }

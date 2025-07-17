@@ -37,12 +37,6 @@ namespace api.Services.Customer
             };
         }
 
-        public async Task<MomoQueryResponseDto> HandleCheckOrderStatusMomo(CheckOrderStatusMomo dto)
-        {
-            return await _paymentRepository.CheckOrderStatusMomo(dto);
-
-        }
-
         public async Task<ResponseMomoCallBackDto> HandleMomoCallback(MomoCallbackDto dto)
         {
             return await _paymentRepository.MomoCallback(dto);
