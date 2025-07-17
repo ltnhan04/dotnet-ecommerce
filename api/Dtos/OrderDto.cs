@@ -51,7 +51,7 @@ namespace api.Dtos
         public string productName { get; set; } = string.Empty;
         public string colorName { get; set; } = string.Empty;
         public string colorCode { get; set; } = string.Empty;
-        public int stock_quantity { get; set; }
+        public int? stock_quantity { get; set; }
         public string storage { get; set; } = string.Empty;
         public int price { get; set; }
         public List<string> images { get; set; } = new();
@@ -83,6 +83,8 @@ namespace api.Dtos
         public string paymentMethod { get; set; } = string.Empty;
         public string stripeSessionId { get; set; } = string.Empty;
         public bool? isPaymentMomo { get; set; } = false;
+        public long? transId { get; set; }
+        public string? payType { get; set; }
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
     }

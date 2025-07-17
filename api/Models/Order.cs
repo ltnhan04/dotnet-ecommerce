@@ -27,7 +27,7 @@ namespace api.models
         public string shippingAddress { get; set; } = string.Empty;
 
         [BsonElement("paymentMethod")]
-        public string paymentMethod { get; set; } = "ship_cod";
+        public string paymentMethod { get; set; } = "cash on delivery";
 
         [BsonElement("stripeSessionId")]
         public string? stripeSessionId { get; set; }
@@ -47,6 +47,10 @@ namespace api.models
         public int? refundAmount { get; set; }
         [BsonElement("refundReason")]
         public string? refundReason { get; set; }
+        [BsonElement("transId")]
+        public long? transId { get; set; }
+        [BsonElement("payType")]
+        public string? payType { get; set; }
 
         [BsonElement("createdAt")]
         public DateTime createdAt { get; set; } = DateTime.UtcNow;

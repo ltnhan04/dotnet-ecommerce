@@ -54,12 +54,49 @@ namespace api.Dtos
         public int resultCode { get; set; }
         public string message { get; set; } = string.Empty;
         public string payType { get; set; } = string.Empty;
-        public string responseTime { get; set; } = string.Empty;
+        public long responseTime { get; set; }
         public string? extraData { get; set; }
         public string signature { get; set; } = string.Empty;
     }
 
-    public class ResponseMomoCallBackDto: OrderDtoResponse
+    public class CheckOrderStatusMomo
+    {
+        public string orderId { get; set; } = string.Empty;
+    }
+    public class ResponseCheckOrderStatusMomoDto
+    {
+        public string partnerCode { get; set; } = string.Empty;
+        public string requestId { get; set; } = string.Empty;
+        public string orderId { get; set; } = string.Empty;
+        public string lang { get; set; } = "vi";
+        public string signature { get; set; } = string.Empty;
+    }
+    public class MomoRefundTrans
+    {
+        public long refundId { get; set; }
+        public long amount { get; set; }
+        public string description { get; set; } = string.Empty;
+        public int resultCode { get; set; }
+        public long responseTime { get; set; }
+    }
+
+    public class MomoQueryResponseDto
+    {
+        public string partnerCode { get; set; } 
+        public string requestId { get; set; }
+        public string orderId { get; set; }
+        public string extraData { get; set; }
+        public long amount { get; set; }
+        public long transId { get; set; }
+        public string payType { get; set; }
+        public int resultCode { get; set; }
+        public string message { get; set; }
+        public long responseTime { get; set; }
+
+        public List<MomoRefundTrans>? refundTrans { get; set; }
+    }
+
+    public class ResponseMomoCallBackDto : OrderDtoResponse
     {
 
     }
@@ -68,5 +105,35 @@ namespace api.Dtos
     {
         public string orderId { get; set; } = string.Empty;
         public string reason { get; set; } = string.Empty;
+    }
+
+    public class RefundMomoDto
+    {
+        public string orderId { get; set; } = string.Empty;
+        public string reason { get; set; } = string.Empty;
+    }
+
+    public class RefundMomoRequestDto
+    {
+        public string partnerCode { get; set; } = string.Empty;
+        public string orderId { get; set; } = string.Empty;
+        public string requestId { get; set; } = string.Empty;
+        public long amount { get; set; }
+        public long transId { get; set; }
+        public string lang { get; set; } = "vi";
+        public string description { get; set; } = string.Empty;
+        public string signature { get; set; } = string.Empty;
+
+    }
+    public class RefundMomoResponseDto
+    {
+        public string partnerCode { get; set; } = string.Empty;
+        public string orderId { get; set; } = string.Empty;
+        public string requestId { get; set; } = string.Empty;
+        public long amount { get; set; }
+        public long transId { get; set; }
+        public int resultCode { get; set; }
+        public string message { get; set; } = string.Empty;
+        public long responseTime { get; set; }
     }
 }
