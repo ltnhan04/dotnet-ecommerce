@@ -9,7 +9,6 @@ RUN npm run build
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Copy standalone folder
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/public ./public
 
