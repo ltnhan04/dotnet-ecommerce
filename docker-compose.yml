@@ -1,42 +1,46 @@
 services:
   frontend:
-    image: itribe-v2-fe
+    image: nhanluong2812/itribe-v2-fe:latest
     container_name: itribe-v2-fe
-    pull_policy: never
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
+    restart: unless-stopped
     environment:
-      - NEXT_PUBLIC_API_ENDPOINT=http://127.0.0.1:8000
-      - NODE_ENV=development
+      - NEXT_PUBLIC_API_ENDPOINT=/api
     ports:
       - 3000:3000
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     networks:
       - app-networks
+    expose:
+      - "3000"
   backend:
-    image: itribe-v2-be
+    image: nhanluong2812/itribe-v2-be:latest
     container_name: itribe-v2-be
-    pull_policy: never
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-      target: development
+    restart: unless-stopped
     env_file:
       - ./api/.env
-    ports:
-      - 8000:8000
     volumes:
-      - ./api:/app
-      - /app/obj
-      - /app/bin
-      - ./data-protection-keys:/root/.aspnet/DataProtection-Keys
+      - data-protection-prod:/root/.aspnet/DataProtection-Keys
     networks:
       - app-networks
+    expose:
+      - "8000"
+  nginx-proxy:
+    image: nginx:stable-alpine
+    container_name: itribe-v2-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - app-networks
+    depends_on:
+      - frontend
+      - backend
 networks:
   app-networks:
     driver: bridge
+volumes:
+  data-protection-prod:
