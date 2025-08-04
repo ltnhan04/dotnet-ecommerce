@@ -202,7 +202,7 @@ export default function LoginForm() {
         variant="outline"
         type="button"
         onClick={() =>
-          (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/login-google`)
+          (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/login-google`)
         }
         className="w-full font-sans text-gray-500"
       >

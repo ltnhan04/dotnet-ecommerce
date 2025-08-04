@@ -5,7 +5,7 @@ export const createCheckoutSession = async ({
   variants,
   orderId,
 }: PaymentType) => {
-  return await axiosInstance.post("/api/v1/payment/create-checkout-session", {
+  return await axiosInstance.post("/v1/payment/create-checkout-session", {
     variants,
     orderId,
   });
@@ -18,7 +18,7 @@ export const updateOrderPayment = async ({
   stripeSessionId: string;
   orderId: string;
 }) => {
-  return await axiosInstance.post("/api/v1/orders/update-order-payment", {
+  return await axiosInstance.post("/v1/orders/update-order-payment", {
     stripeSessionId,
     orderId,
   });
@@ -29,15 +29,11 @@ export const createMomoPayment = async (data: {
   amount: number;
   orderInfo: string;
 }) => {
-  const response = await axiosInstance.post(
-    `/api/v1/payment/momo/create`,
-    data
-  );
+  const response = await axiosInstance.post(`/v1/payment/momo/create`, data);
   return response;
 };
 
 export const momoCallback = async (data: IMomoCallback) => {
-  const response = await axiosInstance.post('/api/v1/payment/momo/callback', data);
+  const response = await axiosInstance.post("/v1/payment/momo/callback", data);
   return response;
-}
-
+};
