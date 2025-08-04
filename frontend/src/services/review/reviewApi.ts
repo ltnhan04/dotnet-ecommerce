@@ -10,7 +10,7 @@ export const createReview = async ({
   rating: number;
   comment: string;
 }): Promise<IResponseReview> => {
-  const res = await axiosInstance.post("/v1/reviews", {
+  const res = await axiosInstance.post("/api/v1/reviews", {
     variant,
     rating,
     comment,
@@ -30,7 +30,7 @@ export const updateReview = async (
     comment?: string;
   }
 ): Promise<IResponseReview> => {
-  const res = await axiosInstance.put(`/v1/reviews/${id}`, {
+  const res = await axiosInstance.put(`/api/v1/reviews/${id}`, {
     variant,
     rating,
     comment,
@@ -38,6 +38,6 @@ export const updateReview = async (
   return res.data;
 };
 export const deleteReview = async (id: string): Promise<IResponseReview> => {
-  const res = await axiosInstance.delete(`/v1/reviews/${id}`);
+  const res = await axiosInstance.delete(`/api/v1/reviews/${id}`);
   return res.data;
 };
