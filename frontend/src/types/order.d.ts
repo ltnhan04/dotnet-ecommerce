@@ -1,5 +1,5 @@
 export interface OrderType {
-  variants: Variant[];
+  variants: VariantOrder[];
   totalAmount: number;
   shippingAddress: string;
   paymentMethod: string | "cash on delivery";
@@ -28,8 +28,13 @@ export interface User {
   _id: string;
   name: string;
 }
-export interface Variant {
+
+export interface VariantOrder {
   variant: string;
+  quantity: number;
+}
+export interface Variant {
+  variant: Variant2;
   quantity: number;
 }
 
@@ -63,10 +68,9 @@ export interface OrderDetails {
       productName: string;
       price: number;
       images: string;
-      colorName: string,
-      storage: number
+      colorName: string;
+      storage: number;
     };
     quantity: number;
   }[];
 }
-

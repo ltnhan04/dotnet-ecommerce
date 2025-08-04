@@ -26,7 +26,7 @@ const RecentOrders = ({ orders }: RecentOrdersProps) => {
                 <Image
                   src={order.variants[0]?.variant?.images[0] as string}
                   alt={
-                    order.variants[0]?.variant?.color?.colorName || "Product"
+                    order.variants[0]?.variant?.colorName || "Product"
                   }
                   fill
                   className="object-cover"
@@ -34,7 +34,7 @@ const RecentOrders = ({ orders }: RecentOrdersProps) => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {order.variants[0]?.variant?.color?.colorName || "Sản phẩm"}
+                  {order.variants[0]?.variant?.colorName || "Sản phẩm"}
                 </p>
                 <p className="text-sm text-gray-500">
                   {order.variants.length} sản phẩm

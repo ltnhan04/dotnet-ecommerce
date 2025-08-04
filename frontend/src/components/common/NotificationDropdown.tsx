@@ -22,7 +22,7 @@ export const NotificationDropdown = () => {
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useNotifications(type);
   const { mutate: markAsRead } = useMarkNotificationAsRead();
-  const notifications = data?.data || [];
+  const notifications = useMemo(() => data?.data || [], [data]);
   const total = notifications.length;
   const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
   const paginatedNotifications = useMemo(() => {
@@ -56,7 +56,10 @@ export const NotificationDropdown = () => {
           )}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[380px] p-0 rounded-lg max-h-[400px] flex flex-col">
+      <DropdownMenuContent
+        align="end"
+        className="w-[380px] p-0 rounded-lg max-h-[400px] flex flex-col"
+      >
         <div className="px-4 pt-3 pb-1 border-b flex items-center justify-between gap-2">
           <span className="font-medium text-base">Thông báo</span>
           <DropdownMenu>

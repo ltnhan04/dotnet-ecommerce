@@ -4,17 +4,17 @@ import {
   getDistricts,
   getWards,
 } from "@/services/profile/profileApi";
-import { ProvinceType, DistrictType, WardType } from "@/types/profile";
+import { IProvinceType, IDistrictType, IWardType } from "@/types/profile";
 
 export const useProvinces = () => {
-  return useQuery<ProvinceType[]>({
+  return useQuery<IProvinceType[]>({
     queryKey: ["provinces"],
     queryFn: getProvinces,
   });
 };
 
 export const useDistricts = (provinceCode?: number) => {
-  return useQuery<DistrictType[]>({
+  return useQuery<IDistrictType[]>({
     queryKey: ["districts", provinceCode],
     queryFn: () =>
       provinceCode ? getDistricts(provinceCode) : Promise.resolve([]),
@@ -23,7 +23,7 @@ export const useDistricts = (provinceCode?: number) => {
 };
 
 export const useWards = (districtCode?: number) => {
-  return useQuery<WardType[]>({
+  return useQuery<IWardType[]>({
     queryKey: ["wards", districtCode],
     queryFn: () =>
       districtCode ? getWards(districtCode) : Promise.resolve([]),

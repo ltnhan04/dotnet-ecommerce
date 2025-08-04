@@ -58,7 +58,7 @@ const OrderList = ({
     setIsReviewModalOpen(false);
     setSelectedVariant(null);
   };
-
+  console.log(filteredOrders);
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm p-6">
