@@ -236,7 +236,7 @@ export default function RegisterForm() {
           type="button"
           variant="outline"
           onClick={() =>
-            (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/login-google?returnUrl=${process.env.NEXT_PUBLIC_CLIENT_ENDPOINT}`)
+            (window.location.href = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/login-google?returnUrl=${process.env.NEXT_PUBLIC_CLIENT_ENDPOINT}`)
           }
           className="w-full font-sans text-gray-500"
         >

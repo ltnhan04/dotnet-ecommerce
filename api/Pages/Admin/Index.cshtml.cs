@@ -58,7 +58,7 @@ namespace api.Pages.Admin
                     role = "admin"
                 };
 
-                var response = await _httpClient.PostAsJsonAsync("/v1/auth/login", loginDto);
+                var response = await _httpClient.PostAsJsonAsync("/api/v1/auth/login", loginDto);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
