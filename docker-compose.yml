@@ -3,8 +3,6 @@ services:
     image: nhanluong2812/itribe-v2-fe:latest
     container_name: itribe-v2-fe
     restart: unless-stopped
-    env_file:
-      - ./frontend/.env.production
     depends_on:
       - backend
     networks:
