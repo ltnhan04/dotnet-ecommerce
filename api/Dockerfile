@@ -1,5 +1,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+COPY package*.json ./
+RUN npm install
+
+
+COPY *.sln .
 COPY *.csproj ./
 RUN dotnet restore
 COPY . .
