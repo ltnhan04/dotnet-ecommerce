@@ -22,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
 
-builder.WebHost.UseUrls("https://localhost:8000");
+builder.WebHost.UseUrls("http://*:8000");
 
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
