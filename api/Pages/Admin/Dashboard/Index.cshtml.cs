@@ -41,12 +41,12 @@ namespace api.Pages.Admin.Dashboard
             if (!string.IsNullOrEmpty(accessToken))
                 http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            Summary = await http.GetFromJsonAsync<TotalDto>($"/v1/revenue/total?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
+            Summary = await http.GetFromJsonAsync<TotalDto>($"/api/v1/revenue/total?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
 
-            ChartData = await http.GetFromJsonAsync<ChartResponseDto>($"/v1/revenue/chart?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
+            ChartData = await http.GetFromJsonAsync<ChartResponseDto>($"/api/v1/revenue/chart?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
 
-            TopProducts = await http.GetFromJsonAsync<List<TopProductDtoRes>>($"/v1/revenue/top10?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
-            TopLocations = await http.GetFromJsonAsync<List<TopLocationDto>>($"/v1/revenue/top-sales-by-location?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
+            TopProducts = await http.GetFromJsonAsync<List<TopProductDtoRes>>($"/api/v1/revenue/top10?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
+            TopLocations = await http.GetFromJsonAsync<List<TopLocationDto>>($"/api/v1/revenue/top-sales-by-location?fromDate={FromDate:yyyy-MM-dd}&toDate={ToDate:yyyy-MM-dd}");
         }
 
         // Update AJAX endpoint for chart to get fromDate and toDate
@@ -59,7 +59,7 @@ namespace api.Pages.Admin.Dashboard
             if (!string.IsNullOrEmpty(accessToken))
                 http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var chartResponse = await http.GetFromJsonAsync<ChartResponseDto>($"/v1/revenue/chart?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}");
+            var chartResponse = await http.GetFromJsonAsync<ChartResponseDto>($"/api/v1/revenue/chart?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}");
             return new JsonResult(chartResponse); // Return alls response object
         }
 

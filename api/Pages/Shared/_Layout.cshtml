@@ -159,7 +159,7 @@
 
         async function fetchNotifications() {
             try {
-                const response = await fetch('/v1/notifications', {
+                const response = await fetch('/api/v1/notifications', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -293,7 +293,7 @@
 
         async function markAsRead(notificationId) {
             try {
-                const response = await fetch(`/v1/notifications/${notificationId}/read`, {
+                const response = await fetch(`/api/v1/notifications/${notificationId}/read`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
