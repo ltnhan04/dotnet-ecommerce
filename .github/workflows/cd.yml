@@ -16,14 +16,14 @@ jobs:
       - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./api
           file: ./api/Dockerfile
           push: true
           tags: ${{secrets.DOCKERHUB_USERNAME}}/itribe-v2-be:latest
       - name: Build and push Frontend
         uses: docker/build-push-action@v5
         with:
-          context: .z
+          context: ./frontend
           file: ./frontend/Dockerfile
           push: true
           tags: ${{secrets.DOCKERHUB_USERNAME}}/itribe-v2-fe:latest
