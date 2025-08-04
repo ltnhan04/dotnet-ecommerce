@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace api.Controllers.Admin
 {
-    [Route("api/v1/admin/categories")]
+    [Route("v1/admin/categories")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;

@@ -12,7 +12,7 @@ using api.Models;
 
 namespace api.Controllers
 {
-    [Route("api/v1/reviews")]
+    [Route("v1/reviews")]
     [ApiController]
     public class ReviewsController : ControllerBase
     {

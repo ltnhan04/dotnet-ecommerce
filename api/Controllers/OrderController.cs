@@ -14,7 +14,7 @@ using MongoDB.Bson;
 namespace api.Controllers
 {
     [ApiController]
-    [Route("api/v1/orders")]
+    [Route("v1/orders")]
     [Authorize]
     public class OrderController(IOrderService orderService, INotificationRepository notificationRepository) : ControllerBase
     {

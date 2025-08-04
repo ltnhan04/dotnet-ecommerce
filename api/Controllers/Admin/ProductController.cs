@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/v1/admin/products")]
+    [Route("v1/admin/products")]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
