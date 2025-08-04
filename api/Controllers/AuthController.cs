@@ -128,7 +128,7 @@ namespace api.Controllers
             { "code", code },
             { "client_id", Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")! },
             { "client_secret", Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")! },
-            { "redirect_uri", "https://localhost:8000/api/v1/auth/login-google/callback" },
+            { "redirect_uri", "https://itribe.id.vn/api/v1/auth/login-google/callback" },
             { "grant_type", "authorization_code" }
         })
             };

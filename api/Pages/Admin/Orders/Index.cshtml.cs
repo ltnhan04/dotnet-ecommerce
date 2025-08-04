@@ -55,7 +55,7 @@ namespace api.Pages.Admin.Orders
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var url = $"api/v1/admin/orders?page={CurrentPage}&size={SizeOrder}";
+            var url = $"v1/admin/orders?page={CurrentPage}&size={SizeOrder}";
 
             if (!string.IsNullOrEmpty(OrderId)) url += $"&orderId={OrderId}";
             if (!string.IsNullOrEmpty(Customer)) url += $"&customer={Customer}";

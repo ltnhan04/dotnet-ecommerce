@@ -28,7 +28,7 @@ namespace api.Pages.Admin.Products
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.GetAsync($"api/v1/admin/products/{Id}");
+            var response = await _httpClient.GetAsync($"v1/admin/products/{Id}");
             if (!response.IsSuccessStatusCode) return RedirectToPage("./Index");
 
             var json = await response.Content.ReadAsStringAsync();
@@ -44,7 +44,7 @@ namespace api.Pages.Admin.Products
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.DeleteAsync($"api/v1/admin/products/{Id}");
+            var response = await _httpClient.DeleteAsync($"v1/admin/products/{Id}");
             return response.IsSuccessStatusCode ? RedirectToPage("./Index") : Page();
         }
     }

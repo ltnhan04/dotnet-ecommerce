@@ -6,26 +6,26 @@ import {
 } from "@/types/promotion";
 
 export const retrievePoints = async (): Promise<IResponsePoints> => {
-  const res = await axiosInstance.get("/api/v1/points/");
+  const res = await axiosInstance.get("/v1/points/");
   return res.data;
 };
 
 export const exchangeVoucher = async (
   pointsToUse: number
 ): Promise<IResponseExchangeVoucher> => {
-  const res = await axiosInstance.post("/api/v1/points/exchange-voucher", {
+  const res = await axiosInstance.post("/v1/points/exchange-voucher", {
     pointsToUse,
   });
   return res.data;
 };
 
 export const getVouchers = async (): Promise<IResponseVoucherList> => {
-  const res = await axiosInstance.get("/api/v1/points/vouchers");
+  const res = await axiosInstance.get("/v1/points/vouchers");
   return res.data;
 };
 
 export const applyVoucher = async (voucherCode: string, orderTotal: number) => {
-  const res = await axiosInstance.post("/api/v1/points/apply-voucher", {
+  const res = await axiosInstance.post("/v1/points/apply-voucher", {
     voucherCode,
     orderTotal,
   });
@@ -36,7 +36,7 @@ export const updateVoucherAsUsed = async (
   voucherCode: string,
   orderId: string
 ) => {
-  const res = await axiosInstance.put("/api/v1/points/status-voucher", {
+  const res = await axiosInstance.put("/v1/points/status-voucher", {
     voucherCode,
     orderId,
   });

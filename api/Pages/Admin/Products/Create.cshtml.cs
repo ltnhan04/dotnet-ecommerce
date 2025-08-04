@@ -20,7 +20,7 @@ namespace api.Pages.Admin.Products
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            var catRes = await _httpClient.GetAsync("api/v1/admin/categories");
+            var catRes = await _httpClient.GetAsync("v1/admin/categories");
             if (catRes.IsSuccessStatusCode)
             {
                 var catJson = await catRes.Content.ReadAsStringAsync();
@@ -38,7 +38,7 @@ namespace api.Pages.Admin.Products
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
 
-            var response = await _httpClient.PostAsJsonAsync("api/v1/admin/products", Product);
+            var response = await _httpClient.PostAsJsonAsync("v1/admin/products", Product);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();

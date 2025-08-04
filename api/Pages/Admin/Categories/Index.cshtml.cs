@@ -36,7 +36,7 @@ namespace api.Pages.Admin.Categories
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
             // Lấy danh mục cha
-            var parentResponse = await _httpClient.GetAsync("api/v1/admin/categories");
+            var parentResponse = await _httpClient.GetAsync("v1/admin/categories");
             if (parentResponse.IsSuccessStatusCode)
             {
                 var json = await parentResponse.Content.ReadAsStringAsync();
@@ -47,7 +47,7 @@ namespace api.Pages.Admin.Categories
                 // Lấy children cho từng parent
                 foreach (var parent in Parents)
                 {
-                    var subResponse = await _httpClient.GetAsync($"api/v1/admin/categories/sub/{parent._id}");
+                    var subResponse = await _httpClient.GetAsync($"v1/admin/categories/sub/{parent._id}");
                     if (subResponse.IsSuccessStatusCode)
                     {
                         var subJson = await subResponse.Content.ReadAsStringAsync();

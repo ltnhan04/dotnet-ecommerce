@@ -38,7 +38,7 @@ namespace api.Pages.Admin.Variants
                 {
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 }
-                var response = await _httpClient.GetAsync($"api/v1/admin/products/{productId}");
+                var response = await _httpClient.GetAsync($"v1/admin/products/{productId}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -77,7 +77,7 @@ namespace api.Pages.Admin.Variants
                     form.Add(streamContent, "images", file.FileName);
                 }
             }
-            var response = await _httpClient.PostAsync($"api/v1/admin/products/variant", form);
+            var response = await _httpClient.PostAsync($"v1/admin/products/variant", form);
             var responseContent = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {

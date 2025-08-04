@@ -39,7 +39,7 @@ namespace api.Pages.Admin.Customers
 
             try
             {
-                var customerResponse = await _httpClient.GetAsync($"api/v1/admin/customers/{id}");
+                var customerResponse = await _httpClient.GetAsync($"v1/admin/customers/{id}");
                 if (customerResponse.IsSuccessStatusCode)
                 {
                     var customerJson = await customerResponse.Content.ReadAsStringAsync();
@@ -47,7 +47,7 @@ namespace api.Pages.Admin.Customers
                     Customer = JsonSerializer.Deserialize<User>(customerDoc.RootElement.GetProperty("data").ToString());
                 }
 
-                var pointsResponse = await _httpClient.GetAsync($"api/v1/admin/customers/{id}/points");
+                var pointsResponse = await _httpClient.GetAsync($"v1/admin/customers/{id}/points");
                 if (pointsResponse.IsSuccessStatusCode)
                 {
                     var pointsJson = await pointsResponse.Content.ReadAsStringAsync();
@@ -55,7 +55,7 @@ namespace api.Pages.Admin.Customers
                     CustomerPoints = JsonSerializer.Deserialize<GetCustomerPointDto>(pointsDoc.RootElement.GetProperty("data").ToString());
                 }
 
-                var vouchersResponse = await _httpClient.GetAsync($"api/v1/admin/customers/{id}/vouchers");
+                var vouchersResponse = await _httpClient.GetAsync($"v1/admin/customers/{id}/vouchers");
                 if (vouchersResponse.IsSuccessStatusCode)
                 {
                     var vouchersJson = await vouchersResponse.Content.ReadAsStringAsync();

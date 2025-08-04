@@ -91,7 +91,7 @@ namespace api.Pages.Admin.Categories
                 Category.parent_category = null;
             }
 
-            var response = await _httpClient.PutAsJsonAsync($"api/v1/admin/categories/{Id}", Category);
+            var response = await _httpClient.PutAsJsonAsync($"v1/admin/categories/{Id}", Category);
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToPage("/Admin/Categories/Index");
@@ -111,7 +111,7 @@ namespace api.Pages.Admin.Categories
             if (string.IsNullOrEmpty(token)) return;
 
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            var catRes = await _httpClient.GetAsync("api/v1/admin/categories");
+            var catRes = await _httpClient.GetAsync("v1/admin/categories");
             if (catRes.IsSuccessStatusCode)
             {
                 var catJson = await catRes.Content.ReadAsStringAsync();
