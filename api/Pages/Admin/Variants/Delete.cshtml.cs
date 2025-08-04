@@ -34,7 +34,7 @@ namespace api.Pages.Admin.Variants
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.GetAsync($"api/v1/admin/products/variant/{id}");
+            var response = await _httpClient.GetAsync($"v1/admin/products/variant/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -54,7 +54,7 @@ namespace api.Pages.Admin.Variants
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.DeleteAsync($"api/v1/admin/products/variant/{id}");
+            var response = await _httpClient.DeleteAsync($"v1/admin/products/variant/{id}");
             var responseContent = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {

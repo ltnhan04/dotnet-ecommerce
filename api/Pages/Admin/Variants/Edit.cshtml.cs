@@ -47,7 +47,7 @@ namespace api.Pages.Admin.Variants
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.GetAsync($"api/v1/admin/products/variant/{id}");
+            var response = await _httpClient.GetAsync($"v1/admin/products/variant/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -67,7 +67,7 @@ namespace api.Pages.Admin.Variants
                         EditVariant.slug = variant.slug;
                         EditVariant.existingImages = variant.images ?? new List<string>();
                         // Lấy product name từ API
-                        var productResponse = await _httpClient.GetAsync($"api/v1/admin/products/{variant.product}");
+                        var productResponse = await _httpClient.GetAsync($"v1/admin/products/{variant.product}");
                         if (productResponse.IsSuccessStatusCode)
                         {
                             var productJson = await productResponse.Content.ReadAsStringAsync();
@@ -121,7 +121,7 @@ namespace api.Pages.Admin.Variants
                     form.Add(streamContent, "images", file.FileName);
                 }
             }
-            var response = await _httpClient.PutAsync($"api/v1/admin/products/variant/{EditVariant.variantId}", form);
+            var response = await _httpClient.PutAsync($"v1/admin/products/variant/{EditVariant.variantId}", form);
             var responseContent = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {

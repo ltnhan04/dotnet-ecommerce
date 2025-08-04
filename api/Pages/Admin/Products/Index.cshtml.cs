@@ -40,7 +40,7 @@ namespace api.Pages.Admin.Products
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var catRes = await _httpClient.GetAsync("api/v1/admin/categories");
+            var catRes = await _httpClient.GetAsync("v1/admin/categories");
             if (catRes.IsSuccessStatusCode)
             {
                 var catJson = await catRes.Content.ReadAsStringAsync();
@@ -53,7 +53,7 @@ namespace api.Pages.Admin.Products
             MaxPrice = maxPrice;
             Color = color;
             Storage = storage;
-            var url = $"api/v1/admin/products/search?page={page}&size={size}";
+            var url = $"v1/admin/products/search?page={page}&size={size}";
             if (!string.IsNullOrEmpty(search)) url += $"&search={Uri.EscapeDataString(search)}";
             if (!string.IsNullOrEmpty(categoryId)) url += $"&categoryId={Uri.EscapeDataString(categoryId)}";
             if (minPrice.HasValue) url += $"&minPrice={minPrice.Value}";

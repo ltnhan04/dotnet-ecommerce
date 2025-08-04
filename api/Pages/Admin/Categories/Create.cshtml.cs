@@ -26,7 +26,7 @@ namespace api.Pages.Admin.Categories
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            var catRes = await _httpClient.GetAsync("api/v1/admin/categories");
+            var catRes = await _httpClient.GetAsync("v1/admin/categories");
             if (catRes.IsSuccessStatusCode)
             {
                 var catJson = await catRes.Content.ReadAsStringAsync();
@@ -44,7 +44,7 @@ namespace api.Pages.Admin.Categories
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
 
-            var response = await _httpClient.PostAsJsonAsync("api/v1/admin/categories", Category);
+            var response = await _httpClient.PostAsJsonAsync("v1/admin/categories", Category);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();

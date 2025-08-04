@@ -32,7 +32,7 @@ namespace api.Pages.Admin.Products
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.GetAsync($"api/v1/admin/products/{id}");
+            var response = await _httpClient.GetAsync($"v1/admin/products/{id}");
             if (!response.IsSuccessStatusCode) return RedirectToPage("./Index");
             var json = await response.Content.ReadAsStringAsync();
             var result = JsonDocument.Parse(json);

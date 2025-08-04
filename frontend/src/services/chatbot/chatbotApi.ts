@@ -12,12 +12,12 @@ export interface ChatHistory {
 }
 
 export const createChatSession = async () => {
-  const response = await axiosInstance.post("/api/v1/chatbot/session");
+  const response = await axiosInstance.post("/v1/chatbot/session");
   return response.data;
 };
 
 export const sendMessage = async (sessionId: string, message: string) => {
-  const response = await axiosInstance.post("/api/v1/chatbot/message", {
+  const response = await axiosInstance.post("/v1/chatbot/message", {
     sessionId,
     message,
   });
@@ -25,6 +25,6 @@ export const sendMessage = async (sessionId: string, message: string) => {
 };
 
 export const getChatHistory = async (sessionId: string) => {
-  const response = await axiosInstance.get(`/api/v1/chatbot/history/${sessionId}`);
+  const response = await axiosInstance.get(`/v1/chatbot/history/${sessionId}`);
   return response.data;
 }; 

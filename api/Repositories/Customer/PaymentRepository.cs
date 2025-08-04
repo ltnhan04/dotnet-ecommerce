@@ -105,7 +105,7 @@ namespace api.Repositories.Customer
             var secretKey = Environment.GetEnvironmentVariable("MOMO_SECRET_KEY");
             var partnerCode = Environment.GetEnvironmentVariable("MOMO_PARTNER_CODE");
             var redirectUrl = Environment.GetEnvironmentVariable("CLIENT_URL") + "/payment/success";
-            var callbackUrl = Environment.GetEnvironmentVariable("SERVER_URL") + "/api/v1/payment/momo/callback";
+            var callbackUrl = Environment.GetEnvironmentVariable("SERVER_URL") + "/v1/payment/momo/callback";
 
             var infoPayment = $"Thanh toán đơn hàng {dto.orderId}";
             var voucherCode = await _redisRepository.GetAsync($"voucher-{dto.orderId}");
@@ -135,7 +135,7 @@ namespace api.Repositories.Customer
             var client = _httpClientFactory.CreateClient();
             var httpContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync("https://test-payment.momo.vn/v2/gateway/api/create", httpContent);
+            var response = await client.PostAsync("https://test-payment.momo.vn/v2/gateway/create", httpContent);
             var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
             var resultCode = json.RootElement.GetProperty("resultCode").GetInt32();

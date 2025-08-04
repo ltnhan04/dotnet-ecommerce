@@ -24,7 +24,7 @@ namespace api.Pages.Admin
                 var refreshToken = Request.Cookies["refreshToken"];
                 if (!string.IsNullOrEmpty(refreshToken))
                 {
-                    await _httpClient.PostAsync($"/api/v1/auth/logout", null);
+                    await _httpClient.PostAsync($"/v1/auth/logout", null);
                 }
                 return RedirectToPage("/Admin/Index");
             }

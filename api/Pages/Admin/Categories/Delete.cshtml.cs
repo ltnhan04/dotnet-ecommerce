@@ -56,7 +56,7 @@ namespace api.Pages.Admin.Categories
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var response = await _httpClient.DeleteAsync($"api/v1/admin/categories/{Id}");
+            var response = await _httpClient.DeleteAsync($"v1/admin/categories/{Id}");
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToPage("./Index");

@@ -35,7 +35,7 @@ namespace api.Pages.Admin.Orders
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
-            var url = $"api/v1/admin/orders/{id}";
+            var url = $"v1/admin/orders/{id}";
             var response = await _httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
@@ -67,7 +67,7 @@ namespace api.Pages.Admin.Orders
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
 
-            var updateUrl = $"api/v1/admin/orders/{id}";
+            var updateUrl = $"v1/admin/orders/{id}";
             var payload = new { status = SelectedStatus };
             var content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
             var updateResponse = await _httpClient.PutAsync(updateUrl, content);
