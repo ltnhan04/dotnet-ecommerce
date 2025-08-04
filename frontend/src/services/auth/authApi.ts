@@ -11,7 +11,7 @@ import {
 
 export const login = async ({ email, password }: LoginType) => {
   return await axios.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/login`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/login`,
     {
       email,
       password,
@@ -25,7 +25,7 @@ export const login = async ({ email, password }: LoginType) => {
 
 export const signUp = async ({ name, email, password }: SignUpType) => {
   const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/signup`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/signup`,
     {
       name,
       email,
@@ -37,7 +37,7 @@ export const signUp = async ({ name, email, password }: SignUpType) => {
 
 export const verifySignUp = async ({ email, otp }: VerifySignUpType) => {
   const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/verify-signup`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/verify-signup`,
     {
       email,
       otp,
@@ -47,17 +47,17 @@ export const verifySignUp = async ({ email, otp }: VerifySignUpType) => {
 };
 
 export const logout = async () => {
-  const response = await axiosInstance.post(`/v1/auth/logout`);
+  const response = await axiosInstance.post(`/api/v1/auth/logout`);
   return response;
 };
 
 export const resentOTP = async (email: string) => {
-  return await axiosInstance.post(`/v1/auth/resent-otp`, { email });
+  return await axiosInstance.post(`/api/v1/auth/resent-otp`, { email });
 };
 
 export const getProfile = async (): Promise<ProfileType> => {
   const response = await axiosInstance.get<IResponseProfileType>(
-    "/v1/auth/profile"
+    "/api/v1/auth/profile"
   );
   return response.data.data;
 };
@@ -77,7 +77,7 @@ export const updateProfile = async ({
   };
   phoneNumber: string;
 }) => {
-  return await axiosInstance.put(`/v1/auth/update-profile`, {
+  return await axiosInstance.put(`/api/v1/auth/update-profile`, {
     name,
     address,
     phoneNumber,
@@ -86,21 +86,21 @@ export const updateProfile = async ({
 
 export const forgotPassword = async (email: string) => {
   return await axios.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/forgot-password`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/forgot-password`,
     { email }
   );
 };
 
 export const resetPassword = async (token: string, password: string) => {
   return await axios.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/reset-password/${token}`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/reset-password/${token}`,
     { password }
   );
 };
 
 export const refreshToken = async () => {
   const response = await axiosInstance.post(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/v1/auth/refresh-token`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/v1/auth/refresh-token`,
     { withCredentials: true }
   );
   return response;
