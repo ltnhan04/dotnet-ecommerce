@@ -13,7 +13,7 @@ using api.Services.Customer;
 namespace api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/v1/admin/customers")]
+    [Route("v1/admin/customers")]
     [Authorize(Roles = "admin")]
     public class AdminCustomerController : ControllerBase
     {
@@ -68,4 +68,4 @@ namespace api.Controllers.Admin
             }
         }
     }
-} 
+}

@@ -13,7 +13,7 @@ using api.Common;
 namespace api.Controllers
 {
     [ApiController]
-    [Route("api/v1/revenue")]
+    [Route("v1/revenue")]
     [Authorize(Roles = "admin")]
     public class RevenueController : ControllerBase
     {

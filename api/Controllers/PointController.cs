@@ -14,7 +14,7 @@ using MongoDB.Bson;
 namespace api.Controllers
 {
     [ApiController]
-    [Route("api/v1/points")]
+    [Route("v1/points")]
     [Authorize]
     public class PointController : ControllerBase
     {

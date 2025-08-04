@@ -15,7 +15,7 @@ using MongoDB.Bson;
 namespace api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/v1/admin/orders")]
+    [Route("v1/admin/orders")]
     [Authorize(Roles = "admin")]
     public class AdminOrderController : ControllerBase
     {

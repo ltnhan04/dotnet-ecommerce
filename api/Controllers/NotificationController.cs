@@ -13,7 +13,7 @@ using api.Models;
 namespace api.Controllers
 {
     [ApiController]
-    [Route("api/v1/notifications")]
+    [Route("v1/notifications")]
     public class NotificationController : ControllerBase
     {
         private readonly INotificationRepository _repo;
