@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers.Admin
 {
     [ApiController]
-    [Route("api/v1/admin/products/variant")]
+    [Route("v1/admin/products/variant")]
     [Authorize(Roles = "admin")]
     public class ProductVariantController : ControllerBase
     {

@@ -12,7 +12,7 @@ using api.Utils;
 
 namespace api.Controllers
 {
-    [Route("api/v1/shipping-methods")]
+    [Route("v1/shipping-methods")]
     [ApiController]
     public class ShippingController : ControllerBase
     {

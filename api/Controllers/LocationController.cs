@@ -4,7 +4,7 @@ using api.Interfaces;
 		
 
 [ApiController]
-[Route("api/v1/")]
+[Route("v1/")]
 public class LocationController : ControllerBase
 {
 	private readonly ILocationService _locationService;

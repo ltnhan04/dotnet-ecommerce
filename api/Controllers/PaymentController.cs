@@ -13,7 +13,7 @@ using MongoDB.Bson;
 namespace api.Controllers
 {
     [ApiController]
-    [Route("api/v1/payment")]
+    [Route("v1/payment")]
     [Authorize]
     public class PaymentController : ControllerBase
     {

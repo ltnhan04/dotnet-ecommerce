@@ -8,7 +8,7 @@ using api.Utils;
 
 namespace api.Controllers.Admin
 {
-    [Route("api/admin/reviews")]
+    [Route("admin/reviews")]
     [ApiController]
     [Authorize(Roles = "admin")]
     public class AdminReviewController : ControllerBase
