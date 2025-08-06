@@ -1,76 +1,81 @@
-# 🌳 **Git Flow**
+# 🛍️ iTribe E-Commerce Platform
 
-Git Flow introduces a robust branching model for project development. Below is the structure and workflow for managing branches like `main`, `develop`, `release`, and `hotfix`.
+A full-stack, enterprise-grade e-commerce platform built with **.NET 8** and **Next.js 14** — offering real-time payment processing, scalable architecture, and secure customer experiences.
 
-## 7.1. **Branching Model Overview**
+> 💼 This project demonstrates my skills in backend scalability, frontend architecture, secure payments, and production-ready DevOps. Designed as a showcase of real-world engineering standards.
 
-![Git Flow Model](https://media.licdn.com/dms/image/v2/D4E22AQFv9-n24c-x0A/feedshare-shrink_800/feedshare-shrink_800/0/1708786844976?e=2147483647&v=beta&t=DZ7YCMW3f5orafrSi1CXZLEB3J_YfZaWe2Gpnb0jigI)
+---
 
-### 7.2. **Branch Definitions**
+## 🚀 Overview
 
-| **Branch**  | **Purpose**                                                                |
-| ----------- | -------------------------------------------------------------------------- |
-| **main**    | Contains production-ready code. Reflects what is currently live.           |
-| **develop** | Holds the latest code under development. Acts as an integration branch.    |
-| **feature** | Branch off `develop` to work on individual features.                       |
-| **release** | Prepare code for production. Merge back into `main` and `develop`.         |
-| **hotfix**  | For urgent fixes directly on `main`. Merge into both `main` and `develop`. |
+`iTribe` is a modern online retail platform built to handle the full lifecycle of e-commerce operations:
 
-### 7.3. **Workflow Steps**
+- 👥 Multi-role user management (admin/customer)
+- 🛍️ Product catalog with variants, inventory, and filtering
+- 🧾 Seamless order management & payment flows
+- 🔐 Security-first approach with JWT, rate limiting, and encrypted sessions
 
-#### 1. **Starting a Feature**
+---
 
-- Branch from `develop`:
-  ```bash
-  git checkout develop
-  git checkout -b feature/{feature-name}
-  ```
+## ✨ Key Features
 
-#### 2. **Finishing a Feature**
+### 🛒 **E-Commerce Core**
+- Dynamic product & variant management
+- Real-time inventory checks & persistent cart
+- Order tracking with status history
+- Role-based access control (RBAC)
 
-- Merge into `develop`:
-  ```bash
-  git checkout develop
-  git merge feature/{feature-name}
-  git branch -d feature/{feature-name}
-  ```
+### 💳 **Payment Integration**
+- Stripe & MoMo gateways with webhook validation
+- Full refund workflows
+- Transaction status syncing with order updates
 
-#### 3. **Preparing a Release**
+### 🛡️ **Security**
+- JWT + refresh token strategy
+- Rate limiting & brute-force protection
+- XSS, CSRF & injection mitigations
+- CSP headers + encrypted storage
 
-- Branch from `develop`:
-  ```bash
-  git checkout develop
-  git checkout -b release/{version}
-  ```
-- Test and fix issues.
-- Merge into `main` and tag the release:
-  ```bash
-  git checkout main
-  git merge release/{version}
-  git tag -a v{version} -m "Release {version}"
-  ```
-- Merge back into `develop`:
-  ```bash
-  git checkout develop
-  git merge release/{version}
-  git branch -d release/{version}
-  ```
+---
 
-#### 4. **Hotfixing**
+## 🛠️ Technology Stack
 
-- Branch from `main`:
-  ```bash
-  git checkout main
-  git checkout -b hotfix/{issue-name}
-  ```
-- Fix the issue and merge into both `main` and `develop`:
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=dotnet,mongodb,redis,nextjs,redux,tailwind,typescript,docker,githubactions,nginx,ubuntu" alt="Tech stack icons" />
+</p>
 
-  ```bash
-  git checkout main
-  git merge hotfix/{issue-name}
-  git tag -a v{hotfix-version} -m "Hotfix {issue-name}"
+- **Backend**: .NET 8 (.Net Core Web API), EF Core, MongoDB, Redis, Cloudinary
+- **Frontend**: Next.js 14, TypeScript, Redux Toolkit, TanStack Query, Zod, Tailwind CSS
+- **DevOps**: Docker, GitHub Actions, Nginx, Ubuntu
 
-  git checkout develop
-  git merge hotfix/{issue-name}
-  git branch -d hotfix/{issue-name}
-  ```
+---
+
+## 🧠 What I Focused On
+
+- **Clean Architecture**: DI, Repository-Service pattern, layered separation
+- **Security**: Full JWT auth flow, input sanitization, secure cookies
+- **Payments**: Modular integration with Stripe & MoMo; refund API design
+- **Frontend Engineering**: SSR-friendly architecture, optimized UI/UX, accessible components
+- **Performance**: Redis caching, lazy loading, Dockerized CI/CD flow
+
+---
+
+## 🏗️ Architecture Highlights
+
+- Modular service-oriented design
+- Environment-based configuration (dev/prod)
+- Secure deployments with HTTPS, Nginx reverse proxy
+- Health checks, logging & backup-ready
+
+---
+
+## 🚀 CI/CD & Deployment Workflow
+
+Below is the automated workflow for code delivery and deployment to the production VPS:
+
+### 📊 Deployment Flow Diagram
+
+![CI/CD Workflow](./frontend/public/assets/images/cicd.png)
+
+---
+
