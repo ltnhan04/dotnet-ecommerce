@@ -21,7 +21,6 @@ using api.Common;
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 
-
 builder.WebHost.UseUrls("http://*:8000");
 
 builder.Services.AddControllers();
